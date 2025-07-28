@@ -1,8 +1,13 @@
 // app/api/iniciar/route.ts
 import { NextResponse } from 'next/server'
-import { loopAutomatico } from '@/lib/loopAutomatico'
+import { iniciarSorteioContinuo } from '@/lib/loopAutomatico'  // corrigido o nome da função
 
 export async function GET() {
-  loopAutomatico()
-  return NextResponse.json({ ok: true, status: 'Loop iniciado' })
+  try {
+    await iniciarSorteioContinuo()   // usar o nome correto da função
+    return NextResponse.json({ ok: true, status: 'Loop iniciado' })
+  } catch (error) {
+    console.error('[ERRO_LOOP_INICIADO]', error)
+    return NextResponse.json({ ok: false, status: 'Erro ao iniciar loop' }, { status: 500 })
+  }
 }
