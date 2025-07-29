@@ -76,8 +76,14 @@ export default function DashboardPage() {
     );
   }
 
-  const renderGameCard = (src: string, alt: string) => (
-    <div className="relative bg-gray-800 rounded-xl overflow-hidden shadow hover:scale-105 transition-transform duration-300">
+  // 👇 ALTERAÇÃO: Card clicável
+  const renderGameCard = (src: string, alt: string, href?: string) => (
+    <div
+      className="relative bg-gray-800 rounded-xl overflow-hidden shadow hover:scale-105 transition-transform duration-300 cursor-pointer"
+      onClick={() => {
+        if (href) router.push(href);
+      }}
+    >
       <img src={src} alt={alt} className="w-full h-32 sm:h-40 object-cover" />
       <span className="absolute top-2 left-2 bg-yellow-400 text-black font-semibold text-xs px-3 py-1 rounded shadow-lg">
         Jogar agora
@@ -166,12 +172,33 @@ export default function DashboardPage() {
         </div>
 
         {/* Jogos de Fortune */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-6">🧧 Jogos de Fortune</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {[...Array(14)].map((_, i) => renderGameCard(`/img/demo${i + 1}.png`, `Fortune ${i + 1}`))}
-          </div>
-        </div>
+        {/* Jogos de Fortune */}
+<div className="mt-16">
+  <h2 className="text-2xl font-bold mb-6">🧧 Jogos de Fortune</h2>
+  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
+    {[
+      { src: '/img/demo1.png', alt: 'Fortune Ox', link: '/games/fortune-ox' },
+      { src: '/img/demo2.png', alt: 'Fortune Rabbit', link: '/games/fortune-rabbit' },
+      { src: '/img/demo3.png', alt: 'Fortune Tiger', link: '/games/fortune-tiger' },
+      { src: '/img/demo4.png', alt: 'Fortune Mouse', link: '/games/fortune-mouse' },
+      { src: '/img/demo5.png', alt: 'Fortune Cat', link: '/games/fortune-cat' },
+      { src: '/img/demo6.png', alt: 'Fortune Pig', link: '/games/fortune-pig' },
+      { src: '/img/demo7.png', alt: 'Fortune Panda', link: '/games/fortune-panda' },
+      { src: '/img/demo8.png', alt: 'Fortune Dog', link: '/games/fortune-dog' },
+    ].map((game, i) => (
+      <div
+        key={i}
+        onClick={() => router.push(game.link)}
+        className="relative bg-gray-800 rounded-xl overflow-hidden shadow hover:scale-105 transition-transform duration-300 cursor-pointer"
+      >
+        <img src={game.src} alt={game.alt} className="w-full h-32 sm:h-40 object-cover" />
+        <span className="absolute top-2 left-2 bg-yellow-400 text-black font-semibold text-xs px-3 py-1 rounded shadow-lg">
+          Jogar agora
+        </span>
+      </div>
+    ))}
+  </div>
+</div>
 
         {/* Populares */}
         <div className="mt-16">
