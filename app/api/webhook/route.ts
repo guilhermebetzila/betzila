@@ -9,17 +9,16 @@ const client = new MercadoPagoConfig({
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    console.log('📩 Webhook recebido:', body)
+    console.log('📩 Webhook recebido:', JSON.stringify(body, null, 2))
 
-    // Ignora notificações que não são de pagamento
     if (body.type !== 'payment') {
       console.log('🔕 Notificação ignorada (não é pagamento)')
       return NextResponse.json({ ok: true })
     }
 
-    // Ignora notificações de modo de teste
+    // Opcional: remova ou comente esta parte para testes sandbox
     if (body.live_mode === false) {
-      console.log('⚠️ Webhook em modo de teste ignorado (live_mode: false)')
+      console.log('⚠️ Webhook sandbox ignorado (live_mode: false)')
       return NextResponse.json({ ok: true })
     }
 
@@ -29,23 +28,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
-    // Busca detalhes do pagamento
     let payment
     try {
       payment = await new Payment(client).get({ id: paymentId })
     } catch (err) {
-      console.error('❌ Falha ao buscar pagamento no Mercado Pago:', err)
-      return NextResponse.json({ ok: true }) // responde 200 para não gerar falha na entrega
+      console.error('❌ Erro ao buscar pagamento no Mercado Pago:', err)
+      return NextResponse.json({ ok: true }) // evitar falha na entrega
     }
 
-    console.log('📦 Detalhes do pagamento:', {
+    console.log('📦 Dados do pagamento:', {
       status: payment.status,
       email: payment.metadata?.email,
       valor: payment.transaction_amount,
     })
 
     if (payment.status !== 'approved') {
-      console.log('⏳ Pagamento ainda não aprovado. Ignorado.')
+      console.log('⏳ Pagamento não aprovado ainda, ignorando')
       return NextResponse.json({ ok: true })
     }
 
@@ -57,17 +55,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
-    // Atualiza saldo no banco
-    await prisma.user.update({
-      where: { email },
-      data: { saldo: { increment: valor } },
-    })
-
-    console.log(`✅ Pagamento aprovado! R$${valor} creditado para ${email}`)
+    try {
+      const userUpdated = await prisma.user.update({
+        where: { email },
+        data: { saldo: { increment: valor } },
+      })
+      console.log(`✅ Saldo atualizado para ${email}: +R$${valor}`)
+    } catch (prismaError) {
+      console.error('❌ Erro ao atualizar saldo no banco:', prismaError)
+      // mesmo assim retornamos ok para Mercado Pago não tentar de novo
+    }
 
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error('❌ Erro geral no webhook:', error)
-    return NextResponse.json({ ok: true }) // responde 200 para evitar falha no webhook
+    return NextResponse.json({ ok: true }) // evitar falha no webhook
   }
 }
