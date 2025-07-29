@@ -1,11 +1,11 @@
 generator client {
   provider   = "prisma-client-js"
-  engineType = "binary" // ✅ Ajuste feito aqui
+  engineType = "binary"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Puxa do .env
 }
 
 model User {
@@ -16,10 +16,9 @@ model User {
   saldo          Float     @default(0)
   indicador      String?
 
-  // Relação autorreferenciada para indicações:
-  indicadoPorId  Int?      // campo que referencia o usuário que indicou este usuário (pode ser nulo)
+  indicadoPorId  Int?
   indicadoPor    User?     @relation("Indicacoes", fields: [indicadoPorId], references: [id])
-  indicados      User[]    @relation("Indicacoes") // lista dos usuários indicados por este usuário
+  indicados      User[]    @relation("Indicacoes")
 
   cartelas       Cartela[]
 }
