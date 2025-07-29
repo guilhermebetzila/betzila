@@ -11,8 +11,15 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     console.log('📩 Webhook recebido:', body)
 
+    // Ignora notificações que não são de pagamento
     if (body.type !== 'payment') {
       console.log('🔕 Notificação ignorada (não é pagamento)')
+      return NextResponse.json({ ok: true })
+    }
+
+    // Ignora notificações de modo de teste
+    if (body.live_mode === false) {
+      console.log('⚠️ Webhook em modo de teste ignorado (live_mode: false)')
       return NextResponse.json({ ok: true })
     }
 
@@ -23,7 +30,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Busca detalhes do pagamento
-    const payment = await new Payment(client).get({ id: paymentId })
+    let payment
+    try {
+      payment = await new Payment(client).get({ id: paymentId })
+    } catch (err) {
+      console.error('❌ Falha ao buscar pagamento no Mercado Pago:', err)
+      return NextResponse.json({ ok: true }) // responde 200 para não gerar falha na entrega
+    }
 
     console.log('📦 Detalhes do pagamento:', {
       status: payment.status,
@@ -54,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true })
   } catch (error) {
-    console.error('❌ Erro no webhook:', error)
-    return NextResponse.json({ ok: true }) // responde 200 sempre
+    console.error('❌ Erro geral no webhook:', error)
+    return NextResponse.json({ ok: true }) // responde 200 para evitar falha no webhook
   }
 }
