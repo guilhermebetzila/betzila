@@ -1,8 +1,38 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { io as clientIO } from 'socket.io-client'
 import { Search, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
+const socket = clientIO('http://localhost:4000') // Altere para https://betzila.com.br:4000 em produção
+
 export function Header() {
+  const [saldo, setSaldo] = useState<number>(0)
+
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+    if (usuario?.saldo) {
+      setSaldo(usuario.saldo)
+    }
+
+    socket.on('saldo:atualizado', ({ email, valor }) => {
+      const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+
+      if (usuario.email === email) {
+        usuario.saldo += valor
+        localStorage.setItem('usuarioLogado', JSON.stringify(usuario))
+        setSaldo(usuario.saldo)
+        console.log('💰 Saldo atualizado via socket:', usuario.saldo)
+      }
+    })
+
+    return () => {
+      socket.off('saldo:atualizado')
+    }
+  }, [])
+
   return (
     <header className="bg-green-600 text-white p-4">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -26,6 +56,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2">
+          <span className="mr-2 font-bold text-yellow-300">Saldo: R${saldo.toFixed(2)}</span>
           <Button variant="ghost" className="text-white hover:bg-green-700">
             Entrar
           </Button>
