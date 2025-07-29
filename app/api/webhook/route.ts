@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     console.log('📩 Webhook recebido:', body)
 
-    // Ignora notificações que não são de pagamento
     if (body.type !== 'payment') {
       console.log('🔕 Notificação ignorada (não é pagamento)')
       return NextResponse.json({ ok: true })
@@ -19,11 +18,11 @@ export async function POST(req: NextRequest) {
 
     const paymentId = body.data?.id
     if (!paymentId) {
-      console.error('❌ ID do pagamento ausente na notificação')
-      return NextResponse.json({ ok: false, error: 'ID ausente' }, { status: 400 })
+      console.warn('❌ ID do pagamento ausente na notificação')
+      return NextResponse.json({ ok: true })
     }
 
-    // Consulta o pagamento usando o SDK oficial
+    // Busca detalhes do pagamento
     const payment = await new Payment(client).get({ id: paymentId })
 
     console.log('📦 Detalhes do pagamento:', {
@@ -32,7 +31,6 @@ export async function POST(req: NextRequest) {
       valor: payment.transaction_amount,
     })
 
-    // Só continua se estiver aprovado
     if (payment.status !== 'approved') {
       console.log('⏳ Pagamento ainda não aprovado. Ignorado.')
       return NextResponse.json({ ok: true })
@@ -42,11 +40,11 @@ export async function POST(req: NextRequest) {
     const valor = Number(payment.transaction_amount)
 
     if (!email) {
-      console.error('❌ Email não encontrado nos metadados do pagamento!')
-      return NextResponse.json({ ok: false, error: 'Email ausente' }, { status: 400 })
+      console.warn('❌ Email ausente no metadata do pagamento')
+      return NextResponse.json({ ok: true })
     }
 
-    // Atualiza saldo do usuário
+    // Atualiza saldo no banco
     await prisma.user.update({
       where: { email },
       data: { saldo: { increment: valor } },
@@ -57,6 +55,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   } catch (error) {
     console.error('❌ Erro no webhook:', error)
-    return NextResponse.json({ ok: false, error: 'Erro interno' }, { status: 500 })
+    return NextResponse.json({ ok: true }) // responde 200 sempre
   }
 }
