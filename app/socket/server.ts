@@ -1,6 +1,7 @@
+// app/scripts/socket/server.ts
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { iniciarLoopDePartidas } from '@/lib/startBingo';
+import { iniciarLoopDePartidas } from '@/lib/startBingo'; // ✅ usando alias
 
 const server = createServer();
 const io = new Server(server, {
@@ -8,11 +9,10 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-  console.log('🎮 Novo jogador conectado');
+  console.log('🎮 Novo jogador conectado:', socket.id);
 });
 
-// ✅ Passa o io corretamente
-iniciarLoopDePartidas(io); // inicia o ciclo automático com socket.io
+iniciarLoopDePartidas(io); // Loop 24h automático
 
 server.listen(4000, () => {
   console.log('🟢 Socket.IO rodando na porta 4000');
