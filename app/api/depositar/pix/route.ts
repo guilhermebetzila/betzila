@@ -1,3 +1,5 @@
+// app/api/depositar/pix/route.ts
+
 import { NextRequest, NextResponse } from 'next/server'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 
@@ -19,20 +21,18 @@ export async function POST(req: NextRequest) {
         description: 'Depósito via PIX',
         payment_method_id: 'pix',
         payer: { email },
-        metadata: {
-          email, // <- ESSENCIAL para o webhook reconhecer o usuário depois
-        },
+        metadata: { email },
       },
     })
 
     const transactionData = payment.point_of_interaction?.transaction_data
-    if (!transactionData) {
-      return NextResponse.json({ error: 'Erro ao gerar QR Code' }, { status: 500 })
+    if (!transactionData?.qr_code) {
+      return NextResponse.json({ error: 'Erro ao gerar código PIX' }, { status: 500 })
     }
 
+    // 🔥 Retorna apenas o código de "copiar e colar"
     return NextResponse.json({
       copia_e_cola: transactionData.qr_code,
-      qr_code_base64: transactionData.qr_code_base64,
     })
   } catch (error) {
     console.error(error)
