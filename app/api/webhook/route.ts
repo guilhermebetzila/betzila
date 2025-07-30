@@ -9,6 +9,9 @@ const mp = new MercadoPagoConfig({
 const payments = new Payment(mp)
 
 export async function POST(req: Request) {
+  // ✅ Forçar erro para testar se a rota está funcionando
+  throw new Error("Forçando erro para testar execução do webhook");
+
   console.log('📩 Webhook recebido!')
 
   try {
