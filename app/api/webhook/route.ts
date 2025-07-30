@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     const paymentData = await payments.get({ id: String(paymentId) })
 
     const status = paymentData.status
-    const tipo = paymentData.payment_type_id
+    const tipo = paymentData.payment_type_id ?? 'indefinido'
     const valor = paymentData.transaction_amount
     const email = paymentData.external_reference?.trim().toLowerCase()
 
@@ -40,25 +40,21 @@ export async function POST(req: Request) {
       email,
     })
 
-    // ✅ Verifica se foi aprovado
     if (status !== 'approved') {
       console.log('⏳ Pagamento ainda não aprovado. Status:', status)
       return NextResponse.json({ status: 'não aprovado' }, { status: 200 })
     }
 
-    // ✅ Verifica se o tipo é aceito (evita erro se tipo for undefined)
-    if (!['pix', 'account_money', 'bank_transfer'].includes(tipo || '')) {
+    if (!['pix', 'account_money', 'bank_transfer'].includes(tipo)) {
       console.log('💳 Tipo de pagamento não aceito:', tipo)
       return NextResponse.json({ status: 'tipo não aceito' }, { status: 200 })
     }
 
-    // ✅ Valida o e-mail
     if (!email) {
       console.log('🚫 Email ausente no campo external_reference.')
       return NextResponse.json({ error: 'Email ausente' }, { status: 400 })
     }
 
-    // ✅ Atualiza o saldo
     try {
       const result = await prisma.user.update({
         where: { email },
