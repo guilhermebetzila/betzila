@@ -15,17 +15,20 @@ export async function POST(req: Request) {
     const body = await req.json()
     console.log('🧾 Conteúdo do webhook:', body)
 
+    // Só processa se for evento de pagamento criado ou atualizado
     if (body.type !== 'payment' || !['payment.created', 'payment.updated'].includes(body.action)) {
       console.log('🔁 Webhook ignorado. Tipo ou ação não compatíveis:', body.type, body.action)
       return NextResponse.json({ status: 'ignored' }, { status: 200 })
     }
 
+    // Pega o ID do pagamento para consultar no Mercado Pago
     const paymentId = body.data?.id
     if (!paymentId) {
       console.log('⚠️ ID de pagamento ausente.')
       return NextResponse.json({ error: 'ID ausente' }, { status: 400 })
     }
 
+    // Busca os dados completos do pagamento no Mercado Pago
     const paymentData = await payments.get({ id: String(paymentId) })
 
     const status = paymentData.status
@@ -40,16 +43,19 @@ export async function POST(req: Request) {
       email,
     })
 
+    // Só atualiza se pagamento aprovado e via PIX
     if (status !== 'approved' || tipo !== 'pix') {
       console.log('⏳ Pagamento ainda não aprovado ou não é PIX.')
       return NextResponse.json({ status: 'não processado' }, { status: 200 })
     }
 
+    // Se email estiver vazio, erro
     if (!email) {
       console.log('🚫 Email ausente no campo external_reference.')
       return NextResponse.json({ error: 'Email ausente' }, { status: 400 })
     }
 
+    // Atualiza saldo no banco
     try {
       const result = await prisma.user.update({
         where: { email },
