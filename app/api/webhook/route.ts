@@ -31,9 +31,9 @@ export async function POST(req: Request) {
     const status = paymentData.status
     const tipo = paymentData.payment_type_id
     const valor = paymentData.transaction_amount
-    const email = paymentData.external_reference
+    const email = paymentData.external_reference?.trim().toLowerCase()
 
-    console.log('📦 Dados do pagamento:', {
+    console.log('📦 Dados do pagamento recebidos do Mercado Pago:', {
       status,
       tipo,
       valor,
@@ -41,12 +41,12 @@ export async function POST(req: Request) {
     })
 
     if (status !== 'approved' || tipo !== 'pix') {
-      console.log('⏳ Pagamento não aprovado ou não é PIX.')
+      console.log('⏳ Pagamento ainda não aprovado ou não é PIX.')
       return NextResponse.json({ status: 'não processado' }, { status: 200 })
     }
 
     if (!email) {
-      console.log('🚫 Email ausente no external_reference.')
+      console.log('🚫 Email ausente no campo external_reference.')
       return NextResponse.json({ error: 'Email ausente' }, { status: 400 })
     }
 
@@ -57,15 +57,15 @@ export async function POST(req: Request) {
       })
 
       console.log(`✅ Saldo atualizado com sucesso para ${email}: +${valor}`, result)
+      return NextResponse.json({ success: true }, { status: 200 })
+
     } catch (e) {
-      console.error('❌ Erro ao atualizar saldo no banco:', e)
+      console.error('❌ Erro ao atualizar o saldo no banco:', e)
       return NextResponse.json({ error: 'Erro ao atualizar saldo' }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true }, { status: 200 })
-
   } catch (error) {
-    console.error('❌ Erro geral no webhook:', error)
+    console.error('❌ Erro geral no processamento do webhook:', error)
     return NextResponse.json({ error: 'Erro interno no webhook' }, { status: 500 })
   }
 }
