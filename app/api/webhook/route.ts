@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'ID ausente' }, { status: 400 })
     }
 
-    // ✅ Protege contra erro ao buscar pagamento
+    // Protege contra erro ao buscar pagamento
     let paymentData
     try {
       paymentData = await payments.get({ id: String(paymentId) })
