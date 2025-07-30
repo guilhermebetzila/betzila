@@ -26,6 +26,8 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    console.log('Pagamento PIX criado:', paymentData)
+
     const tx = paymentData.point_of_interaction?.transaction_data
     if (!tx?.qr_code) {
       return NextResponse.json({ error: 'Erro ao gerar código PIX' }, { status: 500 })

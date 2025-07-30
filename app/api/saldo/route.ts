@@ -4,19 +4,19 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(req: NextRequest) {
   try {
-    // Recupera token JWT do usuário logado
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
     if (!token?.email) {
+      console.log('Acesso negado: token inválido ou email ausente')
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    // Busca saldo no banco
     const user = await prisma.user.findUnique({
       where: { email: token.email },
       select: { saldo: true },
     })
 
     if (!user) {
+      console.log('Usuário não encontrado para email:', token.email)
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
 
