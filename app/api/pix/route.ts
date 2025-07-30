@@ -53,7 +53,11 @@ export async function POST(req: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('❌ Erro ao criar PIX:', error.response?.data || error.message || error)
+    // Logs detalhados para entender o erro completo
+    console.error('❌ Erro ao criar PIX completo:', error)
+    console.error('❌ Erro ao criar PIX response.data:', error.response?.data)
+    console.error('❌ Erro ao criar PIX message:', error.message)
+
     return NextResponse.json({
       error: 'Erro interno ao criar pagamento PIX',
       detalhes: error.response?.data || error.message || error,
