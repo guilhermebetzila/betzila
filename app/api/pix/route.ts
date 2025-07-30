@@ -16,6 +16,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'amount e email são obrigatórios' }, { status: 400 })
     }
 
+    console.log('Criando pagamento PIX:', { valor, email, description })
+
+    if (!process.env.MERCADO_PAGO_ACCESS_TOKEN) {
+      console.error('Token Mercado Pago não configurado')
+      return NextResponse.json({ error: 'Token Mercado Pago não configurado' }, { status: 500 })
+    }
+
     const paymentData = await payments.create({
       body: {
         transaction_amount: valor,
@@ -41,7 +48,7 @@ export async function POST(req: NextRequest) {
       ticket_url: tx.ticket_url ?? null,
     })
   } catch (error) {
-    console.error('Erro ao criar PIX:', error)
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
+    console.error('Erro ao criar PIX:', error instanceof Error ? error.message : error)
+    return NextResponse.json({ error: 'Erro interno ao criar pagamento PIX' }, { status: 500 })
   }
 }
