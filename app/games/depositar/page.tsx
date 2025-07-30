@@ -18,9 +18,9 @@ export default function Depositar() {
     setLoading(true)
 
     try {
-      const response = await axios.post('/api/depositar/pix', {
+      const response = await axios.post('/api/pix', { // ALTEREI AQUI: rota corrigida
         amount: Number(valor),
-        email: session?.user?.email, // ✅ email enviado
+        email: session?.user?.email,
       })
 
       setCopiacola(response.data.copia_e_cola)
