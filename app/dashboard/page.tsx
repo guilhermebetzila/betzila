@@ -40,7 +40,7 @@ export default function DashboardPage() {
 
     const fetchSaldo = async () => {
       try {
-        const res = await fetch('/api/user/saldo');
+        const res = await fetch('/api/saldo'); // ✅ ROTA CORRETA
         const data = await res.json();
         if (res.ok) {
           setSaldo(data.saldo || 0);
@@ -76,7 +76,6 @@ export default function DashboardPage() {
     );
   }
 
-  // 👇 ALTERAÇÃO: Card clicável
   const renderGameCard = (src: string, alt: string, href?: string) => (
     <div
       className="relative bg-gray-800 rounded-xl overflow-hidden shadow hover:scale-105 transition-transform duration-300 cursor-pointer"
@@ -94,7 +93,6 @@ export default function DashboardPage() {
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        {/* Cabeçalho (sem avatar) */}
         <div className="mb-10">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user.nome || user.email}
