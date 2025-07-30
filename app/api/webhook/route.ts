@@ -10,8 +10,8 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
 
-    // Apenas processa eventos de criação de pagamento
-    if (body.type !== 'payment' || body.action !== 'payment.created') {
+    // ✅ Aceita tanto payment.created quanto payment.updated
+    if (body.type !== 'payment' || (body.action !== 'payment.created' && body.action !== 'payment.updated')) {
       return NextResponse.json({ status: 'ignored' }, { status: 200 })
     }
 
@@ -20,20 +20,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'ID de pagamento ausente' }, { status: 400 })
     }
 
-    // Busca o pagamento na API do Mercado Pago
     const payment = await new Payment(client).get({ id: paymentId })
 
-    // Verifica se o pagamento foi aprovado e é via Pix
+    // ✅ Verifica se o pagamento foi aprovado por PIX
     if (payment.status !== 'approved' || payment.payment_type_id !== 'pix') {
       return NextResponse.json({ status: 'não processado' }, { status: 200 })
     }
 
-    const email = payment.metadata?.email
+    const email = payment.external_reference // ✅ Pegando do external_reference
+
     if (!email) {
-      return NextResponse.json({ error: 'Email não encontrado nos metadados' }, { status: 400 })
+      return NextResponse.json({ error: 'Email não encontrado no external_reference' }, { status: 400 })
     }
 
-    // Atualiza saldo no banco de dados
+    // ✅ Atualiza o saldo do usuário
     await prisma.user.update({
       where: { email },
       data: {

@@ -1,5 +1,3 @@
-// app/api/depositar/pix/route.ts
-
 import { NextRequest, NextResponse } from 'next/server'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 
@@ -21,7 +19,7 @@ export async function POST(req: NextRequest) {
         description: 'Depósito via PIX',
         payment_method_id: 'pix',
         payer: { email },
-        metadata: { email },
+        external_reference: email, // ✅ campo que será enviado de volta no webhook
       },
     })
 
@@ -30,7 +28,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Erro ao gerar código PIX' }, { status: 500 })
     }
 
-    // 🔥 Retorna apenas o código de "copiar e colar"
     return NextResponse.json({
       copia_e_cola: transactionData.qr_code,
     })
