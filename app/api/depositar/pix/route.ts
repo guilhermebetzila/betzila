@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 
 const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
+  accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN || '',
 })
 
 export async function POST(req: NextRequest) {
@@ -19,7 +19,9 @@ export async function POST(req: NextRequest) {
         description: 'Depósito via PIX',
         payment_method_id: 'pix',
         payer: { email },
-        metadata: { email },
+        metadata: {
+          email, // <- ESSENCIAL para o webhook reconhecer o usuário depois
+        },
       },
     })
 

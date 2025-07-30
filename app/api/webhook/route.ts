@@ -1,41 +1,51 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { MercadoPagoConfig, Payment } from 'mercadopago'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { MercadoPagoConfig, Payment } from 'mercadopago'
 
 const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '',
+  accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN!,
 })
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     const body = await req.json()
-    if (body.type !== 'payment') return NextResponse.json({ ok: true })
 
-    const paymentId = body.data?.id
-    if (!paymentId) return NextResponse.json({ ok: true })
-
-    let payment
-    try {
-      payment = await new Payment(client).get({ id: paymentId })
-    } catch {
-      return NextResponse.json({ ok: true })
+    // Apenas processa eventos de criação de pagamento
+    if (body.type !== 'payment' || body.action !== 'payment.created') {
+      return NextResponse.json({ status: 'ignored' }, { status: 200 })
     }
 
-    if (payment.status !== 'approved') return NextResponse.json({ ok: true })
+    const paymentId = body.data?.id
+    if (!paymentId) {
+      return NextResponse.json({ error: 'ID de pagamento ausente' }, { status: 400 })
+    }
+
+    // Busca o pagamento na API do Mercado Pago
+    const payment = await new Payment(client).get({ id: paymentId })
+
+    // Verifica se o pagamento foi aprovado e é via Pix
+    if (payment.status !== 'approved' || payment.payment_type_id !== 'pix') {
+      return NextResponse.json({ status: 'não processado' }, { status: 200 })
+    }
 
     const email = payment.metadata?.email
-    const valor = Number(payment.transaction_amount)
-    if (!email) return NextResponse.json({ ok: true })
+    if (!email) {
+      return NextResponse.json({ error: 'Email não encontrado nos metadados' }, { status: 400 })
+    }
 
+    // Atualiza saldo no banco de dados
     await prisma.user.update({
       where: { email },
-      data: { saldo: { increment: valor } },
+      data: {
+        saldo: {
+          increment: payment.transaction_amount,
+        },
+      },
     })
 
-    console.log(`Saldo atualizado para ${email}: +${valor}`)
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
     console.error('Erro no webhook:', error)
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ error: 'Erro interno no webhook' }, { status: 500 })
   }
 }
