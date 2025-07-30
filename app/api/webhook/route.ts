@@ -2,16 +2,17 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
 
-const client = new MercadoPagoConfig({
+const mp = new MercadoPagoConfig({
   accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN!,
 })
+
+const payments = new Payment(mp)
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
 
-    // ✅ Aceita tanto payment.created quanto payment.updated
-    if (body.type !== 'payment' || (body.action !== 'payment.created' && body.action !== 'payment.updated')) {
+    if (body.type !== 'payment' || !['payment.created', 'payment.updated'].includes(body.action)) {
       return NextResponse.json({ status: 'ignored' }, { status: 200 })
     }
 
@@ -20,27 +21,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'ID de pagamento ausente' }, { status: 400 })
     }
 
-    const payment = await new Payment(client).get({ id: paymentId })
+    // v2: retorna o pagamento diretamente (sem `.body`)
+    const paymentData = await payments.get({ id: String(paymentId) })
 
-    // ✅ Verifica se o pagamento foi aprovado por PIX
-    if (payment.status !== 'approved' || payment.payment_type_id !== 'pix') {
+    if (paymentData.status !== 'approved' || paymentData.payment_type_id !== 'pix') {
       return NextResponse.json({ status: 'não processado' }, { status: 200 })
     }
 
-    const email = payment.external_reference // ✅ Pegando do external_reference
-
+    const email = paymentData.external_reference
     if (!email) {
       return NextResponse.json({ error: 'Email não encontrado no external_reference' }, { status: 400 })
     }
 
-    // ✅ Atualiza o saldo do usuário
     await prisma.user.update({
       where: { email },
-      data: {
-        saldo: {
-          increment: payment.transaction_amount,
-        },
-      },
+      data: { saldo: { increment: paymentData.transaction_amount } },
     })
 
     return NextResponse.json({ success: true }, { status: 200 })
