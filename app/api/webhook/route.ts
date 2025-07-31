@@ -56,6 +56,7 @@ export async function POST(req: Request) {
     const email = externalRefRaw.trim().toLowerCase()
 
     if (status !== 'approved') {
+      console.log('⏳ Status do pagamento:', status)
       console.log('⏳ Pagamento ainda não aprovado. Agendando nova tentativa em 15 segundos.')
 
       setTimeout(async () => {
