@@ -54,7 +54,7 @@ export async function POST(req: Request) {
 
     const email = externalRefRaw.trim().toLowerCase()
 
-    // ✅ VERIFICAÇÃO DE STATUS E TIPO
+    // ✅ Processar imediatamente se aprovado e tipo aceito
     if (status === 'approved' && ['pix', 'bank_transfer', 'account_money'].includes(tipo)) {
       const user = await prisma.user.findUnique({ where: { email } })
       if (!user) {
@@ -71,10 +71,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true }, { status: 200 })
     }
 
-    // ❗ NÃO APROVADO OU NÃO É TIPO ACEITO
-    console.log('⏳ Pagamento não processado ainda. Status:', status, '| Tipo:', tipo)
+    // ⏳ Caso ainda não esteja aprovado ou tipo não aceito
+    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito. Status:', status, '| Tipo:', tipo)
 
-    // Tentativa de novo em 15 segundos
+    // 🔁 Tentar novamente em 15 segundos
     setTimeout(async () => {
       try {
         const retryPayment = await payments.get({ id: String(paymentId) })
