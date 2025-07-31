@@ -37,8 +37,9 @@ export function Header() {
   }, []);
 
   return (
-    <header className="bg-green-600 text-white p-4">
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
+    <header className="bg-green-600 text-white p-4 w-full">
+      <div className="flex items-center justify-between w-full px-4">
+        {/* Logo e menu */}
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-green-700">
             <Menu className="h-5 w-5" />
@@ -51,6 +52,7 @@ export function Header() {
           </div>
         </div>
 
+        {/* Campo de busca (desktop) */}
         <div className="hidden md:flex items-center gap-4 flex-1 max-w-md mx-8">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -58,6 +60,7 @@ export function Header() {
           </div>
         </div>
 
+        {/* Saldo do usuário */}
         <div className="flex items-center gap-2">
           {user && (
             <span className="mr-2 font-bold text-yellow-300">Saldo: R${saldo.toFixed(2)}</span>
