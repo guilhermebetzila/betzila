@@ -55,10 +55,16 @@ export default function Home() {
         <p className="text-white">Não entre para ver. <strong className="text-yellow-400">Entre para mudar sua vida.</strong></p>
 
         <div className="flex flex-wrap justify-center gap-4 mt-6">
-          <Button onClick={() => router.push('/login')} className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold text-lg px-6 py-3 rounded shadow">
+          <Button
+            onClick={() => router.push('/login')}
+            className="bg-[#8B0000] hover:bg-[#a50000] text-white font-semibold text-lg px-6 py-3 rounded shadow"
+          >
             Entrar
           </Button>
-          <Button onClick={() => router.push('/register')} className="bg-white hover:bg-gray-100 text-black font-semibold text-lg px-6 py-3 rounded shadow">
+          <Button
+            onClick={() => router.push('/register')}
+            className="bg-[#8B0000] hover:bg-[#a50000] text-white font-semibold text-lg px-6 py-3 rounded shadow"
+          >
             Registrar-se
           </Button>
         </div>
@@ -104,4 +110,3 @@ export default function Home() {
     </main>
   );
 }
-
