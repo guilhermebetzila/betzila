@@ -59,20 +59,8 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2">
-          {user ? (
-            <>
-              <span className="mr-2 font-bold text-yellow-300">Saldo: R${saldo.toFixed(2)}</span>
-              {/* Aqui você pode adicionar algum dropdown ou nome do usuário */}
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" className="text-white hover:bg-green-700">
-                Entrar
-              </Button>
-              <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
-                Registrar
-              </Button>
-            </>
+          {user && (
+            <span className="mr-2 font-bold text-yellow-300">Saldo: R${saldo.toFixed(2)}</span>
           )}
         </div>
       </div>
