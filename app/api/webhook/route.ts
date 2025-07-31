@@ -30,7 +30,6 @@ export async function POST(req: Request) {
     let paymentData
     try {
       paymentData = await payments.get({ id: String(paymentId) })
-      console.log('🔍 Dados completos do pagamento:', JSON.stringify(paymentData, null, 2))
     } catch (error) {
       console.error('❌ Erro ao buscar detalhes do pagamento:', error)
       return NextResponse.json({ error: 'Erro ao buscar pagamento' }, { status: 500 })
@@ -41,11 +40,11 @@ export async function POST(req: Request) {
     const valor = paymentData.transaction_amount
     const externalRefRaw = paymentData.external_reference
 
-    console.log('📣 Status detalhado recebido do pagamento:', {
+    console.log('📦 Dados do pagamento recebidos do Mercado Pago:', {
       status,
       tipo,
       valor,
-      external_reference: externalRefRaw,
+      email: externalRefRaw,
     })
 
     if (typeof externalRefRaw !== 'string' || !externalRefRaw.trim()) {
@@ -55,17 +54,9 @@ export async function POST(req: Request) {
 
     const email = externalRefRaw.trim().toLowerCase()
 
-    console.log('📦 Verificando status e tipo:', { status, tipo })
-
-    if (status === 'approved') {
-      if (!['pix', 'account_money', 'bank_transfer'].includes(tipo)) {
-        console.log('💳 Tipo de pagamento não aceito:', tipo)
-        return NextResponse.json({ status: 'tipo não aceito' }, { status: 200 })
-      }
-
+    // ✅ VERIFICAÇÃO DE STATUS E TIPO
+    if (status === 'approved' && ['pix', 'bank_transfer', 'account_money'].includes(tipo)) {
       const user = await prisma.user.findUnique({ where: { email } })
-      console.log('👤 Usuário encontrado:', user)
-
       if (!user) {
         console.log('🚫 Usuário não encontrado para o email:', email)
         return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 400 })
@@ -78,47 +69,50 @@ export async function POST(req: Request) {
 
       console.log(`✅ Saldo atualizado com sucesso para ${email}: +${valor}`, result)
       return NextResponse.json({ success: true }, { status: 200 })
-
-    } else {
-      console.log('⏳ Pagamento ainda não aprovado. Status atual:', status)
-      console.log('⏱️ Agendando nova tentativa em 15 segundos.')
-
-      setTimeout(async () => {
-        try {
-          const retryPayment = await payments.get({ id: String(paymentId) })
-
-          console.log('🔁 Nova tentativa após 15s:', {
-            status: retryPayment.status,
-            tipo: retryPayment.payment_type_id,
-            valor: retryPayment.transaction_amount,
-            external_reference: retryPayment.external_reference,
-          })
-
-          if (
-            retryPayment.status === 'approved' &&
-            ['pix', 'account_money', 'bank_transfer'].includes(retryPayment.payment_type_id ?? '') &&
-            typeof retryPayment.external_reference === 'string' &&
-            retryPayment.external_reference.trim()
-          ) {
-            const retryEmail = retryPayment.external_reference.trim().toLowerCase()
-            await prisma.user.update({
-              where: { email: retryEmail },
-              data: { saldo: { increment: retryPayment.transaction_amount } },
-            })
-            console.log(`✅ Saldo atualizado na tentativa após 15s: +${retryPayment.transaction_amount} para ${retryEmail}`)
-          } else {
-            console.log('❌ Tentativa após 15s não resultou em aprovação.')
-          }
-        } catch (e) {
-          console.error('❌ Erro na re-tentativa após 15s:', e)
-        }
-      }, 15000)
-
-      return NextResponse.json({ status: 'não aprovado ainda, re-tentando em 15s' }, { status: 200 })
     }
 
+    // ❗ NÃO APROVADO OU NÃO É TIPO ACEITO
+    console.log('⏳ Pagamento não processado ainda. Status:', status, '| Tipo:', tipo)
+
+    // Tentativa de novo em 15 segundos
+    setTimeout(async () => {
+      try {
+        const retryPayment = await payments.get({ id: String(paymentId) })
+        const retryStatus = retryPayment.status
+        const retryTipo = retryPayment.payment_type_id ?? ''
+        const retryRef = retryPayment.external_reference
+
+        console.log('🔁 Nova tentativa após 15s:', {
+          status: retryStatus,
+          tipo: retryTipo,
+          valor: retryPayment.transaction_amount,
+          external_reference: retryRef,
+        })
+
+        if (
+          retryStatus === 'approved' &&
+          ['pix', 'account_money', 'bank_transfer'].includes(retryTipo) &&
+          typeof retryRef === 'string' &&
+          retryRef.trim()
+        ) {
+          const retryEmail = retryRef.trim().toLowerCase()
+          await prisma.user.update({
+            where: { email: retryEmail },
+            data: { saldo: { increment: retryPayment.transaction_amount } },
+          })
+          console.log(`✅ Saldo atualizado após nova tentativa para ${retryEmail}: +${retryPayment.transaction_amount}`)
+        } else {
+          console.log('❌ Nova tentativa após 15s não resultou em aprovação válida.')
+        }
+      } catch (e) {
+        console.error('❌ Erro na nova tentativa após 15s:', e)
+      }
+    }, 15000)
+
+    return NextResponse.json({ status: 'Pagamento ainda não aprovado ou tipo não aceito' }, { status: 200 })
+
   } catch (error) {
-    console.error('❌ Erro geral no processamento do webhook:', error)
-    return NextResponse.json({ error: 'Erro interno no webhook' }, { status: 500 })
+    console.error('❌ Erro geral no webhook:', error)
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
   }
 }
