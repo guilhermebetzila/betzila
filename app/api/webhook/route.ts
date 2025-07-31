@@ -54,7 +54,6 @@ export async function POST(req: Request) {
 
     const email = externalRefRaw.trim().toLowerCase()
 
-    // ✅ Processar imediatamente se aprovado e tipo aceito
     if (status === 'approved' && ['pix', 'bank_transfer', 'account_money'].includes(tipo)) {
       const user = await prisma.user.findUnique({ where: { email } })
       if (!user) {
@@ -71,45 +70,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true }, { status: 200 })
     }
 
-    // ⏳ Caso ainda não esteja aprovado ou tipo não aceito
-    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito. Status:', status, '| Tipo:', tipo)
-
-    // 🔁 Tentar novamente em 15 segundos
-    setTimeout(async () => {
-      try {
-        const retryPayment = await payments.get({ id: String(paymentId) })
-        const retryStatus = retryPayment.status
-        const retryTipo = retryPayment.payment_type_id ?? ''
-        const retryRef = retryPayment.external_reference
-
-        console.log('🔁 Nova tentativa após 15s:', {
-          status: retryStatus,
-          tipo: retryTipo,
-          valor: retryPayment.transaction_amount,
-          external_reference: retryRef,
-        })
-
-        if (
-          retryStatus === 'approved' &&
-          ['pix', 'account_money', 'bank_transfer'].includes(retryTipo) &&
-          typeof retryRef === 'string' &&
-          retryRef.trim()
-        ) {
-          const retryEmail = retryRef.trim().toLowerCase()
-          await prisma.user.update({
-            where: { email: retryEmail },
-            data: { saldo: { increment: retryPayment.transaction_amount } },
-          })
-          console.log(`✅ Saldo atualizado após nova tentativa para ${retryEmail}: +${retryPayment.transaction_amount}`)
-        } else {
-          console.log('❌ Nova tentativa após 15s não resultou em aprovação válida.')
-        }
-      } catch (e) {
-        console.error('❌ Erro na nova tentativa após 15s:', e)
-      }
-    }, 15000)
-
-    return NextResponse.json({ status: 'Pagamento ainda não aprovado ou tipo não aceito' }, { status: 200 })
+    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito.')
+    return NextResponse.json({ status: 'aguardando aprovação ou tipo inválido' }, { status: 200 })
 
   } catch (error) {
     console.error('❌ Erro geral no webhook:', error)
