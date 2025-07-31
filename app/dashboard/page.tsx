@@ -87,23 +87,8 @@ export default function DashboardPage() {
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        
-        {/* IA trabalhando acima da mensagem de boas-vindas */}
-        <IAWorkingPanel />
 
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold flex items-center gap-4">
-            Olá, {user.nome || user.email}
-            <span className="bg-yellow-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
-              Saldo: R$ {saldo.toFixed(2)}
-            </span>
-          </h1>
-          <p className="text-gray-400 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
-          <p className="text-yellow-400 mt-2">
-            📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!
-          </p>
-        </div>
-
+        {/* Busca e botões */}
         <div className="mb-6 flex flex-col items-center space-y-4">
           <div className="relative w-full max-w-md">
             <input
@@ -136,32 +121,52 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-
-          <div className="mt-10 bg-gray-900 text-white p-6 rounded-xl max-w-2xl text-center">
-            <h2 className="text-2xl font-bold text-yellow-400 mb-4">🚀 Bem-vindo à BetZila AI</h2>
-            <p className="mb-2">Seja bem-vindo à IA mais audaciosa e inovadora do mercado.</p>
-            <p className="mb-2">Após anos de estudos, pesquisas e acompanhamento minucioso dos principais setores econômicos, finalmente reunimos as mentes mais brilhantes para trabalhar por você.</p>
-            <p className="mb-2">A era da Inteligência Artificial a seu favor começa agora.</p>
-            <p className="mb-2">Faça parte de um ecossistema revolucionário, onde seu capital pode render <strong>2,5% ao dia</strong>, com segurança, estratégia e tecnologia.</p>
-            <p className="mb-2">💰 E lembre-se: os <strong>juros compostos</strong> são o segredo das grandes riquezas — e agora estão ao seu alcance.</p>
-            <p className="mb-2">🧬 Nosso sistema também recompensa a sua rede:</p>
-            <ul className="text-sm text-gray-300 mb-4">
-              <li>1ª geração de indicação: 10%</li>
-              <li>2ª geração: 5%</li>
-              <li>3ª geração: 2,5%</li>
-            </ul>
-            <p className="font-semibold text-green-400">Transforme sua vida com a força da Inteligência Artificial.<br />Comece agora com a BetZila AI.</p>
-          </div>
         </div>
 
-        {/* Quadrados */}
+        {/* IA trabalhando - ENTRE os botões e a mensagem de boas-vindas */}
+        <div className="mb-6">
+          <IAWorkingPanel />
+        </div>
+
+        {/* Mensagem de boas-vindas */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold flex items-center gap-4">
+            Olá, {user.nome || user.email}
+            <span className="bg-yellow-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
+              Saldo: R$ {saldo.toFixed(2)}
+            </span>
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
+          <p className="text-yellow-400 mt-2">
+            📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!
+          </p>
+        </div>
+
+        {/* Conteúdo principal abaixo */}
+        <div className="mb-6 bg-gray-900 text-white p-6 rounded-xl max-w-2xl text-center">
+          <h2 className="text-2xl font-bold text-yellow-400 mb-4">🚀 Bem-vindo à BetZila AI</h2>
+          <p className="mb-2">Seja bem-vindo à IA mais audaciosa e inovadora do mercado.</p>
+          <p className="mb-2">Após anos de estudos, pesquisas e acompanhamento minucioso dos principais setores econômicos, finalmente reunimos as mentes mais brilhantes para trabalhar por você.</p>
+          <p className="mb-2">A era da Inteligência Artificial a seu favor começa agora.</p>
+          <p className="mb-2">Faça parte de um ecossistema revolucionário, onde seu capital pode render <strong>2,5% ao dia</strong>, com segurança, estratégia e tecnologia.</p>
+          <p className="mb-2">💰 E lembre-se: os <strong>juros compostos</strong> são o segredo das grandes riquezas — e agora estão ao seu alcance.</p>
+          <p className="mb-2">🧬 Nosso sistema também recompensa a sua rede:</p>
+          <ul className="text-sm text-gray-300 mb-4">
+            <li>1ª geração de indicação: 10%</li>
+            <li>2ª geração: 5%</li>
+            <li>3ª geração: 2,5%</li>
+          </ul>
+          <p className="font-semibold text-green-400">Transforme sua vida com a força da Inteligência Artificial.<br />Comece agora com a BetZila AI.</p>
+        </div>
+
+        {/* Quadrados com bordas verdes */}
         <div className="flex flex-col items-center space-y-6 mb-12">
-          <div className="bg-gray-800 border-2 border-red-600 rounded-2xl p-6 w-72 text-center">
-            <p className="text-sm text-red-500 mb-2 font-bold">Saldo Diário</p>
+          <div className="bg-gray-800 border-2 border-green-400 rounded-2xl p-6 w-72 text-center">
+            <p className="text-sm text-green-400 mb-2 font-bold">Saldo Diário</p>
             <p className="text-2xl font-semibold text-white">R$ 00,00</p>
           </div>
-          <div className="bg-gray-800 border-2 border-red-600 rounded-2xl p-6 w-72 text-center">
-            <p className="text-sm text-red-500 mb-2 font-bold">Rede de Indicações</p>
+          <div className="bg-gray-800 border-2 border-green-400 rounded-2xl p-6 w-72 text-center">
+            <p className="text-sm text-green-400 mb-2 font-bold">Rede de Indicações</p>
             <p className="text-2xl font-semibold text-white">{totalIndicados}</p>
           </div>
         </div>
