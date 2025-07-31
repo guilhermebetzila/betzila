@@ -1,37 +1,40 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { io as clientIO } from 'socket.io-client'
-import { Search, Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useEffect, useState } from 'react';
+import { io as clientIO } from 'socket.io-client';
+import { Search, Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-const socket = clientIO('http://localhost:4000') // Altere para https://betzila.com.br:4000 em produção
+const socket = clientIO('http://localhost:4000'); // Altere para produção
 
 export function Header() {
-  const [saldo, setSaldo] = useState<number>(0)
+  const [saldo, setSaldo] = useState<number>(0);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+    const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || 'null');
+    setUser(usuario);
+
     if (usuario?.saldo) {
-      setSaldo(usuario.saldo)
+      setSaldo(usuario.saldo);
     }
 
     socket.on('saldo:atualizado', ({ email, valor }) => {
-      const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}')
+      const usuarioAtual = JSON.parse(localStorage.getItem('usuarioLogado') || 'null');
 
-      if (usuario.email === email) {
-        usuario.saldo += valor
-        localStorage.setItem('usuarioLogado', JSON.stringify(usuario))
-        setSaldo(usuario.saldo)
-        console.log('💰 Saldo atualizado via socket:', usuario.saldo)
+      if (usuarioAtual?.email === email) {
+        usuarioAtual.saldo += valor;
+        localStorage.setItem('usuarioLogado', JSON.stringify(usuarioAtual));
+        setSaldo(usuarioAtual.saldo);
+        console.log('💰 Saldo atualizado via socket:', usuarioAtual.saldo);
       }
-    })
+    });
 
     return () => {
-      socket.off('saldo:atualizado')
-    }
-  }, [])
+      socket.off('saldo:atualizado');
+    };
+  }, []);
 
   return (
     <header className="bg-green-600 text-white p-4">
@@ -56,13 +59,23 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="mr-2 font-bold text-yellow-300">Saldo: R${saldo.toFixed(2)}</span>
-          <Button variant="ghost" className="text-white hover:bg-green-700">
-            Entrar
-          </Button>
-          <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">Registrar</Button>
+          {user ? (
+            <>
+              <span className="mr-2 font-bold text-yellow-300">Saldo: R${saldo.toFixed(2)}</span>
+              {/* Aqui você pode adicionar algum dropdown ou nome do usuário */}
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" className="text-white hover:bg-green-700">
+                Entrar
+              </Button>
+              <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
+                Registrar
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>
-  )
+  );
 }
