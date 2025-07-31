@@ -12,8 +12,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Valor inválido' }, { status: 400 })
     }
 
-    // Pega o token do cookie
-    const cookieStore = cookies()
+    // ✅ Corrigido com await
+    const cookieStore = await cookies()
     const token = cookieStore.get('token')?.value
 
     if (!token) {
