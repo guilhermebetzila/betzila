@@ -9,6 +9,7 @@ const mp = new MercadoPagoConfig({
 const payments = new Payment(mp)
 
 export async function POST(req: Request) {
+  console.log('🚨 VERSÃO ATUAL DO CÓDIGO WEBHOOK ESTÁ SENDO EXECUTADA')
   console.log('📩 Webhook recebido!')
 
   try {
