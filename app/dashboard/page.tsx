@@ -87,7 +87,21 @@ export default function DashboardPage() {
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
 
-        {/* Busca e Menu Rápido no topo */}
+        {/* Bem-vindo + saldo + indicações (AGORA NO TOPO) */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold flex items-center gap-4">
+            Olá, {user.nome || user.email}
+            <span className="bg-yellow-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
+              Saldo: R$ {saldo.toFixed(2)}
+            </span>
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
+          <p className="text-yellow-400 mt-2">
+            📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!
+          </p>
+        </div>
+
+        {/* Busca e Menu Rápido */}
         <div className="mb-6 flex flex-col items-center space-y-4">
           <div className="relative w-full max-w-md">
             <input
@@ -122,26 +136,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Marquee de saques */}
-        <div className="overflow-hidden whitespace-nowrap mb-6">
-          <div className="animate-marquee text-sm text-yellow-400 font-semibold">
-            {saques.join(' • ')}
-          </div>
-        </div>
-
-        {/* Bem-vindo + saldo + indicações */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold flex items-center gap-4">
-            Olá, {user.nome || user.email}
-            <span className="bg-yellow-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
-              Saldo: R$ {saldo.toFixed(2)}
-            </span>
-          </h1>
-          <p className="text-gray-400 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
-          <p className="text-yellow-400 mt-2">
-            📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!
-          </p>
-        </div>
+        {/* Marquee de saques - REMOVIDO temporariamente */}
 
         {/* Quadrados */}
         <div className="flex flex-col items-center space-y-6 mb-12">
@@ -159,8 +154,16 @@ export default function DashboardPage() {
         <div className="mt-16 max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold mb-6">❓ Perguntas Frequentes</h2>
           <ul className="space-y-3 text-white text-sm">
-            {[ 'Como faço para sacar via Pix?', 'Como entrar em contato com o suporte da BetDreams?', 'Como consultar meu histórico de apostas?', 'Como cancelo um bônus?', 'Como consultar meu histórico de transação?', 'Como apostar nos jogos da BetDreams?', 'Como posso encontrar instruções para o jogo?', 'Onde encontro todas promoções e bônus disponíveis?' ]
-              .map((q, i) => (
+            {[ 
+              'Como faço para sacar via Pix?', 
+              'Como entrar em contato com o suporte da BetDreams?', 
+              'Como consultar meu histórico de apostas?', 
+              'Como cancelo um bônus?', 
+              'Como consultar meu histórico de transação?', 
+              'Como apostar nos jogos da BetDreams?', 
+              'Como posso encontrar instruções para o jogo?', 
+              'Onde encontro todas promoções e bônus disponíveis?' 
+            ].map((q, i) => (
               <li key={i} className="flex items-start gap-2">
                 <span className="text-yellow-400">➔</span>
                 <span>{q}</span>
@@ -192,17 +195,7 @@ export default function DashboardPage() {
         </footer>
       </div>
 
-      <style jsx>{`
-        .animate-marquee {
-          display: inline-block;
-          white-space: nowrap;
-          animation: marquee 40s linear infinite;
-        }
-        @keyframes marquee {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
-        }
-      `}</style>
+      {/* Removi o estilo da animação do marquee temporariamente */}
     </LayoutWrapper>
   );
 }
