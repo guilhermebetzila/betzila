@@ -36,28 +36,52 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Erro ao buscar pagamento' }, { status: 500 })
     }
 
-    console.log('📣 Status detalhado recebido do pagamento:', {
-      status: paymentData.status,
-      tipo: paymentData.payment_type_id,
-      valor: paymentData.transaction_amount,
-      external_reference: paymentData.external_reference,
-    })
-
     const status = paymentData.status
     const tipo = paymentData.payment_type_id ?? ''
     const valor = paymentData.transaction_amount
     const externalRefRaw = paymentData.external_reference
 
-    // Garantir que email é string válida
+    console.log('📣 Status detalhado recebido do pagamento:', {
+      status,
+      tipo,
+      valor,
+      external_reference: externalRefRaw,
+    })
+
     if (typeof externalRefRaw !== 'string' || !externalRefRaw.trim()) {
       console.log('🚫 Email ausente ou inválido no campo external_reference.')
       return NextResponse.json({ error: 'Email ausente ou inválido' }, { status: 400 })
     }
+
     const email = externalRefRaw.trim().toLowerCase()
 
-    if (status !== 'approved') {
-      console.log('⏳ Status do pagamento:', status)
-      console.log('⏳ Pagamento ainda não aprovado. Agendando nova tentativa em 15 segundos.')
+    console.log('📦 Verificando status e tipo:', { status, tipo })
+
+    if (status === 'approved') {
+      if (!['pix', 'account_money', 'bank_transfer'].includes(tipo)) {
+        console.log('💳 Tipo de pagamento não aceito:', tipo)
+        return NextResponse.json({ status: 'tipo não aceito' }, { status: 200 })
+      }
+
+      const user = await prisma.user.findUnique({ where: { email } })
+      console.log('👤 Usuário encontrado:', user)
+
+      if (!user) {
+        console.log('🚫 Usuário não encontrado para o email:', email)
+        return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 400 })
+      }
+
+      const result = await prisma.user.update({
+        where: { email },
+        data: { saldo: { increment: valor } },
+      })
+
+      console.log(`✅ Saldo atualizado com sucesso para ${email}: +${valor}`, result)
+      return NextResponse.json({ success: true }, { status: 200 })
+
+    } else {
+      console.log('⏳ Pagamento ainda não aprovado. Status atual:', status)
+      console.log('⏱️ Agendando nova tentativa em 15 segundos.')
 
       setTimeout(async () => {
         try {
@@ -92,26 +116,6 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ status: 'não aprovado ainda, re-tentando em 15s' }, { status: 200 })
     }
-
-    if (!['pix', 'account_money', 'bank_transfer'].includes(tipo)) {
-      console.log('💳 Tipo de pagamento não aceito:', tipo)
-      return NextResponse.json({ status: 'tipo não aceito' }, { status: 200 })
-    }
-
-    const user = await prisma.user.findUnique({ where: { email } })
-    console.log('👤 Usuário encontrado:', user)
-    if (!user) {
-      console.log('🚫 Usuário não encontrado para o email:', email)
-      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 400 })
-    }
-
-    const result = await prisma.user.update({
-      where: { email },
-      data: { saldo: { increment: valor } },
-    })
-
-    console.log(`✅ Saldo atualizado com sucesso para ${email}: +${valor}`, result)
-    return NextResponse.json({ success: true }, { status: 200 })
 
   } catch (error) {
     console.error('❌ Erro geral no processamento do webhook:', error)
