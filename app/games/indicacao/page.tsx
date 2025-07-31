@@ -9,6 +9,7 @@ export default function IndicacaoPage() {
   const router = useRouter()
   const { user } = useAuth()
   const [linkConvite, setLinkConvite] = useState('')
+  const [quantidadeIndicados, setQuantidadeIndicados] = useState<number | null>(null)
 
   useEffect(() => {
     if (user?.nome) {
@@ -16,6 +17,18 @@ export default function IndicacaoPage() {
       const nomeFormatado = user.nome.toLowerCase().replace(/\s+/g, '')
       const link = `https://betdreams.com/convite/${nomeFormatado}`
       setLinkConvite(link)
+
+      // Busca a quantidade de indicados do usuário
+      fetch('/api/indicacoes/quantidade')
+        .then(res => res.json())
+        .then(data => {
+          if (data.quantidade !== undefined) {
+            setQuantidadeIndicados(data.quantidade)
+          }
+        })
+        .catch(() => {
+          setQuantidadeIndicados(null)
+        })
     }
   }, [user])
 
@@ -35,7 +48,13 @@ export default function IndicacaoPage() {
       {user ? (
         <>
           <p className="text-lg mb-2">Bem-vindo, {user.nome}!</p>
-          <p className="text-lg mb-4">{linkConvite}</p>
+          <p className="text-lg mb-4 break-words">{linkConvite}</p>
+
+          {quantidadeIndicados !== null && (
+            <p className="text-lg mb-4">
+              Você já indicou <strong>{quantidadeIndicados}</strong> pessoa(s).
+            </p>
+          )}
         </>
       ) : (
         <p className="text-lg mb-4 text-red-500">Carregando usuário...</p>

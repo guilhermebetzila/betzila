@@ -1,6 +1,7 @@
+// /app/register/page.tsx
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function RegistroPage() {
@@ -10,6 +11,14 @@ export default function RegistroPage() {
   const [indicador, setIndicador] = useState('')
   const [erro, setErro] = useState('')
   const router = useRouter()
+
+  // ✅ Quando a página carregar, pega o indicador salvo no localStorage
+  useEffect(() => {
+    const indicacao = localStorage.getItem('indicador')
+    if (indicacao) {
+      setIndicador(indicacao)
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +40,7 @@ export default function RegistroPage() {
       })
 
       if (res.ok) {
-        router.push('/login') // redireciona ao login após sucesso
+        router.push('/login')
       } else {
         const data = await res.json()
         setErro(data?.message || 'Erro ao registrar')
@@ -44,6 +53,13 @@ export default function RegistroPage() {
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
       <h1 className="text-2xl font-bold mb-4">Registrar</h1>
+
+      {indicador && (
+        <p className="mb-2 text-green-600">
+          Você está sendo indicado por: <strong>{indicador}</strong>
+        </p>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
