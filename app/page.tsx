@@ -3,12 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import EsteiraSaques from '@/components/EsteiraSaques'; // Esteira de saques no topo
 
 export default function Home() {
   const router = useRouter();
 
   return (
     <main className="flex flex-col items-center justify-center bg-[#0a0d1a] min-h-screen">
+      
+      {/* Esteira de saques */}
+      <EsteiraSaques />
+
       {/* Avatar */}
       <div className="w-full flex justify-center mt-8 mb-4">
         <Image
@@ -57,7 +62,11 @@ export default function Home() {
         </ul>
 
         <h2 className="text-white text-xl font-bold mt-6">🎯 Por Que as Pessoas Estão Correndo para a BetZila?</h2>
-        <p className="text-gray-300">Porque estão cansadas de promessas vazias.<br />Porque querem liberdade financeira de verdade.<br />Porque sentem que nasceram para mais.</p>
+        <p className="text-gray-300">
+          Porque estão cansadas de promessas vazias.<br />
+          Porque querem liberdade financeira de verdade.<br />
+          Porque sentem que nasceram para mais.
+        </p>
 
         <ul className="text-gray-300 space-y-1">
           <li>📍 Pagar dívidas.</li>
@@ -71,7 +80,10 @@ export default function Home() {
         <p className="text-white">Não entre para ver. <strong className="text-green-400">Entre para mudar sua vida.</strong></p>
 
         <p className="text-sm text-gray-400 mt-4">🔒 Seguro. Rápido. Sem pegadinhas.</p>
-        <p className="text-white text-lg font-bold mt-4">O futuro pertence a quem age agora.<br />BetZila – O Investimento do Século Está a um Clique.</p>
+        <p className="text-white text-lg font-bold mt-4">
+          O futuro pertence a quem age agora.<br />
+          BetZila – O Investimento do Século Está a um Clique.
+        </p>
       </div>
 
       {/* Rodapé Profissional */}
@@ -120,7 +132,9 @@ export default function Home() {
           <div className="mb-2">🔒 Criptografia SSL 256 bits — Site Seguro</div>
           <div className="mb-2">🌐 BetZila © 2025 — Todos os direitos reservados.</div>
           <div className="italic">Tecnologia, Liberdade Financeira e Transparência em um só clique.</div>
-          <div className="mt-2 text-xs text-gray-500">Este site não oferece serviços de jogos de azar. A BetZila é uma plataforma tecnológica voltada para inteligência financeira.</div>
+          <div className="mt-2 text-xs text-gray-500">
+            Este site não oferece serviços de jogos de azar. A BetZila é uma plataforma tecnológica voltada para inteligência financeira.
+          </div>
         </div>
       </footer>
     </main>
