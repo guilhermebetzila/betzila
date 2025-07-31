@@ -9,7 +9,7 @@ const mp = new MercadoPagoConfig({
 const payments = new Payment(mp)
 
 export async function POST(req: Request) {
-  console.log('📩 Webhook recebido!')
+  console.log('📩 Webhook recebido! ✅ Função ATUAL executando!')
 
   try {
     const body = await req.json()
@@ -54,6 +54,7 @@ export async function POST(req: Request) {
 
     const email = externalRefRaw.trim().toLowerCase()
 
+    // ✅ Verificação correta
     if (status === 'approved' && ['pix', 'bank_transfer', 'account_money'].includes(tipo)) {
       const user = await prisma.user.findUnique({ where: { email } })
       if (!user) {
@@ -70,8 +71,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true }, { status: 200 })
     }
 
-    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito.')
-    return NextResponse.json({ status: 'aguardando aprovação ou tipo inválido' }, { status: 200 })
+    // ❗ Ainda não aprovado ou tipo não aceito
+    console.log(`⏳ Pagamento não processado ainda. Status: ${status} | Tipo: ${tipo}`)
+
+    return NextResponse.json({ status: 'Aguardando aprovação ou tipo não aceito' }, { status: 200 })
 
   } catch (error) {
     console.error('❌ Erro geral no webhook:', error)
