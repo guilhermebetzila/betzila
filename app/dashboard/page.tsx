@@ -94,7 +94,7 @@ export default function DashboardPage() {
             <input
               type="text"
               placeholder="Buscar jogos ou provedores..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -112,7 +112,7 @@ export default function DashboardPage() {
                 className="flex flex-col items-center cursor-pointer w-16"
                 onClick={() => handleMenuClick(item)}
               >
-                <div className="w-12 h-12 bg-gray-800 border-2 border-yellow-400 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
+                <div className="w-12 h-12 bg-gray-800 border-2 border-green-400 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
                   <span className="text-xl">{item.label.split(' ')[0]}</span>
                 </div>
                 <span className="text-[10px] mt-1 text-center text-white leading-tight">
@@ -132,19 +132,19 @@ export default function DashboardPage() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user.nome || user.email}
-            <span className="bg-yellow-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
+            <span className="bg-green-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
               Saldo: R$ {saldo.toFixed(2)}
             </span>
           </h1>
           <p className="text-gray-400 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
-          <p className="text-yellow-400 mt-2">
+          <p className="text-green-400 mt-2">
             📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!
           </p>
         </div>
 
         {/* Conteúdo principal abaixo */}
         <div className="mb-6 bg-gray-900 text-white p-6 rounded-xl max-w-2xl text-center">
-          <h2 className="text-2xl font-bold text-yellow-400 mb-4">🚀 Bem-vindo à BetZila AI</h2>
+          <h2 className="text-2xl font-bold text-green-400 mb-4">🚀 Bem-vindo à BetZila AI</h2>
           <p className="mb-2">Seja bem-vindo à IA mais audaciosa e inovadora do mercado.</p>
           <p className="mb-2">Após anos de estudos, pesquisas e acompanhamento minucioso dos principais setores econômicos, finalmente reunimos as mentes mais brilhantes para trabalhar por você.</p>
           <p className="mb-2">A era da Inteligência Artificial a seu favor começa agora.</p>
