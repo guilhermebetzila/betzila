@@ -14,6 +14,7 @@ model User {
   nome           String
   senha          String
   saldo          Float     @default(0)
+  valorInvestido Float     @default(0) // Novo campo para armazenar valor investido
   indicador      String?
 
   indicadoPorId  Int?

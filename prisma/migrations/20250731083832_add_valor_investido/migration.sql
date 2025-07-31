@@ -5,6 +5,7 @@ CREATE TABLE "public"."User" (
     "nome" TEXT NOT NULL,
     "senha" TEXT NOT NULL,
     "saldo" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "valorInvestido" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "indicador" TEXT,
     "indicadoPorId" INTEGER,
 
