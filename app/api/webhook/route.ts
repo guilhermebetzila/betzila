@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     }
 
     const status = paymentData.status
-    const tipo = paymentData.payment_type_id ?? ''
+    const tipo = (paymentData.payment_type_id ?? '').toLowerCase()
     const valor = paymentData.transaction_amount
     const externalRefRaw = paymentData.external_reference
 
@@ -54,29 +54,27 @@ export async function POST(req: Request) {
 
     const email = externalRefRaw.trim().toLowerCase()
 
-    // ✅ TRATAMENTO PRINCIPAL
-    if (
-      status === 'approved' &&
-      ['pix', 'bank_transfer', 'account_money'].includes(tipo)
-    ) {
+    const aprovado = status === 'approved'
+    const tipoAceito = ['pix', 'bank_transfer', 'account_money'].includes(tipo)
+
+    if (aprovado && tipoAceito) {
       const user = await prisma.user.findUnique({ where: { email } })
       if (!user) {
         console.log('🚫 Usuário não encontrado para o email:', email)
         return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 400 })
       }
 
-      const result = await prisma.user.update({
+      await prisma.user.update({
         where: { email },
         data: { saldo: { increment: valor } },
       })
 
-      console.log(`✅ Saldo atualizado com sucesso para ${email}: +${valor}`, result)
+      console.log(`✅ Saldo atualizado com sucesso para ${email}: +${valor}`)
       return NextResponse.json({ success: true }, { status: 200 })
     }
 
-    // ❗ Caso ainda esteja pendente
-    console.log('⏳ Pagamento ainda não aprovado ou não é PIX.')
-    return NextResponse.json({ status: 'aguardando aprovação' }, { status: 200 })
+    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito.')
+    return NextResponse.json({ status: 'aguardando aprovação ou tipo inválido' }, { status: 200 })
 
   } catch (error) {
     console.error('❌ Erro geral no webhook:', error)
