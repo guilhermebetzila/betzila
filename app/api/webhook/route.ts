@@ -55,14 +55,15 @@ export async function POST(req: Request) {
 
     const email = externalRefRaw.trim().toLowerCase()
     const aprovado = status === 'approved'
-    const tipoAceito = ['pix', 'bank_transfer', 'account_money'].includes(tipo)
 
-    console.log('🔍 Comparação de status/tipo:', {
-      aprovado,
-      tipoAceito,
+    const tiposAceitos = ['pix', 'bank_transfer', 'account_money']
+    const tipoAceito = tiposAceitos.includes(tipo)
+
+    // 🚨 Log detalhado da verificação
+    console.log('🧪 Verificação do tipo:', {
       tipoRecebido: tipo,
-      tipoOriginal,
-      statusRecebido: status,
+      tiposAceitos,
+      tipoAceito,
     })
 
     if (aprovado && tipoAceito) {
@@ -81,7 +82,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true }, { status: 200 })
     }
 
-    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito.')
+    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito.', {
+      aprovado,
+      tipoAceito,
+      tipoRecebido: tipo,
+      tipoOriginal,
+      statusRecebido: status,
+    })
+
     return NextResponse.json({ status: 'aguardando aprovação ou tipo inválido' }, { status: 200 })
 
   } catch (error) {
