@@ -21,7 +21,7 @@ export function QRCodeGenerator({ text, size = 200, className = "" }: QRCodeGene
         const ctx = canvas.getContext("2d")!
 
         // Usar API pública para gerar QR Code
-        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&format=png&bgcolor=1f2937&color=ffffff&margin=10`
+        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&format=png&bgcolor=1f2937&color=ffffff&margin=2`
 
         const img = new Image()
         img.crossOrigin = "anonymous"
