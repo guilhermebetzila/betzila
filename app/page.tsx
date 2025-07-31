@@ -9,8 +9,8 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <main className="flex flex-col items-center justify-start bg-[#0a0d1a] min-h-screen w-full overflow-x-hidden">
-      <div className="w-full max-w-6xl px-4 flex flex-col items-center">
+    <main className="flex flex-col items-center justify-start bg-[#0a0d1a] min-h-screen w-full overflow-x-hidden px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-full flex flex-col items-center">
         {/* Esteira de saques */}
         <EsteiraSaques />
 
@@ -42,7 +42,7 @@ export default function Home() {
         </div>
 
         {/* Conteúdo principal */}
-        <div className="text-center text-white px-4 max-w-3xl space-y-6 mt-6">
+        <div className="text-center text-white px-4 max-w-none space-y-6 mt-6">
           <h1 className="text-4xl sm:text-5xl font-bold text-green-400">
             🌐 Bem-vindo ao Futuro dos Investimentos
           </h1>

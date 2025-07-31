@@ -1,6 +1,5 @@
 import './globals.css'
 import Providers from './Providers'
-import { Sidebar } from '@/components/Sidebar'
 import { Topbar } from '@/components/TopBar'
 
 export const metadata = {
@@ -11,13 +10,13 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-br" className="w-full h-full overflow-x-hidden">
-      <body className="m-0 p-0 w-full min-h-screen bg-background text-foreground">
+      <body className="m-0 p-0 w-full min-h-screen bg-black text-white overflow-x-hidden">
         <Providers>
           <div className="flex flex-col w-full min-h-screen">
             <Topbar />
-            {/* <Header /> REMOVIDO conforme solicitado */}
-            <main className="flex-1 w-full">{children}</main>
-            <Sidebar />
+            <main className="flex-1 w-full max-w-none">
+              {children}
+            </main>
           </div>
         </Providers>
       </body>
