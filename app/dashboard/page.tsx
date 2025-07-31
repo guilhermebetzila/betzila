@@ -148,43 +148,6 @@ export default function DashboardPage() {
             <p className="font-semibold text-green-400">Transforme sua vida com a força da Inteligência Artificial.<br />Comece agora com a BetZila AI.</p>
           </div>
         </div>
-        
-        {/* Busca e Menu Rápido */}
-        <div className="mb-6 flex flex-col items-center space-y-4">
-          <div className="relative w-full max-w-md">
-            <input
-              type="text"
-              placeholder="Buscar jogos ou provedores..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
-              </svg>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-3">
-            {menuItems.map((item, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center cursor-pointer w-16"
-                onClick={() => handleMenuClick(item)}
-              >
-                <div className="w-12 h-12 bg-gray-800 border-2 border-yellow-400 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-                  <span className="text-xl">{item.label.split(' ')[0]}</span>
-                </div>
-                <span className="text-[10px] mt-1 text-center text-white leading-tight">
-                  {item.label.split(' ').slice(1).join(' ')}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Marquee de saques - REMOVIDO temporariamente */}
 
         {/* Quadrados */}
         <div className="flex flex-col items-center space-y-6 mb-12">
@@ -196,28 +159,6 @@ export default function DashboardPage() {
             <p className="text-sm text-red-500 mb-2 font-bold">Rede de Indicações</p>
             <p className="text-2xl font-semibold text-white">{totalIndicados}</p>
           </div>
-        </div>
-
-        {/* FAQ */}
-        <div className="mt-16 max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6">❓ Perguntas Frequentes</h2>
-          <ul className="space-y-3 text-white text-sm">
-            {[ 
-              'Como faço para sacar via Pix?', 
-              'Como entrar em contato com o suporte da BetDreams?', 
-              'Como consultar meu histórico de apostas?', 
-              'Como cancelo um bônus?', 
-              'Como consultar meu histórico de transação?', 
-              'Como apostar nos jogos da BetDreams?', 
-              'Como posso encontrar instruções para o jogo?', 
-              'Onde encontro todas promoções e bônus disponíveis?' 
-            ].map((q, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span className="text-yellow-400">➔</span>
-                <span>{q}</span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* Rodapé */}
@@ -242,8 +183,6 @@ export default function DashboardPage() {
           </div>
         </footer>
       </div>
-
-      {/* Removi o estilo da animação do marquee temporariamente */}
     </LayoutWrapper>
   );
 }
