@@ -27,7 +27,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'ID ausente' }, { status: 400 })
     }
 
-    // Protege contra erro ao buscar pagamento
     let paymentData
     try {
       paymentData = await payments.get({ id: String(paymentId) })
@@ -59,6 +58,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email ausente' }, { status: 400 })
     }
 
+    // NOVO: Verificar se usuário existe antes do update
+    try {
+      const user = await prisma.user.findUnique({ where: { email } })
+      console.log('👤 Usuário encontrado:', user)
+      if (!user) {
+        console.log('🚫 Usuário não encontrado para o email:', email)
+        return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 400 })
+      }
+    } catch (e) {
+      console.error('❌ Erro ao buscar usuário no banco:', e)
+      return NextResponse.json({ error: 'Erro ao buscar usuário' }, { status: 500 })
+    }
+
     try {
       const result = await prisma.user.update({
         where: { email },
@@ -71,7 +83,6 @@ export async function POST(req: Request) {
       console.error('❌ Erro ao atualizar o saldo no banco:', e)
       return NextResponse.json({ error: 'Erro ao atualizar saldo' }, { status: 500 })
     }
-
   } catch (error) {
     console.error('❌ Erro geral no processamento do webhook:', error)
     return NextResponse.json({ error: 'Erro interno no webhook' }, { status: 500 })
