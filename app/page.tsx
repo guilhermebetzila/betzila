@@ -22,14 +22,14 @@ export default function Home() {
 
       {/* Copy poderosa */}
       <div className="text-center text-white px-6 max-w-3xl space-y-6 mt-6">
-        <h1 className="text-4xl sm:text-5xl font-bold text-yellow-400">🌐 Bem-vindo ao Futuro dos Investimentos</h1>
+        <h1 className="text-4xl sm:text-5xl font-bold text-green-400">🌐 Bem-vindo ao Futuro dos Investimentos</h1>
         <p className="text-xl text-white font-semibold">💥 A Nova Era de Riqueza Começa com um Clique.</p>
 
         <p className="text-gray-300">
           Imagine uma inteligência artificial que nunca dorme.
           Ela estuda padrões, rastreia bilhões de dados em tempo real, detecta os movimentos mais lucrativos do mercado financeiro tradicional, criptoativos e até mesmo as jogadas mais vantajosas dos maiores cassinos online do mundo.
         </p>
-        <p className="text-yellow-400 font-bold text-xl">Agora imagine que você pode investir nela.</p>
+        <p className="text-green-400 font-bold text-xl">Agora imagine que você pode investir nela.</p>
 
         <p className="text-white font-semibold text-lg">📈 Essa é a BetZila.</p>
         <ul className="text-gray-300 space-y-2 text-left">
@@ -50,9 +50,9 @@ export default function Home() {
           <li>🕊️ Ou simplesmente, nunca mais trabalhar para ninguém.</li>
         </ul>
 
-        <h2 className="text-yellow-400 font-bold text-2xl mt-6">🚀 Você Está Diante da Sua Grande Virada</h2>
+        <h2 className="text-green-400 font-bold text-2xl mt-6">🚀 Você Está Diante da Sua Grande Virada</h2>
         <p className="text-white font-semibold">Se você está vendo essa página, é porque o universo te deu uma chance.</p>
-        <p className="text-white">Não entre para ver. <strong className="text-yellow-400">Entre para mudar sua vida.</strong></p>
+        <p className="text-white">Não entre para ver. <strong className="text-green-400">Entre para mudar sua vida.</strong></p>
 
         <div className="flex flex-wrap justify-center gap-4 mt-6">
           <Button
