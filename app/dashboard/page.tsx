@@ -87,8 +87,6 @@ export default function DashboardPage() {
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-
-        {/* Busca e botões */}
         <div className="mb-6 flex flex-col items-center space-y-4">
           <div className="relative w-full max-w-md">
             <input
@@ -123,12 +121,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* IA trabalhando - ENTRE os botões e a mensagem de boas-vindas */}
-        <div className="mb-6">
-          <IAWorkingPanel />
-        </div>
+        <div className="mb-6"><IAWorkingPanel /></div>
 
-        {/* Mensagem de boas-vindas */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user.nome || user.email}
@@ -142,7 +136,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Conteúdo principal abaixo */}
         <div className="mb-6 bg-gray-900 text-white p-6 rounded-xl max-w-2xl text-center">
           <h2 className="text-2xl font-bold text-green-400 mb-4">🚀 Bem-vindo à BetZila AI</h2>
           <p className="mb-2">Seja bem-vindo à IA mais audaciosa e inovadora do mercado.</p>
@@ -159,7 +152,6 @@ export default function DashboardPage() {
           <p className="font-semibold text-green-400">Transforme sua vida com a força da Inteligência Artificial.<br />Comece agora com a BetZila AI.</p>
         </div>
 
-        {/* Quadrados com bordas verdes */}
         <div className="flex flex-col items-center space-y-6 mb-12">
           <div className="bg-gray-800 border-2 border-green-400 rounded-2xl p-6 w-72 text-center">
             <p className="text-sm text-green-400 mb-2 font-bold">Saldo Diário</p>
@@ -169,6 +161,16 @@ export default function DashboardPage() {
             <p className="text-sm text-green-400 mb-2 font-bold">Rede de Indicações</p>
             <p className="text-2xl font-semibold text-white">{totalIndicados}</p>
           </div>
+        </div>
+
+        {/* ✅ BOTÃO INVESTIR ANTES DO RODAPÉ */}
+        <div className="flex justify-center mb-8">
+          <button
+            onClick={() => router.push('/games/investir')}
+            className="bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-6 rounded-full shadow-xl transition-all text-lg"
+          >
+            💹 Investir Agora
+          </button>
         </div>
 
         {/* Rodapé */}
