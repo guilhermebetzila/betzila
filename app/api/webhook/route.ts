@@ -83,7 +83,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true }, { status: 200 })
     }
 
-    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito.', {
+    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceit.', {
       aprovado,
       tipoAceito,
       tipoRecebido: tipo,
