@@ -36,6 +36,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Erro ao buscar pagamento' }, { status: 500 })
     }
 
+    // 📣 NOVO: Log detalhado para depuração
+    console.log('📣 Status detalhado recebido do pagamento:', {
+      status: paymentData.status,
+      tipo: paymentData.payment_type_id,
+      valor: paymentData.transaction_amount,
+      external_reference: paymentData.external_reference,
+    })
+
     const status = paymentData.status
     const tipo = paymentData.payment_type_id ?? ''
     const valor = paymentData.transaction_amount
@@ -58,7 +66,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email ausente' }, { status: 400 })
     }
 
-    // NOVO: Verificar se usuário existe antes do update
+    // Verificar se o usuário existe antes do update
     try {
       const user = await prisma.user.findUnique({ where: { email } })
       console.log('👤 Usuário encontrado:', user)
