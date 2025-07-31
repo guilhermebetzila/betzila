@@ -41,7 +41,7 @@ export default function Home() {
       </div>
 
       {/* Conteúdo principal */}
-      <div className="w-full flex flex-col items-center px-0 mt-6 space-y-6 text-center">
+      <div className="w-full flex flex-col items-center px-4 mt-6 space-y-6 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold text-green-400">
           🌐 Bem-vindo ao Futuro dos Investimentos
         </h1>
@@ -49,7 +49,7 @@ export default function Home() {
           💥 A Nova Era de Riqueza Começa com um Clique.
         </p>
 
-        <p className="text-gray-300 max-w-7xl">
+        <p className="text-gray-300 w-full max-w-screen-lg">
           Imagine uma inteligência artificial que nunca dorme.
           Ela estuda padrões, rastreia bilhões de dados em tempo real, detecta os movimentos mais lucrativos do mercado financeiro tradicional, criptoativos e até mesmo as jogadas mais vantajosas dos maiores cassinos online do mundo.
         </p>
@@ -58,7 +58,7 @@ export default function Home() {
 
         <p className="text-white font-semibold text-lg">📈 Essa é a BetZila.</p>
 
-        <ul className="text-gray-300 space-y-2 text-left max-w-5xl">
+        <ul className="text-gray-300 space-y-2 text-left w-full max-w-screen-md px-2">
           <li>💸 Ganhar Dinheiro Dormindo Não É Mais Um Sonho. É Código.</li>
           <li>⚡ Rendimentos Diários com base em estratégias validadas em tempo real.</li>
           <li>🧠 IA Autônoma, treinada para operar nos bastidores enquanto você vive sua vida.</li>
@@ -67,13 +67,13 @@ export default function Home() {
         </ul>
 
         <h2 className="text-white text-xl font-bold mt-6">🎯 Por Que as Pessoas Estão Correndo para a BetZila?</h2>
-        <p className="text-gray-300 max-w-5xl">
+        <p className="text-gray-300 w-full max-w-screen-md">
           Porque estão cansadas de promessas vazias.<br />
           Porque querem liberdade financeira de verdade.<br />
           Porque sentem que nasceram para mais.
         </p>
 
-        <ul className="text-gray-300 space-y-1 text-left max-w-5xl">
+        <ul className="text-gray-300 space-y-1 text-left w-full max-w-screen-md px-2">
           <li>📍 Pagar dívidas.</li>
           <li>🏝️ Viajar o mundo.</li>
           <li>🏡 Dar uma casa nova pra família.</li>
@@ -100,7 +100,7 @@ export default function Home() {
       </div>
 
       {/* Rodapé */}
-      <footer className="w-full bg-[#0a0d1a] text-white py-12 px-0 mt-20 border-t border-gray-700">
+      <footer className="w-full bg-[#0a0d1a] text-white py-12 mt-20 border-t border-gray-700">
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm px-4">
           <div>
             <h3 className="font-bold mb-4 text-blue-400">🔹 SOBRE NÓS</h3>
@@ -141,7 +141,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-10 text-center text-gray-400 text-sm">
+        <div className="mt-10 text-center text-gray-400 text-sm px-2">
           <div className="mb-2">🔒 Criptografia SSL 256 bits — Site Seguro</div>
           <div className="mb-2">🌐 BetZila © 2025 — Todos os direitos reservados.</div>
           <div className="italic">Tecnologia, Liberdade Financeira e Transparência em um só clique.</div>
