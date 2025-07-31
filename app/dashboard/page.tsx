@@ -18,14 +18,35 @@ const menuItems = [
   { label: '🚪 Sair', action: 'logout' },
 ];
 
+// Geração de nomes fictícios
+const nomesFicticios = [
+  'Ana Clara', 'Bruno Silva', 'Carlos Eduardo', 'Daniela Souza', 'Eduardo Lima',
+  'Fernanda Rocha', 'Gabriel Santos', 'Helena Costa', 'Igor Alves', 'Juliana Castro',
+  'Kauan Ferreira', 'Larissa Oliveira', 'Marcelo Dias', 'Natalia Gomes', 'Otávio Ramos',
+  'Paula Martins', 'Rafael Teixeira', 'Simone Silva', 'Thiago Mendes', 'Vanessa Moreira',
+];
+
+function gerarSaquesAleatorios(qtd = 1000) {
+  const saques = [];
+  for (let i = 0; i < qtd; i++) {
+    const nome = nomesFicticios[Math.floor(Math.random() * nomesFicticios.length)];
+    const valor = (Math.random() * (2000 - 300) + 300).toFixed(2);
+    saques.push(`💸 ${nome} sacou R$ ${valor}`);
+  }
+  return saques;
+}
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [totalIndicados, setTotalIndicados] = useState<number>(0);
   const [search, setSearch] = useState('');
   const [saldo, setSaldo] = useState<number>(0);
+  const [saques, setSaques] = useState<string[]>([]);
 
   useEffect(() => {
+    setSaques(gerarSaquesAleatorios());
+
     const fetchIndicacoes = async () => {
       try {
         const res = await fetch('/api/user/indicacoes');
@@ -79,6 +100,15 @@ export default function DashboardPage() {
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+
+        {/* Marquee de saques */}
+        <div className="overflow-hidden whitespace-nowrap mb-6">
+          <div className="animate-marquee text-sm text-yellow-400 font-semibold">
+            {saques.join(' • ')}
+          </div>
+        </div>
+
+        {/* Bem-vindo + saldo + indicações */}
         <div className="mb-10">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user.nome || user.email}
@@ -104,7 +134,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Barra de busca */}
+        {/* Busca */}
         <div className="mb-10">
           <div className="relative max-w-md mx-auto">
             <input
@@ -122,7 +152,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Menus rápidos */}
+        {/* Menu rápido */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
           {menuItems.map((item, index) => (
             <div
@@ -189,9 +219,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <h3 className="font-bold mb-4">SUPORTE</h3>
-              <p className="text-sm text-gray-300 mb-2">
-                Atendimento 24h todos os dias.
-              </p>
+              <p className="text-sm text-gray-300 mb-2">Atendimento 24h todos os dias.</p>
               <ul className="space-y-1 text-sm text-gray-300">
                 <li>📚 Central de Ajuda</li>
                 <li>📞 0800 00 4546</li>
@@ -205,6 +233,23 @@ export default function DashboardPage() {
           </div>
         </footer>
       </div>
+
+      {/* Marquee animation style */}
+      <style jsx>{`
+        .animate-marquee {
+          display: inline-block;
+          white-space: nowrap;
+          animation: marquee 50s linear infinite;
+        }
+        @keyframes marquee {
+          0% {
+            transform: translateX(100%);
+          }
+          100% {
+            transform: translateX(-100%);
+          }
+        }
+      `}</style>
     </LayoutWrapper>
   );
 }
