@@ -15,7 +15,8 @@ export default function Providers({ children }: { children: ReactNode }) {
           <Sidebar />
           <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
             <Topbar />
-            <main className="flex-1 ml-16 md:ml-64 transition-all duration-300 overflow-y-auto">
+            {/* REMOVIDO ml-16 md:ml-64 para eliminar margem lateral */}
+            <main className="flex-1 transition-all duration-300 overflow-y-auto">
               {children}
             </main>
           </div>
