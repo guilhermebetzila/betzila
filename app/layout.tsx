@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-br" className="w-full h-full overflow-x-hidden">
-      <body className="m-0 p-0 w-full min-h-screen bg-black text-white overflow-x-hidden">
+      <body className="m-0 p-0 w-full min-h-screen bg-[#0a0d1a] text-white overflow-x-hidden">
         <Providers>
           <div className="flex flex-col w-full min-h-screen">
             <Topbar />
