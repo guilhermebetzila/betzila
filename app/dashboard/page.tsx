@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/context/AuthContext';
 import LayoutWrapper from '@/components/LayoutWrapper';
+import IAWorkingPanel from '@/components/IAWorkingPanel';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 
@@ -86,6 +87,10 @@ export default function DashboardPage() {
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+        
+        {/* IA trabalhando acima da mensagem de boas-vindas */}
+        <IAWorkingPanel />
+
         <div className="mb-6">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user.nome || user.email}
