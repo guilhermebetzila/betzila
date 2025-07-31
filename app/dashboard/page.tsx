@@ -18,7 +18,6 @@ const menuItems = [
   { label: '🚪 Sair', action: 'logout' },
 ];
 
-// Geração de nomes fictícios
 const nomesFicticios = [
   'Ana Clara', 'Bruno Silva', 'Carlos Eduardo', 'Daniela Souza', 'Eduardo Lima',
   'Fernanda Rocha', 'Gabriel Santos', 'Helena Costa', 'Igor Alves', 'Juliana Castro',
@@ -51,9 +50,7 @@ export default function DashboardPage() {
       try {
         const res = await fetch('/api/user/indicacoes');
         const data = await res.json();
-        if (res.ok) {
-          setTotalIndicados(data.totalIndicados || 0);
-        }
+        if (res.ok) setTotalIndicados(data.totalIndicados || 0);
       } catch (error) {
         console.error('Erro ao buscar indicações:', error);
       }
@@ -63,9 +60,7 @@ export default function DashboardPage() {
       try {
         const res = await fetch('/api/saldo');
         const data = await res.json();
-        if (res.ok) {
-          setSaldo(data.saldo || 0);
-        }
+        if (res.ok) setSaldo(data.saldo || 0);
       } catch (error) {
         console.error('Erro ao buscar saldo:', error);
       }
@@ -85,21 +80,47 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) {
-    return <p className="text-center mt-10 text-white">Carregando...</p>;
-  }
-
-  if (!user) {
-    return (
-      <p className="text-center mt-10 text-red-500">
-        Acesso negado. Faça login para continuar.
-      </p>
-    );
-  }
+  if (loading) return <p className="text-center mt-10 text-white">Carregando...</p>;
+  if (!user) return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
   return (
     <LayoutWrapper>
-      <div className="min-h-screen px-4 py-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+
+        {/* Busca e Menu Rápido no topo */}
+        <div className="mb-6 flex flex-col items-center space-y-4">
+          <div className="relative w-full max-w-md">
+            <input
+              type="text"
+              placeholder="Buscar jogos ou provedores..."
+              className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-3">
+            {menuItems.map((item, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center cursor-pointer w-16"
+                onClick={() => handleMenuClick(item)}
+              >
+                <div className="w-12 h-12 bg-gray-800 border-2 border-yellow-400 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
+                  <span className="text-xl">{item.label.split(' ')[0]}</span>
+                </div>
+                <span className="text-[10px] mt-1 text-center text-white leading-tight">
+                  {item.label.split(' ').slice(1).join(' ')}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Marquee de saques */}
         <div className="overflow-hidden whitespace-nowrap mb-6">
@@ -122,71 +143,27 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Quadrados personalizados */}
+        {/* Quadrados */}
         <div className="flex flex-col items-center space-y-6 mb-12">
-          <div className="bg-gray-800 border-2 border-red-500 rounded-2xl p-6 w-72 text-center">
+          <div className="bg-gray-800 border-2 border-red-600 rounded-2xl p-6 w-72 text-center">
             <p className="text-sm text-red-500 mb-2 font-bold">Saldo Diário</p>
             <p className="text-2xl font-semibold text-white">R$ 00,00</p>
           </div>
-          <div className="bg-gray-800 border-2 border-red-500 rounded-2xl p-6 w-72 text-center">
+          <div className="bg-gray-800 border-2 border-red-600 rounded-2xl p-6 w-72 text-center">
             <p className="text-sm text-red-500 mb-2 font-bold">Rede de Indicações</p>
             <p className="text-2xl font-semibold text-white">{totalIndicados}</p>
           </div>
-        </div>
-
-        {/* Busca */}
-        <div className="mb-10">
-          <div className="relative max-w-md mx-auto">
-            <input
-              type="text"
-              placeholder="Buscar jogos ou provedores..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Menu rápido */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {menuItems.map((item, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center cursor-pointer w-16"
-              onClick={() => handleMenuClick(item)}
-            >
-              <div className="w-12 h-12 bg-gray-800 border-2 border-yellow-400 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-                <span className="text-xl">{item.label.split(' ')[0]}</span>
-              </div>
-              <span className="text-[10px] mt-1 text-center text-white leading-tight">
-                {item.label.split(' ').slice(1).join(' ')}
-              </span>
-            </div>
-          ))}
         </div>
 
         {/* FAQ */}
         <div className="mt-16 max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold mb-6">❓ Perguntas Frequentes</h2>
           <ul className="space-y-3 text-white text-sm">
-            {[
-              'Como faço para sacar via Pix?',
-              'Como entrar em contato com o suporte da BetDreams?',
-              'Como consultar meu histórico de apostas?',
-              'Como cancelo um bônus?',
-              'Como consultar meu histórico de transação?',
-              'Como apostar nos jogos da BetDreams?',
-              'Como posso encontrar instruções para o jogo?',
-              'Onde encontro todas promoções e bônus disponíveis?'
-            ].map((question, index) => (
-              <li key={index} className="flex items-start gap-2">
+            {[ 'Como faço para sacar via Pix?', 'Como entrar em contato com o suporte da BetDreams?', 'Como consultar meu histórico de apostas?', 'Como cancelo um bônus?', 'Como consultar meu histórico de transação?', 'Como apostar nos jogos da BetDreams?', 'Como posso encontrar instruções para o jogo?', 'Onde encontro todas promoções e bônus disponíveis?' ]
+              .map((q, i) => (
+              <li key={i} className="flex items-start gap-2">
                 <span className="text-yellow-400">➔</span>
-                <span>{question}</span>
+                <span>{q}</span>
               </li>
             ))}
           </ul>
@@ -197,57 +174,33 @@ export default function DashboardPage() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold mb-4">APOSTE</h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>Indicação</li>
-                <li>Jogo da Velha</li>
-              </ul>
+              <ul className="space-y-2 text-sm text-gray-300"><li>Indicação</li><li>Jogo da Velha</li></ul>
             </div>
             <div>
               <h3 className="font-bold mb-4">LINKS ÚTEIS</h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>Comunidade</li>
-                <li>Promoções</li>
-              </ul>
+              <ul className="space-y-2 text-sm text-gray-300"><li>Comunidade</li><li>Promoções</li></ul>
             </div>
             <div>
               <h3 className="font-bold mb-4">REGRAS</h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>Termos e Condições Gerais</li>
-                <li>Jogo Responsável</li>
-                <li>Regras de Pagamento</li>
-              </ul>
+              <ul className="space-y-2 text-sm text-gray-300"><li>Termos e Condições</li><li>Jogo Responsável</li></ul>
             </div>
             <div>
               <h3 className="font-bold mb-4">SUPORTE</h3>
-              <p className="text-sm text-gray-300 mb-2">Atendimento 24h todos os dias.</p>
-              <ul className="space-y-1 text-sm text-gray-300">
-                <li>📚 Central de Ajuda</li>
-                <li>📞 0800 00 4546</li>
-                <li>📧 suporte.betdreams@gmail.com</li>
-              </ul>
+              <ul className="space-y-1 text-sm text-gray-300"><li>📚 Central de Ajuda</li><li>📞 0800 00 4546</li><li>📧 suporte@betdreams.com</li></ul>
             </div>
-          </div>
-          <div className="max-w-6xl mx-auto mt-10">
-            <h3 className="font-bold mb-2">OUTROS</h3>
-            <p className="text-sm text-gray-300">Ouvidoria PROCON</p>
           </div>
         </footer>
       </div>
 
-      {/* Marquee animation style */}
       <style jsx>{`
         .animate-marquee {
           display: inline-block;
           white-space: nowrap;
-          animation: marquee 50s linear infinite;
+          animation: marquee 40s linear infinite;
         }
         @keyframes marquee {
-          0% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(-100%);
-          }
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
         }
       `}</style>
     </LayoutWrapper>
