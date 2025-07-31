@@ -35,10 +35,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Erro ao buscar pagamento' }, { status: 500 })
     }
 
-    const status = paymentData.status
-    const tipo = (paymentData.payment_type_id ?? '').toLowerCase()
+    const rawStatus = paymentData.status ?? ''
+    const rawTipo = paymentData.payment_type_id ?? ''
     const valor = paymentData.transaction_amount
     const externalRefRaw = paymentData.external_reference
+
+    const status = rawStatus.trim().toLowerCase()
+    const tipo = rawTipo.trim().toLowerCase()
 
     console.log('📦 Dados do pagamento recebidos do Mercado Pago:', {
       status,
@@ -46,6 +49,7 @@ export async function POST(req: Request) {
       valor,
       email: externalRefRaw,
     })
+    console.log('🧪 Tipo original recebido (sem tratamento):', paymentData.payment_type_id)
 
     if (typeof externalRefRaw !== 'string' || !externalRefRaw.trim()) {
       console.log('🚫 Email ausente ou inválido no campo external_reference.')
@@ -55,7 +59,8 @@ export async function POST(req: Request) {
     const email = externalRefRaw.trim().toLowerCase()
 
     const aprovado = status === 'approved'
-    const tipoAceito = ['pix', 'bank_transfer', 'account_money'].includes(tipo)
+    const tiposAceitos = ['pix', 'bank_transfer', 'account_money']
+    const tipoAceito = tiposAceitos.includes(tipo)
 
     if (aprovado && tipoAceito) {
       const user = await prisma.user.findUnique({ where: { email } })
@@ -73,7 +78,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true }, { status: 200 })
     }
 
-    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito.')
+    console.log('⏳ Pagamento ainda não aprovado ou tipo não aceito.', {
+      aprovado,
+      tipoAceito,
+      tipoRecebido: tipo,
+      statusRecebido: status,
+    })
+
     return NextResponse.json({ status: 'aguardando aprovação ou tipo inválido' }, { status: 200 })
 
   } catch (error) {
