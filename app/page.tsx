@@ -20,7 +20,7 @@ export default function Home() {
         />
       </div>
 
-      {/* Copy poderosa */}
+      {/* Conteúdo principal */}
       <div className="text-center text-white px-6 max-w-3xl space-y-6 mt-6">
         <h1 className="text-4xl sm:text-5xl font-bold text-green-400">🌐 Bem-vindo ao Futuro dos Investimentos</h1>
         <p className="text-xl text-white font-semibold">💥 A Nova Era de Riqueza Começa com um Clique.</p>
@@ -73,38 +73,53 @@ export default function Home() {
         <p className="text-white text-lg font-bold mt-4">O futuro pertence a quem age agora.<br />BetZila – O Investimento do Século Está a um Clique.</p>
       </div>
 
-      {/* Footer */}
-      <footer className="w-full bg-[#0a0d1a] text-white py-12 px-6 mt-20">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Novo Rodapé Profissional */}
+      <footer className="w-full bg-[#0a0d1a] text-white py-12 px-6 mt-20 border-t border-gray-700">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm">
           <div>
-            <h3 className="font-bold mb-4">CASSINO</h3>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li><a href="#">Cassino</a></li>
-              <li><a href="#">Cassino Ao Vivo</a></li>
-              <li><a href="#">Torneios</a></li>
+            <h3 className="font-bold mb-4 text-blue-400">🔹 SOBRE NÓS</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li>O que é a BetZila</li>
+              <li>Inteligência Artificial e Estratégias</li>
+              <li>Transparência e Tecnologia</li>
+              <li>Nossa Missão</li>
             </ul>
           </div>
           <div>
-            <h3 className="font-bold mb-4">ESPORTES</h3>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li><a href="#">Ao Vivo</a></li>
-              <li><a href="#">Esportes</a></li>
-              <li><a href="#">TOP Bets 🏆</a></li>
+            <h3 className="font-bold mb-4 text-blue-400">🔹 PRODUTOS</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li>Investimento com IA</li>
+              <li>Diversificação Inteligente</li>
+              <li>Rendimento Diário Automatizado</li>
+              <li>Painel do Investidor</li>
             </ul>
           </div>
           <div>
-            <h3 className="font-bold mb-4">SUPORTE</h3>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li><a href="#">Central de Ajuda</a></li>
-              <li><a href="#">Termos e Condições</a></li>
-              <li><a href="#">Política de Privacidade</a></li>
-              <li><a href="#">Política de Bônus</a></li>
-              <li><a href="#">Política de PLD/CFTP</a></li>
-              <li><a href="#">Jogo Responsável</a></li>
-              <li><a href="#">Regras de Apostas Esportivas</a></li>
-              <li><a href="#">Gamble Aware</a></li>
+            <h3 className="font-bold mb-4 text-blue-400">🔹 SUPORTE</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li>Central de Ajuda</li>
+              <li>Termos de Uso</li>
+              <li>Política de Privacidade</li>
+              <li>Segurança & Confiabilidade</li>
+              <li>Contato</li>
             </ul>
           </div>
+          <div>
+            <h3 className="font-bold mb-4 text-blue-400">🔹 LEGALIDADE</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li>Conformidade com PLD/CFT</li>
+              <li>Declaração de Riscos</li>
+              <li>Política de Dados</li>
+              <li>Auditorias e Certificações</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-10 text-center text-gray-400 text-sm">
+          <div className="mb-2">🔒 Criptografia SSL 256 bits — Site Seguro</div>
+          <div className="mb-2">🌐 BetZila © 2025 — Todos os direitos reservados.</div>
+          <div className="italic">Tecnologia, Liberdade Financeira e Transparência em um só clique.</div>
+          <div className="mt-2 text-xs text-gray-500">Este site não oferece serviços de jogos de azar. A BetZila é uma plataforma tecnológica voltada para inteligência financeira.</div>
         </div>
       </footer>
     </main>
