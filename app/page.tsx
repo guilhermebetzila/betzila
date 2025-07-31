@@ -20,6 +20,22 @@ export default function Home() {
         />
       </div>
 
+      {/* Botões Login/Registro */}
+      <div className="flex flex-wrap justify-center gap-4 mt-4">
+        <Button
+          onClick={() => router.push('/login')}
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold text-lg px-6 py-3 rounded shadow"
+        >
+          Entrar
+        </Button>
+        <Button
+          onClick={() => router.push('/register')}
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold text-lg px-6 py-3 rounded shadow"
+        >
+          Registrar-se
+        </Button>
+      </div>
+
       {/* Conteúdo principal */}
       <div className="text-center text-white px-6 max-w-3xl space-y-6 mt-6">
         <h1 className="text-4xl sm:text-5xl font-bold text-green-400">🌐 Bem-vindo ao Futuro dos Investimentos</h1>
@@ -54,26 +70,11 @@ export default function Home() {
         <p className="text-white font-semibold">Se você está vendo essa página, é porque o universo te deu uma chance.</p>
         <p className="text-white">Não entre para ver. <strong className="text-green-400">Entre para mudar sua vida.</strong></p>
 
-        <div className="flex flex-wrap justify-center gap-4 mt-6">
-          <Button
-            onClick={() => router.push('/login')}
-            className="bg-[#8B0000] hover:bg-[#a50000] text-white font-semibold text-lg px-6 py-3 rounded shadow"
-          >
-            Entrar
-          </Button>
-          <Button
-            onClick={() => router.push('/register')}
-            className="bg-[#8B0000] hover:bg-[#a50000] text-white font-semibold text-lg px-6 py-3 rounded shadow"
-          >
-            Registrar-se
-          </Button>
-        </div>
-
         <p className="text-sm text-gray-400 mt-4">🔒 Seguro. Rápido. Sem pegadinhas.</p>
         <p className="text-white text-lg font-bold mt-4">O futuro pertence a quem age agora.<br />BetZila – O Investimento do Século Está a um Clique.</p>
       </div>
 
-      {/* Novo Rodapé Profissional */}
+      {/* Rodapé Profissional */}
       <footer className="w-full bg-[#0a0d1a] text-white py-12 px-6 mt-20 border-t border-gray-700">
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm">
           <div>
