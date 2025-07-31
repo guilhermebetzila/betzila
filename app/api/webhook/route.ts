@@ -36,7 +36,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Erro ao buscar pagamento' }, { status: 500 })
     }
 
-    // 📣 NOVO: Log detalhado para depuração
     console.log('📣 Status detalhado recebido do pagamento:', {
       status: paymentData.status,
       tipo: paymentData.payment_type_id,
@@ -47,13 +46,50 @@ export async function POST(req: Request) {
     const status = paymentData.status
     const tipo = paymentData.payment_type_id ?? ''
     const valor = paymentData.transaction_amount
-    const email = paymentData.external_reference?.trim().toLowerCase()
+    const externalRefRaw = paymentData.external_reference
 
-    console.log('📦 Dados resumidos:', { status, tipo, valor, email })
+    // Garantir que email é string válida
+    if (typeof externalRefRaw !== 'string' || !externalRefRaw.trim()) {
+      console.log('🚫 Email ausente ou inválido no campo external_reference.')
+      return NextResponse.json({ error: 'Email ausente ou inválido' }, { status: 400 })
+    }
+    const email = externalRefRaw.trim().toLowerCase()
 
     if (status !== 'approved') {
-      console.log('⏳ Pagamento ainda não aprovado. Status:', status)
-      return NextResponse.json({ status: 'não aprovado' }, { status: 200 })
+      console.log('⏳ Pagamento ainda não aprovado. Agendando nova tentativa em 15 segundos.')
+
+      setTimeout(async () => {
+        try {
+          const retryPayment = await payments.get({ id: String(paymentId) })
+
+          console.log('🔁 Nova tentativa após 15s:', {
+            status: retryPayment.status,
+            tipo: retryPayment.payment_type_id,
+            valor: retryPayment.transaction_amount,
+            external_reference: retryPayment.external_reference,
+          })
+
+          if (
+            retryPayment.status === 'approved' &&
+            ['pix', 'account_money', 'bank_transfer'].includes(retryPayment.payment_type_id ?? '') &&
+            typeof retryPayment.external_reference === 'string' &&
+            retryPayment.external_reference.trim()
+          ) {
+            const retryEmail = retryPayment.external_reference.trim().toLowerCase()
+            await prisma.user.update({
+              where: { email: retryEmail },
+              data: { saldo: { increment: retryPayment.transaction_amount } },
+            })
+            console.log(`✅ Saldo atualizado na tentativa após 15s: +${retryPayment.transaction_amount} para ${retryEmail}`)
+          } else {
+            console.log('❌ Tentativa após 15s não resultou em aprovação.')
+          }
+        } catch (e) {
+          console.error('❌ Erro na re-tentativa após 15s:', e)
+        }
+      }, 15000)
+
+      return NextResponse.json({ status: 'não aprovado ainda, re-tentando em 15s' }, { status: 200 })
     }
 
     if (!['pix', 'account_money', 'bank_transfer'].includes(tipo)) {
@@ -61,36 +97,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ status: 'tipo não aceito' }, { status: 200 })
     }
 
-    if (!email) {
-      console.log('🚫 Email ausente no campo external_reference.')
-      return NextResponse.json({ error: 'Email ausente' }, { status: 400 })
+    const user = await prisma.user.findUnique({ where: { email } })
+    console.log('👤 Usuário encontrado:', user)
+    if (!user) {
+      console.log('🚫 Usuário não encontrado para o email:', email)
+      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 400 })
     }
 
-    // Verificar se o usuário existe antes do update
-    try {
-      const user = await prisma.user.findUnique({ where: { email } })
-      console.log('👤 Usuário encontrado:', user)
-      if (!user) {
-        console.log('🚫 Usuário não encontrado para o email:', email)
-        return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 400 })
-      }
-    } catch (e) {
-      console.error('❌ Erro ao buscar usuário no banco:', e)
-      return NextResponse.json({ error: 'Erro ao buscar usuário' }, { status: 500 })
-    }
+    const result = await prisma.user.update({
+      where: { email },
+      data: { saldo: { increment: valor } },
+    })
 
-    try {
-      const result = await prisma.user.update({
-        where: { email },
-        data: { saldo: { increment: valor } },
-      })
+    console.log(`✅ Saldo atualizado com sucesso para ${email}: +${valor}`, result)
+    return NextResponse.json({ success: true }, { status: 200 })
 
-      console.log(`✅ Saldo atualizado com sucesso para ${email}: +${valor}`, result)
-      return NextResponse.json({ success: true }, { status: 200 })
-    } catch (e) {
-      console.error('❌ Erro ao atualizar o saldo no banco:', e)
-      return NextResponse.json({ error: 'Erro ao atualizar saldo' }, { status: 500 })
-    }
   } catch (error) {
     console.error('❌ Erro geral no processamento do webhook:', error)
     return NextResponse.json({ error: 'Erro interno no webhook' }, { status: 500 })
