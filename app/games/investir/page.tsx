@@ -33,7 +33,7 @@ export default function InvestirPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ valor }),
-        credentials: 'include',  // Envia os cookies junto
+        credentials: 'include', // ENVIA O COOKIE COM O TOKEN
       })
       const data = await res.json()
 
@@ -60,7 +60,7 @@ export default function InvestirPage() {
           <h2 className="text-lg text-gray-300 mb-2">Seu valor investido:</h2>
           <div className="w-full bg-gray-700 rounded-full h-6 overflow-hidden">
             <div
-              className="bg-green-500 h-6 text-sm text-black font-bold text-center"
+              className="bg-green-500 h-6 text-sm text-black font-bold text-center transition-all duration-300"
               style={{ width: `${Math.min((valorInvestido / 20) * 100, 100)}%` }}
             >
               R$ {valorInvestido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -87,20 +87,20 @@ export default function InvestirPage() {
         </div>
 
         <div className="flex justify-center space-x-4">
-          <Button
+          <button
             onClick={investirValor}
             disabled={loading}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl"
+            className="bg-green-600 hover:bg-green-700 text-white text-sm px-5 py-2 rounded-lg transition-all shadow-md disabled:opacity-60"
           >
             {loading ? 'Investindo...' : 'Investir Valor'}
-          </Button>
+          </button>
 
-          <Button
+          <button
             onClick={() => router.push('/dashboard')}
-            className="bg-red-700 hover:bg-red-800 text-white font-semibold px-6 py-3 rounded-xl"
+            className="bg-red-600 hover:bg-red-700 text-white text-sm px-5 py-2 rounded-lg transition-all shadow-md"
           >
-            ← Voltar ao Painel
-          </Button>
+            ← Voltar
+          </button>
         </div>
 
         {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
