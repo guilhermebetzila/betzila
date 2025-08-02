@@ -6,27 +6,48 @@ import { Button } from '@/components/ui/button'
 
 export default function InvestirPage() {
   const router = useRouter()
-  const [saldo, setSaldo] = useState(1500) // Valor inicial, substitua pela sua lógica de fetch real
+  const [saldo, setSaldo] = useState(1500) // Substitua com fetch real do saldo
   const [valorInvestido, setValorInvestido] = useState(0)
+  const [valorParaInvestir, setValorParaInvestir] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   async function investirValor() {
-    setLoading(true)
     setError(null)
 
+    // Converter o valor digitado para número
+    const valor = parseFloat(valorParaInvestir.replace(',', '.'))
+
+    // Validações básicas
+    if (isNaN(valor) || valor <= 0) {
+      setError('Digite um valor válido maior que zero.')
+      return
+    }
+    if (valor > saldo) {
+      setError('Saldo insuficiente para esse investimento.')
+      return
+    }
+
+    setLoading(true)
+
     try {
-      const res = await fetch('/api/investir', { method: 'POST' })
+      // Envia o valor para a API
+      const res = await fetch('/api/investir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ valor }),
+      })
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || 'Erro ao investir valor')
+        setError(data.error || 'Erro ao investir valor.')
       } else {
         setSaldo(data.user.saldo)
         setValorInvestido(data.user.valorInvestido)
+        setValorParaInvestir('')
       }
     } catch (err) {
-      setError('Erro na conexão')
+      setError('Erro na conexão.')
     } finally {
       setLoading(false)
     }
@@ -42,7 +63,7 @@ export default function InvestirPage() {
           <div className="w-full bg-gray-700 rounded-full h-6 overflow-hidden">
             <div
               className="bg-green-500 h-6 text-sm text-black font-bold text-center"
-              style={{ width: `${Math.min(valorInvestido / 20, 100)}%` }}
+              style={{ width: `${Math.min((valorInvestido / 20) * 100, 100)}%` }}
             >
               R$ {valorInvestido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
@@ -53,11 +74,24 @@ export default function InvestirPage() {
           <p className="text-gray-300 text-lg">📈 Acompanhe seus juros diários em tempo real!</p>
         </div>
 
-        {/* Botão Investir Valor */}
+        <div>
+          <label htmlFor="valorInvestir" className="block mb-2 text-gray-300 font-semibold">
+            Digite o valor que deseja investir:
+          </label>
+          <input
+            type="text"
+            id="valorInvestir"
+            value={valorParaInvestir}
+            onChange={(e) => setValorParaInvestir(e.target.value)}
+            placeholder="Ex: 1000,00"
+            className="w-full rounded-md p-3 bg-gray-700 text-white text-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+
         <div className="flex justify-center space-x-4">
           <Button
             onClick={investirValor}
-            disabled={loading || saldo <= 0}
+            disabled={loading}
             className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl"
           >
             {loading ? 'Investindo...' : 'Investir Valor'}

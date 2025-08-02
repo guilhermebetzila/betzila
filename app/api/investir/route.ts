@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies()  // AQUI: await para resolver a Promise
+    const cookieStore = await cookies()
     const token = cookieStore.get('token')?.value
 
     if (!token) {
@@ -25,16 +25,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
 
-    if (user.saldo <= 0) {
-      return NextResponse.json({ error: 'Saldo insuficiente' }, { status: 400 })
+    // Extrair valor enviado no corpo da requisição
+    const body = await req.json()
+    const valor = parseFloat(body.valor)
+
+    if (isNaN(valor) || valor <= 0) {
+      return NextResponse.json({ error: 'Valor inválido para investir' }, { status: 400 })
     }
 
-    const novoInvestimento = (user.valorInvestido ?? 0) + user.saldo
+    if (user.saldo < valor) {
+      return NextResponse.json({ error: 'Saldo insuficiente para esse valor' }, { status: 400 })
+    }
+
+    // Atualiza saldo e valorInvestido subtraindo o valor do saldo e somando ao valorInvestido
+    const novoSaldo = user.saldo - valor
+    const novoInvestimento = (user.valorInvestido ?? 0) + valor
 
     const usuarioAtualizado = await prisma.user.update({
       where: { id: userId },
       data: {
-        saldo: 0,
+        saldo: novoSaldo,
         valorInvestido: novoInvestimento,
       },
     })
