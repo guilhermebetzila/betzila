@@ -14,7 +14,7 @@ export default function Home() {
   const [lucrosDistribuidos, setLucrosDistribuidos] = useState(18450);
   const [vagasRestantes, setVagasRestantes] = useState(34);
   const [capacidadeIA, setCapacidadeIA] = useState(76);
-  const [tempoRestante, setTempoRestante] = useState(45 * 60); // 45 minutos
+  const [tempoRestante, setTempoRestante] = useState(45 * 60);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -73,20 +73,17 @@ export default function Home() {
         <Button
           onClick={() => router.push('/login')}
           className="bg-green-600 hover:bg-green-700 text-white font-extrabold text-lg px-8 py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-          aria-label="Entrar na BetZila"
         >
           Entrar
         </Button>
         <Button
           onClick={() => router.push('/register')}
           className="bg-green-600 hover:bg-green-700 text-white font-extrabold text-lg px-8 py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-          aria-label="Registrar-se na BetZila"
         >
           Registrar-se
         </Button>
       </div>
 
-      {/* Seção unificada começa aqui */}
       <section className="w-full max-w-4xl px-6 mt-14 mx-auto text-center leading-relaxed text-xl sm:text-2xl space-y-6 text-white">
         <h2 className="text-4xl sm:text-5xl font-extrabold text-green-400 mb-6 select-none">
           🛡️ Sua Jornada Começa Aqui
@@ -120,23 +117,29 @@ export default function Home() {
         <p>
           Você não está apenas investindo. <span className="text-green-400 font-bold">Você está se unindo a uma legião.</span> Uma comunidade dos <span className="text-green-400 font-bold">0.1% mais visionários</span> do Brasil.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-8 text-center">
-          <div>
-            <p className="text-4xl font-extrabold text-green-400">{zilersAtivos.toLocaleString()}</p>
-            <p className="text-gray-400 tracking-wider uppercase mt-1">Zilers Ativos Agora</p>
-          </div>
-          <div>
-            <p className="text-4xl font-extrabold text-green-400">{novosHoje}</p>
-            <p className="text-gray-400 tracking-wider uppercase mt-1">Novos Hoje</p>
-          </div>
-          <div>
-            <p className="text-4xl font-extrabold text-green-400">R$ {lucrosDistribuidos.toLocaleString('pt-BR')}</p>
-            <p className="text-gray-400 tracking-wider uppercase mt-1">Lucros na Última Hora</p>
-          </div>
+        <p>📍 Pagar dívidas.</p>
+        <p>🏝️ Viajar o mundo.</p>
+        <p>🏡 Dar uma casa nova pra família.</p>
+        <p>🕊️ Ou simplesmente, nunca mais trabalhar para ninguém.</p>
+        {/* Funil de Conversão Estratégico */}
+        <div className="bg-[#0f172a] border border-green-600 rounded-2xl shadow-2xl mt-10 py-10 px-6 text-center space-y-6 max-w-3xl mx-auto">
+          <h3 className="text-3xl font-bold text-green-400 select-none">🔓 3 Passos Simples para sua Virada</h3>
+          <ol className="text-white text-lg sm:text-xl space-y-3 list-decimal list-inside text-left max-w-md mx-auto font-medium">
+            <li>Crie seu perfil BetZila</li>
+            <li>Ative a IA com qualquer valor</li>
+            <li>Veja seus ganhos começarem amanhã</li>
+          </ol>
+          <Button
+            onClick={() => router.push('/register')}
+            className="bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold text-lg px-8 py-4 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 mt-4"
+          >
+            Quero minha Virada Agora ⚡
+          </Button>
+          <p className="text-gray-400 text-sm mt-2">100% seguro. Sem promessas vazias.</p>
         </div>
-            </section>
+      </section>
 
-      {/* Ranking Top 10 Zilers */}
+      {/* Ranking Top 10 Zilers */}  
       <div className="w-full bg-[#111827] border border-yellow-600 rounded-2xl p-8 mt-12 text-center shadow-2xl hover:shadow-yellow-500/70 transition-shadow duration-500 overflow-x-auto">
         <h2 className="text-4xl font-extrabold text-yellow-400 mb-6 select-none">🏆 Top 10 Zilers do Mês</h2>
         <table className="min-w-full text-sm sm:text-base table-auto mx-auto border-collapse border border-gray-700 rounded-lg overflow-hidden">
