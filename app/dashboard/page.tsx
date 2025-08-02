@@ -79,45 +79,12 @@ export default function DashboardPage() {
   if (loading) return <p className="text-center mt-10 text-white">Carregando...</p>;
   if (!user) return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
+  const pontos = totalIndicados * 10; // Exemplo: 10 pontos por indicação
+  const progresso = Math.min((pontos / 1000) * 100, 100);
+
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        <div className="mb-6 flex flex-col items-center space-y-4">
-          <div className="relative w-full max-w-md">
-            <input
-              type="text"
-              placeholder="Buscar jogos ou provedores..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
-              </svg>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-3">
-            {menuItems.map((item, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center cursor-pointer w-16"
-                onClick={() => handleMenuClick(item)}
-              >
-                <div className="w-12 h-12 bg-gray-800 border-2 border-green-400 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-                  <span className="text-xl">{item.label.split(' ')[0]}</span>
-                </div>
-                <span className="text-[10px] mt-1 text-center text-white leading-tight">
-                  {item.label.split(' ').slice(1).join(' ')}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-6"><IAWorkingPanel /></div>
-
         <div className="mb-6">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user.nome || user.email}
@@ -129,23 +96,33 @@ export default function DashboardPage() {
           <p className="text-green-400 mt-2">
             📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!
           </p>
+          <div className="mt-4">
+            <p className="text-sm text-gray-300 mb-1">🎁 Pontos Acumulados: {pontos} pontos</p>
+            <div className="w-full bg-gray-700 rounded-full h-4">
+              <div className="bg-green-400 h-4 rounded-full" style={{ width: `${progresso}%` }}></div>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">Você precisa de 1000 pontos para desbloquear o próximo prêmio</p>
+          </div>
         </div>
 
-        <div className="mb-6 bg-gray-900 text-white p-6 rounded-xl max-w-2xl text-center">
-          <h2 className="text-2xl font-bold text-green-400 mb-4">🚀 Bem-vindo à BetZila AI</h2>
-          <p className="mb-2">Seja bem-vindo à IA mais audaciosa e inovadora do mercado.</p>
-          <p className="mb-2">Após anos de estudos, pesquisas e acompanhamento minucioso dos principais setores econômicos, finalmente reunimos as mentes mais brilhantes para trabalhar por você.</p>
-          <p className="mb-2">A era da Inteligência Artificial a seu favor começa agora.</p>
-          <p className="mb-2">Faça parte de um ecossistema revolucionário, onde seu capital pode render <strong>2,5% ao dia</strong>, com <strong>segurança</strong>, <strong>transparência</strong> e <strong>controle</strong>.</p>
-          <p className="mb-2">💰 E lembre-se: os <strong>juros compostos</strong> são o segredo das grandes riquezas — e agora estão ao seu alcance.</p>
-          <p className="mb-2">🧬 Nosso sistema também recompensa a sua rede:</p>
-          <ul className="text-sm text-gray-300 mb-4">
-            <li>1ª geração de indicação: 10%</li>
-            <li>2ª geração: 5%</li>
-            <li>3ª geração: 2,5%</li>
-          </ul>
-          <p className="font-semibold text-green-400">Transforme sua vida com a força da Inteligência Artificial.<br />Comece agora com a BetZila AI.</p>
+           {/* Barra de Pontuação Acumulada */}
+        <div className="mb-6 max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-inner p-4 border-2 border-green-400">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-white font-semibold text-sm">🎁 Pontos Acumulados</span>
+            <span className="text-green-400 font-bold text-sm">1240 pts</span>
+          </div>
+          <div className="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
+            <div
+              className="bg-green-400 h-4"
+              style={{ width: `62%` }} // Simulando progresso até a próxima recompensa
+            ></div>
+          </div>
+          <p className="text-gray-300 text-xs mt-2">
+            Faltam <span className="text-green-400 font-semibold">760 pts</span> para desbloquear o <strong>App Exclusivo BetZila!</strong>
+          </p>
         </div>
+
+        <div className="mb-6"><IAWorkingPanel /></div>
 
         {/* Seção de Prova Social */}
         <div className="mb-12">
