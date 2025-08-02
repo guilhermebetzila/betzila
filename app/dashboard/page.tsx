@@ -85,7 +85,22 @@ export default function DashboardPage() {
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-        <div className="mb-6">
+
+        {/* MENU DE AÇÕES */}
+        <div className="mb-6 flex justify-center gap-8">
+          {menuItems.map((item, index) => (
+            <button
+              key={index}
+              onClick={() => handleMenuClick(item)}
+              className="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-lg shadow-lg font-semibold transition-colors"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Saudação, saldo e indicações */}
+        <div className="mb-6 max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user.nome || user.email}
             <span className="bg-green-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
@@ -105,6 +120,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Barra Pontos */}
         <div className="mb-6 max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-inner p-4 border-2 border-green-400">
           <div className="flex items-center justify-between mb-2">
             <span className="text-white font-semibold text-sm">🎁 Pontos Acumulados</span>
@@ -123,6 +139,7 @@ export default function DashboardPage() {
 
         <div className="mb-6"><IAWorkingPanel /></div>
 
+        {/* Prova Social */}
         <div className="mb-12">
           <h3 className="text-xl font-semibold text-center text-white mb-4">🎯 Prova Social: Saques Recentes</h3>
           <div className="bg-gray-800 rounded-xl p-4 max-h-40 overflow-y-auto shadow-inner border border-green-400">
@@ -143,6 +160,7 @@ export default function DashboardPage() {
           </button>
         </div>
 
+        {/* RODAPÉ COM ENGENHARIA SOCIAL */}
         <footer className="w-full mt-20 bg-gray-900 text-white py-12 px-6 border-t border-green-800">
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div>
