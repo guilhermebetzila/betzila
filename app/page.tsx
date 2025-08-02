@@ -13,14 +13,34 @@ export default function Home() {
   const [novosHoje, setNovosHoje] = useState(87);
   const [lucrosDistribuidos, setLucrosDistribuidos] = useState(18450);
 
+  const [vagasRestantes, setVagasRestantes] = useState(34);
+  const [capacidadeIA, setCapacidadeIA] = useState(76);
+  const [tempoRestante, setTempoRestante] = useState(45 * 60); // 45 minutos em segundos
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setZilersAtivos(prev => prev + Math.floor(Math.random() * 3));
-      setNovosHoje(prev => prev + Math.floor(Math.random() * 2));
-      setLucrosDistribuidos(prev => prev + Math.floor(Math.random() * 50));
+      setZilersAtivos((prev) => prev + Math.floor(Math.random() * 3));
+      setNovosHoje((prev) => prev + Math.floor(Math.random() * 2));
+      setLucrosDistribuidos((prev) => prev + Math.floor(Math.random() * 50));
+      setCapacidadeIA((prev) => Math.min(prev + Math.floor(Math.random() * 2), 100));
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTempoRestante((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatarTempo = (segundos: number) => {
+    const min = Math.floor(segundos / 60);
+    const seg = segundos % 60;
+    return `${String(min).padStart(2, '0')}:${String(seg).padStart(2, '0')}`;
+  };
 
   const ranking = [
     { nome: 'Juliana R.', lucro: 9872, badge: 'Diamante' },
@@ -64,31 +84,29 @@ export default function Home() {
         </Button>
       </div>
 
-      <div className="w-full flex flex-col items-center px-4 mt-6 space-y-6 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold text-green-400">
-          🌐 Bem-vindo ao Futuro dos Investimentos
-        </h1>
-        <p className="text-xl font-semibold text-white">
-          💥 A Nova Era de Riqueza Começa com um Clique.
-        </p>
-        <p className="text-gray-300 w-full max-w-screen-lg">
-          Imagine uma inteligência artificial que nunca dorme.
-          Ela estuda padrões, rastreia bilhões de dados em tempo real, detecta os movimentos mais lucrativos do mercado financeiro tradicional, criptoativos e até mesmo as jogadas mais vantajosas dos maiores cassinos online do mundo.
-        </p>
-        <p className="text-green-400 font-bold text-xl">Agora imagine que você pode investir nela.</p>
-        <p className="text-white font-semibold text-lg">📈 Essa é a BetZila.</p>
+      <div className="w-full max-w-4xl px-4 mt-8 space-y-6 text-center mx-auto">
 
-        {/* Legião BetZila com contador */}
-        <div className="w-full max-w-4xl bg-[#111827] border border-green-600 rounded-xl p-6 sm:p-8 mt-6 text-center shadow-xl">
+        {/* 🔥 Escassez Estratégica */}
+        <div className="bg-[#1c1f2e] border border-red-500 rounded-xl p-6 shadow-xl animate-pulse">
+          <h2 className="text-2xl font-bold text-red-400 mb-2">⚠️ Apenas {vagasRestantes} vagas abertas para novos Zilers este mês.</h2>
+          <p className="text-yellow-300 text-lg font-semibold">⏰ Próxima ativação da IA em {formatarTempo(tempoRestante)}. Garanta sua vaga!</p>
+
+          <div className="mt-4 w-full bg-gray-800 rounded-full h-4 overflow-hidden shadow-inner">
+            <div
+              className="h-full bg-green-500 transition-all duration-1000"
+              style={{ width: `${capacidadeIA}%` }}
+            ></div>
+          </div>
+          <p className="text-sm text-gray-300 mt-2">Capacidade atual da IA: {capacidadeIA}%</p>
+        </div>
+
+        {/* Legião BetZila com contadores */}
+        <div className="bg-[#111827] border border-green-600 rounded-xl p-6 text-center shadow-xl">
           <h2 className="text-3xl font-bold text-green-400 mb-2">💎 Legião BetZila</h2>
           <p className="text-white text-lg sm:text-xl">
             Você não é apenas um investidor.<br />
-            <strong className="text-green-400">Você é um Ziler</strong>, parte dos <strong className="text-green-500">0.1% mais visionários</strong> que usam inteligência artificial para prosperar enquanto dormem.
+            <strong className="text-green-400">Você é um Ziler</strong>, parte dos <strong className="text-green-500">0.1% mais visionários</strong>.
           </p>
-          <p className="text-gray-400 mt-4 text-sm sm:text-base">
-            Sinta-se parte de uma comunidade VIP. Um movimento silencioso que está mudando o jogo financeiro no Brasil.
-          </p>
-
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6 text-center">
             <div>
               <p className="text-2xl font-bold text-green-400">{zilersAtivos.toLocaleString()}</p>
@@ -106,7 +124,7 @@ export default function Home() {
         </div>
 
         {/* Ranking Top 10 Zilers */}
-        <div className="w-full max-w-4xl bg-[#111827] border border-yellow-500 rounded-xl p-6 sm:p-8 mt-10 text-center shadow-xl">
+        <div className="w-full bg-[#111827] border border-yellow-500 rounded-xl p-6 mt-10 text-center shadow-xl">
           <h2 className="text-3xl font-bold text-yellow-400 mb-4">🏆 Top 10 Zilers do Mês</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
