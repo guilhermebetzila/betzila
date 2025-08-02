@@ -96,6 +96,16 @@ export default function Home() {
           </p>
         </div>
 
+        {/* Promessa Poderosa + Dados Reais + Emoção */}
+        <div className="bg-[#1a1d2d] border border-purple-500 rounded-xl p-6 shadow-xl">
+          <h2 className="text-2xl font-bold text-purple-400 mb-4">📊 A Prova Está Nos Números</h2>
+          <p className="text-white text-lg">🎯 Precisão validada de <strong className="text-green-400">87,9%</strong> nas decisões da IA.</p>
+          <p className="text-white text-lg">💸 Rendimento médio diário de <strong className="text-yellow-300">2,5%</strong> — o que dá cerca de <strong className="text-green-400">R$75 por dia</strong> para quem investe R$3.000.</p>
+          <div className="w-full h-24 bg-gradient-to-r from-green-500 to-green-700 rounded-full mt-6 flex items-center justify-center animate-pulse">
+            <p className="text-xl font-bold text-white">📈 Crescimento Real. Resultado Concreto.</p>
+          </div>
+        </div>
+
         {/* 🔥 Escassez Estratégica */}
         <div className="bg-[#1c1f2e] border border-red-500 rounded-xl p-6 shadow-xl animate-pulse">
           <h2 className="text-2xl font-bold text-red-400 mb-2">⚠️ Apenas {vagasRestantes} vagas abertas para novos Zilers este mês.</h2>
