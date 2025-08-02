@@ -176,6 +176,77 @@ return (
   <p>🏡 Dar uma casa nova pra família.</p>
   <p>🕊️ Ou simplesmente, nunca mais trabalhar para ninguém.</p>
 
+  {/* Seção de Confiança e Transparência com Time Real */}
+<section className="max-w-5xl mx-auto px-6 mt-20 mb-20">
+  <h2 className="text-3xl sm:text-4xl font-extrabold text-[#00C853] mb-4 select-none">
+    Confiança e Transparência
+  </h2>
+  <p className="text-gray-300 max-w-xl mb-10">
+    Link para auditorias independentes, certificados e parcerias.
+  </p>
+
+  <div className="overflow-x-auto no-scrollbar -mx-6 px-6">
+    <div className="flex gap-8 min-w-max">
+      {[
+        {
+          nome: 'Ana Clara',
+          cargo: 'Desenvolvedora de IA',
+          imagem: '/img/cassino1.png',
+          cargoEstilo: 'text-purple-500 font-extrabold tracking-wide',
+        },
+        {
+          nome: 'Bruno Silva',
+          cargo: 'Engenheiro de Dados',
+          imagem: '/img/cassino2.png',
+          cargoEstilo: 'text-green-400 font-extrabold tracking-widest',
+        },
+        {
+          nome: 'Carla Mendes',
+          cargo: 'Arquiteta de Software',
+          imagem: '/img/cassino3.png',
+          cargoEstilo: 'text-yellow-400 font-extrabold uppercase',
+        },
+        {
+          nome: 'Diego Torres',
+          cargo: 'Diretor de Estratégia',
+          imagem: '/img/cassino4.png',
+          cargoEstilo: 'text-red-500 font-black uppercase tracking-tighter',
+        },
+      ].map(({ nome, cargo, imagem, cargoEstilo }) => (
+        <div
+          key={nome}
+          className="flex-shrink-0 w-48 sm:w-56 bg-[#121524] rounded-xl p-4 shadow-lg border-4 border-gradient-to-r border-green-400 hover:scale-105 transition-transform duration-300 cursor-default select-none"
+        >
+          <div className="relative w-full h-48 rounded-lg overflow-hidden border-4 border-[#00C853] shadow-md">
+            <Image
+              src={imagem}
+              alt={`Foto de ${nome}`}
+              fill
+              sizes="(max-width: 640px) 100vw, 224px"
+              className="object-cover"
+              priority
+            />
+          </div>
+          <h3 className="mt-4 text-xl font-extrabold text-white">{nome}</h3>
+          <p className={`${cargoEstilo} mt-1 text-sm`}>{cargo}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style jsx>{`
+  /* Remover scrollbar horizontal padrão */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE e Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+`}</style>
+
+
   {/* Funil de Conversão Estratégico */}
   <div className="bg-[#0f172a] border border-[#00C853] rounded-2xl shadow-2xl mt-10 py-10 px-6 text-center space-y-6 max-w-3xl mx-auto">
     <h3 className="text-3xl font-bold text-[#00C853] select-none">🔓 3 Passos Simples para sua Virada</h3>
