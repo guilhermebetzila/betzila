@@ -31,11 +31,23 @@ function gerarSaquesAleatorios(qtd = 1000) {
   return saques;
 }
 
+const comentariosEsteira = [
+  '🌍 "Agora posso viajar com minha esposa. A BetZila me deu asas!" — Paulo, MG',
+  '👨‍👩‍👧‍👦 "Consegui pagar a escola das minhas filhas. Obrigado, BetZila!" — Juliana, SP',
+  '🚀 "Investi R$ 200 e hoje vivo de renda com a IA." — Carlos, BA',
+  '🎯 "Não acreditava em mim até ver meus resultados. A IA me fez acreditar!" — Amanda, DF',
+  '💼 "Montei minha loja virtual com os lucros da BetZila." — Tiago, RJ',
+  '🏠 "Minha primeira reforma da casa foi com os rendimentos diários." — Larissa, CE',
+  '📈 "Não é só dinheiro. É liberdade. É escolha." — Rafael, SC',
+  '🎓 "Pude voltar a estudar graças ao lucro diário." — Bianca, PR',
+  '💡 "A BetZila virou meu sócio invisível. A IA trabalha por mim!" — Victor, RS',
+  '💖 "Dei orgulho pros meus pais. Finalmente ajudo em casa." — Camila, AM',
+];
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [totalIndicados, setTotalIndicados] = useState<number>(0);
-  const [search, setSearch] = useState('');
   const [saldo, setSaldo] = useState<number>(0);
   const [saques, setSaques] = useState<string[]>([]);
 
@@ -76,11 +88,11 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) return <p className="text-center mt-10 text-white">Carregando...</p>;
-  if (!user) return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
-
   const pontos = totalIndicados * 10;
   const progresso = Math.min((pontos / 1000) * 100, 100);
+
+  if (loading) return <p className="text-center mt-10 text-white">Carregando...</p>;
+  if (!user) return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
   return (
     <LayoutWrapper>
@@ -127,10 +139,7 @@ export default function DashboardPage() {
             <span className="text-green-400 font-bold text-sm">{pontos} pts</span>
           </div>
           <div className="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
-            <div
-              className="bg-green-400 h-4"
-              style={{ width: `${progresso}%` }}
-            ></div>
+            <div className="bg-green-400 h-4" style={{ width: `${progresso}%` }}></div>
           </div>
           <p className="text-gray-300 text-xs mt-2">
             Faltam <span className="text-green-400 font-semibold">{1000 - pontos} pts</span> para desbloquear o <strong>App Exclusivo BetZila!</strong>
@@ -151,6 +160,21 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Esteira de Comentários */}
+        <div className="mb-8">
+          <h3 className="text-lg text-center text-green-400 font-semibold mb-3">💬 Transformações Reais com a BetZila</h3>
+          <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-green-700">
+            {comentariosEsteira.map((comentario, index) => (
+              <span
+                key={index}
+                className="inline-block bg-gray-700 text-white text-sm px-4 py-2 rounded-full shadow-sm border border-green-500 min-w-[250px]"
+              >
+                {comentario}
+              </span>
+            ))}
+          </div>
+        </div>
+
         <div className="flex justify-center mb-8">
           <button
             onClick={() => router.push('/games/investir')}
@@ -160,7 +184,7 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* RODAPÉ COM ENGENHARIA SOCIAL */}
+        {/* Rodapé */}
         <footer className="w-full mt-20 bg-gray-900 text-white py-12 px-6 border-t border-green-800">
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div>
