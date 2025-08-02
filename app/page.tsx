@@ -86,6 +86,16 @@ export default function Home() {
 
       <div className="w-full max-w-4xl px-4 mt-8 space-y-6 text-center mx-auto">
 
+        {/* Jornada do Herói */}
+        <div className="bg-[#1e1e2f] border border-blue-600 rounded-xl p-6 shadow-xl">
+          <h2 className="text-2xl font-bold text-blue-400 mb-4">🛡️ Jornada do Herói Financeiro</h2>
+          <p className="text-white text-lg">
+            Você é o <strong className="text-green-400">protagonista</strong> dessa revolução financeira.<br />
+            A <strong className="text-green-400">IA BetZila</strong> é seu mentor, seu Yoda nesta jornada.<br />
+            A única coisa entre você e a <strong className="text-yellow-400">liberdade financeira</strong> é o clique abaixo.
+          </p>
+        </div>
+
         {/* 🔥 Escassez Estratégica */}
         <div className="bg-[#1c1f2e] border border-red-500 rounded-xl p-6 shadow-xl animate-pulse">
           <h2 className="text-2xl font-bold text-red-400 mb-2">⚠️ Apenas {vagasRestantes} vagas abertas para novos Zilers este mês.</h2>
