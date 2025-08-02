@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import EsteiraSaques from '@/components/EsteiraSaques';
 import { useEffect, useState } from 'react';
+import PixFixed from '@/components/PixFixed';
 
 // Componente Robô fixo no canto superior direito
 function RobotChat() {
