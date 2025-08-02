@@ -6,6 +6,33 @@ import Image from 'next/image';
 import EsteiraSaques from '@/components/EsteiraSaques';
 import { useEffect, useState } from 'react';
 
+// Componente Robô fixo no canto superior direito
+function RobotChat() {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 20,
+        right: 20,
+        width: 60,
+        height: 60,
+        zIndex: 1000,
+        cursor: 'pointer',
+      }}
+      aria-label="Robô Chat"
+      role="img"
+    >
+      <Image
+        src="/img/demo34.png"
+        alt="Robô Chat"
+        width={60}
+        height={60}
+        priority
+      />
+    </div>
+  );
+}
+
 export default function Home() {
   const router = useRouter();
 

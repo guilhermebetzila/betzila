@@ -204,3 +204,23 @@ body, main {
   animation: marquee 90s linear infinite;
   animation-delay: -45s; /* começa perto do final da animação */
 }
+
+.robot-chat {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 60px; /* tamanho pequeno, ajuste se quiser */
+  height: 60px;
+  cursor: pointer;
+  animation: upDown 3s ease-in-out infinite;
+  z-index: 1000; /* para ficar sobre outros elementos */
+}
+
+@keyframes upDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(15px); /* desce 15px no meio da animação */
+  }
+}
