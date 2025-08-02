@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/context/AuthContext';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import IAWorkingPanel from '@/components/IAWorkingPanel';
@@ -8,13 +8,8 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 
 const menuItems = [
-  { label: '💰 Saldo', action: null },
   { label: '📥 Depositar', action: '/games/depositar' },
   { label: '📤 Saque via Pix', action: '/games/saque' },
-  { label: '⚙️ Configurações', action: null },
-  { label: '📄 Histórico', action: null },
-  { label: '🆘 Suporte', action: null },
-  { label: '🔗 Indicação', action: '/games/indicacao' },
   { label: '#️⃣ Jogar Bingo', action: '/games/jogo-da-velha' },
   { label: '🚪 Sair', action: 'logout' },
 ];
@@ -73,7 +68,7 @@ export default function DashboardPage() {
     }
   }, [user]);
 
-  const handleMenuClick = (item: any) => {
+  const handleMenuClick = (item: typeof menuItems[0]) => {
     if (item.action === 'logout') {
       signOut({ callbackUrl: '/login' });
     } else if (item.action) {
@@ -178,19 +173,32 @@ export default function DashboardPage() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
               <h3 className="font-bold mb-4">APOSTE</h3>
-              <ul className="space-y-2 text-sm text-gray-300"><li>Indicação</li><li>Jogo da Velha</li></ul>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li>Indicação</li>
+                <li>Jogo da Velha</li>
+              </ul>
             </div>
             <div>
               <h3 className="font-bold mb-4">LINKS ÚTEIS</h3>
-              <ul className="space-y-2 text-sm text-gray-300"><li>Comunidade</li><li>Promoções</li></ul>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li>Comunidade</li>
+                <li>Promoções</li>
+              </ul>
             </div>
             <div>
               <h3 className="font-bold mb-4">REGRAS</h3>
-              <ul className="space-y-2 text-sm text-gray-300"><li>Termos e Condições</li><li>Jogo Responsável</li></ul>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li>Termos e Condições</li>
+                <li>Jogo Responsável</li>
+              </ul>
             </div>
             <div>
               <h3 className="font-bold mb-4">SUPORTE</h3>
-              <ul className="space-y-1 text-sm text-gray-300"><li>📚 Central de Ajuda</li><li>📞 0800 00 4546</li><li>📧 suporte@betdreams.com</li></ul>
+              <ul className="space-y-1 text-sm text-gray-300">
+                <li>📚 Central de Ajuda</li>
+                <li>📞 0800 00 4546</li>
+                <li>📧 suporte@betdreams.com</li>
+              </ul>
             </div>
           </div>
         </footer>
