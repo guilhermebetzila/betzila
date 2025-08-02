@@ -136,7 +136,7 @@ export default function DashboardPage() {
           <p className="mb-2">Seja bem-vindo à IA mais audaciosa e inovadora do mercado.</p>
           <p className="mb-2">Após anos de estudos, pesquisas e acompanhamento minucioso dos principais setores econômicos, finalmente reunimos as mentes mais brilhantes para trabalhar por você.</p>
           <p className="mb-2">A era da Inteligência Artificial a seu favor começa agora.</p>
-          <p className="mb-2">Faça parte de um ecossistema revolucionário, onde seu capital pode render <strong>2,5% ao dia</strong>, com segurança, estratégia e tecnologia.</p>
+          <p className="mb-2">Faça parte de um ecossistema revolucionário, onde seu capital pode render <strong>2,5% ao dia</strong>, com <strong>segurança</strong>, <strong>transparência</strong> e <strong>controle</strong>.</p>
           <p className="mb-2">💰 E lembre-se: os <strong>juros compostos</strong> são o segredo das grandes riquezas — e agora estão ao seu alcance.</p>
           <p className="mb-2">🧬 Nosso sistema também recompensa a sua rede:</p>
           <ul className="text-sm text-gray-300 mb-4">
@@ -145,6 +145,18 @@ export default function DashboardPage() {
             <li>3ª geração: 2,5%</li>
           </ul>
           <p className="font-semibold text-green-400">Transforme sua vida com a força da Inteligência Artificial.<br />Comece agora com a BetZila AI.</p>
+        </div>
+
+        {/* Seção de Prova Social */}
+        <div className="mb-12">
+          <h3 className="text-xl font-semibold text-center text-white mb-4">🎯 Prova Social: Saques Recentes</h3>
+          <div className="bg-gray-800 rounded-xl p-4 max-h-40 overflow-y-auto shadow-inner border border-green-400">
+            <ul className="space-y-1 text-sm text-green-300 font-mono">
+              {saques.slice(0, 20).map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <div className="flex flex-col items-center space-y-6 mb-12">
@@ -158,7 +170,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* ✅ BOTÃO INVESTIR ANTES DO RODAPÉ */}
         <div className="flex justify-center mb-8">
           <button
             onClick={() => router.push('/games/investir')}
@@ -168,7 +179,6 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Rodapé */}
         <footer className="w-full mt-20 bg-gray-900 text-white py-12 px-6">
           <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
