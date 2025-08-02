@@ -202,6 +202,5 @@ body, main {
   display: inline-block;
   padding-left: 100%;
   animation: marquee 90s linear infinite;
+  animation-delay: -5s; /* começa perto do final da animação */
 }
-
-
