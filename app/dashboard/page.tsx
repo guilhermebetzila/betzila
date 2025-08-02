@@ -87,12 +87,12 @@ export default function DashboardPage() {
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
 
         {/* MENU DE AÇÕES */}
-        <div className="mb-6 flex justify-center gap-8">
+        <div className="mb-6 flex justify-center gap-4 flex-wrap">
           {menuItems.map((item, index) => (
             <button
               key={index}
               onClick={() => handleMenuClick(item)}
-              className="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-lg shadow-lg font-semibold transition-colors"
+              className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md shadow-md font-semibold text-sm transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400"
             >
               {item.label}
             </button>
@@ -154,7 +154,7 @@ export default function DashboardPage() {
         <div className="flex justify-center mb-8">
           <button
             onClick={() => router.push('/games/investir')}
-            className="bg-green-500 hover:bg-green-600 text-black font-bold py-3 px-6 rounded-full shadow-xl transition-all text-lg"
+            className="bg-green-500 hover:bg-green-600 text-black font-semibold py-2 px-5 rounded-lg shadow-md transition-all text-base"
           >
             💹 Investir Agora
           </button>
