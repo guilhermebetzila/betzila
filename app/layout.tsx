@@ -2,6 +2,8 @@ import './globals.css'
 import Providers from './Providers'
 import { Topbar } from '@/components/TopBar'
 import BackgroundDots from '@/components/BackgroundDots'
+import { Sidebar } from '@/components/Sidebar'
+import { EsteiraParceiros } from '@/components/EsteiraParceiros'
 
 export const metadata = {
   title: 'Betdreams',
@@ -17,6 +19,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex flex-col w-full min-h-screen">
             <Topbar />
             <main className="flex-1 w-full">{children}</main>
+
+            {/* ESTEIRA ACIMA DO SIDEBAR */}
+            <EsteiraParceiros />
+
+            {/* SIDEBAR FIXO EMBAIXO */}
+            <Sidebar />
           </div>
         </Providers>
       </body>
