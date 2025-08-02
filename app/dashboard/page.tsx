@@ -79,7 +79,7 @@ export default function DashboardPage() {
   if (loading) return <p className="text-center mt-10 text-white">Carregando...</p>;
   if (!user) return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
-  const pontos = totalIndicados * 10; // Exemplo: 10 pontos por indicação
+  const pontos = totalIndicados * 10;
   const progresso = Math.min((pontos / 1000) * 100, 100);
 
   return (
@@ -105,26 +105,24 @@ export default function DashboardPage() {
           </div>
         </div>
 
-           {/* Barra de Pontuação Acumulada */}
         <div className="mb-6 max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-inner p-4 border-2 border-green-400">
           <div className="flex items-center justify-between mb-2">
             <span className="text-white font-semibold text-sm">🎁 Pontos Acumulados</span>
-            <span className="text-green-400 font-bold text-sm">1240 pts</span>
+            <span className="text-green-400 font-bold text-sm">{pontos} pts</span>
           </div>
           <div className="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
             <div
               className="bg-green-400 h-4"
-              style={{ width: `62%` }} // Simulando progresso até a próxima recompensa
+              style={{ width: `${progresso}%` }}
             ></div>
           </div>
           <p className="text-gray-300 text-xs mt-2">
-            Faltam <span className="text-green-400 font-semibold">760 pts</span> para desbloquear o <strong>App Exclusivo BetZila!</strong>
+            Faltam <span className="text-green-400 font-semibold">{1000 - pontos} pts</span> para desbloquear o <strong>App Exclusivo BetZila!</strong>
           </p>
         </div>
 
         <div className="mb-6"><IAWorkingPanel /></div>
 
-        {/* Seção de Prova Social */}
         <div className="mb-12">
           <h3 className="text-xl font-semibold text-center text-white mb-4">🎯 Prova Social: Saques Recentes</h3>
           <div className="bg-gray-800 rounded-xl p-4 max-h-40 overflow-y-auto shadow-inner border border-green-400">
@@ -133,17 +131,6 @@ export default function DashboardPage() {
                 <li key={index}>{item}</li>
               ))}
             </ul>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center space-y-6 mb-12">
-          <div className="bg-gray-800 border-2 border-green-400 rounded-2xl p-6 w-72 text-center">
-            <p className="text-sm text-green-400 mb-2 font-bold">Saldo Diário</p>
-            <p className="text-2xl font-semibold text-white">R$ 00,00</p>
-          </div>
-          <div className="bg-gray-800 border-2 border-green-400 rounded-2xl p-6 w-72 text-center">
-            <p className="text-sm text-green-400 mb-2 font-bold">Rede de Indicações</p>
-            <p className="text-2xl font-semibold text-white">{totalIndicados}</p>
           </div>
         </div>
 
@@ -156,38 +143,28 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        <footer className="w-full mt-20 bg-gray-900 text-white py-12 px-6">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <footer className="w-full mt-20 bg-gray-900 text-white py-12 px-6 border-t border-green-800">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div>
-              <h3 className="font-bold mb-4">APOSTE</h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>Indicação</li>
-                <li>Jogo da Velha</li>
-              </ul>
+              <h3 className="text-green-400 text-lg font-bold mb-4">🔐 Segurança & Confiança</h3>
+              <p className="text-sm text-gray-300 mb-2">Auditoria independente concluída com sucesso.</p>
+              <p className="text-sm text-gray-300 mb-2">IA operando com precisão validada de 87,9%.</p>
+              <p className="text-sm text-gray-300">Certificados e parcerias disponíveis no painel.</p>
             </div>
             <div>
-              <h3 className="font-bold mb-4">LINKS ÚTEIS</h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>Comunidade</li>
-                <li>Promoções</li>
-              </ul>
+              <h3 className="text-green-400 text-lg font-bold mb-4">📈 Transparência Total</h3>
+              <p className="text-sm text-gray-300 mb-2">Painel de controle com histórico completo.</p>
+              <p className="text-sm text-gray-300 mb-2">Saque e depósito via Pix 100% transparente.</p>
+              <p className="text-sm text-gray-300">Controle total do seu investimento, em tempo real.</p>
             </div>
             <div>
-              <h3 className="font-bold mb-4">REGRAS</h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>Termos e Condições</li>
-                <li>Jogo Responsável</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-4">SUPORTE</h3>
-              <ul className="space-y-1 text-sm text-gray-300">
-                <li>📚 Central de Ajuda</li>
-                <li>📞 0800 00 4546</li>
-                <li>📧 suporte@betdreams.com</li>
-              </ul>
+              <h3 className="text-green-400 text-lg font-bold mb-4">🤝 Comunidade Ziler</h3>
+              <p className="text-sm text-gray-300 mb-2">Top 10 Zilers com maiores ganhos do mês.</p>
+              <p className="text-sm text-gray-300 mb-2">Missão: Pagar dívidas, viver de renda, transformar vidas.</p>
+              <p className="text-sm text-gray-300">Você é o protagonista dessa revolução financeira.</p>
             </div>
           </div>
+          <div className="text-center mt-12 text-sm text-gray-500">© {new Date().getFullYear()} BetZila • Todos os direitos reservados</div>
         </footer>
       </div>
     </LayoutWrapper>
