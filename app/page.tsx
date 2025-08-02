@@ -36,6 +36,10 @@ function RobotChat() {
 export default function Home() {
   const router = useRouter();
 
+  // Estado para controle da confirmação de idade
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
+
+  // Demais estados do site
   const [zilersAtivos, setZilersAtivos] = useState(1249);
   const [novosHoje, setNovosHoje] = useState(87);
   const [lucrosDistribuidos, setLucrosDistribuidos] = useState(18450);
@@ -69,7 +73,6 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  // Função para calcular ganhos do simulador com juros compostos e comissões
   useEffect(() => {
     const taxaDiaria = 0.025; // 2,5% ao dia
     const diasSemana = 7;
@@ -120,20 +123,57 @@ export default function Home() {
     return `${String(min).padStart(2, '0')}:${String(seg).padStart(2, '0')}`;
   };
 
- const ranking = [
-  { nome: 'Juliana R.', lucro: 9872, badge: 'Diamante' },
-  { nome: 'Carlos M.', lucro: 8850, badge: 'Platina' },
-  { nome: 'Renata L.', lucro: 7810, badge: 'Ouro' },
-  { nome: 'Fábio Z.', lucro: 7225, badge: 'Ouro' },
-  { nome: 'Amanda P.', lucro: 6890, badge: 'Prata' },
-  { nome: 'Thiago K.', lucro: 6605, badge: 'Prata' },
-  { nome: 'Fernanda S.', lucro: 5990, badge: 'Bronze' },
-  { nome: 'Igor D.', lucro: 5745, badge: 'Bronze' },
-  { nome: 'Lucas G.', lucro: 5310, badge: 'Bronze' },
-  { nome: 'Patrícia C.', lucro: 5102, badge: 'Bronze' },
-];
+  // Dados de ranking (exemplo)
+  const ranking = [
+    { nome: 'Juliana R.', lucro: 9872, badge: 'Diamante' },
+    { nome: 'Carlos M.', lucro: 8850, badge: 'Platina' },
+    { nome: 'Renata L.', lucro: 7810, badge: 'Ouro' },
+    { nome: 'Fábio Z.', lucro: 7225, badge: 'Ouro' },
+    { nome: 'Amanda P.', lucro: 6890, badge: 'Prata' },
+    { nome: 'Thiago K.', lucro: 6605, badge: 'Prata' },
+    { nome: 'Fernanda S.', lucro: 5990, badge: 'Bronze' },
+    { nome: 'Igor D.', lucro: 5745, badge: 'Bronze' },
+    { nome: 'Lucas G.', lucro: 5310, badge: 'Bronze' },
+    { nome: 'Patrícia C.', lucro: 5102, badge: 'Bronze' },
+  ];
 
-return (
+  // Funções do modal de confirmação de idade
+  const confirmarIdade = () => {
+    setAgeConfirmed(true);
+  };
+
+  const rejeitarIdade = () => {
+    alert('Você precisa ser maior de 18 anos para acessar o site.');
+    window.location.href = 'https://google.com'; // ou outra página
+  };
+
+  // Renderizar modal se idade não confirmada
+  if (!ageConfirmed) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center z-50 p-4">
+        <div className="bg-gray-900 rounded-lg p-6 max-w-sm text-center text-gray-100">
+          <h2 className="text-xl font-bold mb-4">Você tem mais de 18 anos?</h2>
+          <div className="flex justify-center gap-6">
+            <button
+              onClick={confirmarIdade}
+              className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded text-white font-semibold"
+            >
+              Sim
+            </button>
+            <button
+              onClick={rejeitarIdade}
+              className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded text-white font-semibold"
+            >
+              Não
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Conteúdo normal do site (após confirmação da idade)
+  return (
   <main className="flex flex-col min-h-screen w-full bg-gradient-to-b from-[#0a0d1a] via-[#121524] to-[#1b1f36] text-gray-100 overflow-x-hidden font-sans">
     <EsteiraSaques />
 
