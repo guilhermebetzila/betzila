@@ -246,6 +246,48 @@ return (
   }
 `}</style>
 
+{/* Seção Fluxo da IA - efeito visual */}
+<section className="max-w-5xl mx-auto px-6 mt-20 mb-20">
+  <h2 className="text-3xl sm:text-4xl font-extrabold text-[#00C853] mb-6 select-none">
+    Transparência em Tempo Real
+  </h2>
+  <p className="text-gray-300 max-w-xl mb-12">
+    Visualize o fluxo contínuo e inteligente da nossa IA, garantindo decisões precisas e confiáveis para o seu investimento.
+  </p>
+
+  <div className="relative w-full h-24 bg-[#121524] rounded-xl overflow-hidden shadow-lg">
+    <div className="absolute top-0 left-0 w-full h-full flex space-x-2 px-4 py-6">
+      {[...Array(20)].map((_, i) => (
+        <div
+          key={i}
+          className="w-1 sm:w-2 h-full bg-gradient-to-t from-[#00E676] via-[#00C853] to-[#00796B] rounded animate-flow"
+          style={{ animationDelay: `${i * 0.15}s` }}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style jsx>{`
+  @keyframes flowAnimation {
+    0%, 100% {
+      transform: scaleY(0.3);
+      opacity: 0.4;
+    }
+    50% {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+  }
+  .animate-flow {
+    animation-name: flowAnimation;
+    animation-duration: 1.8s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    transform-origin: bottom;
+  }
+`}</style>
+
 
   {/* Funil de Conversão Estratégico */}
   <div className="bg-[#0f172a] border border-[#00C853] rounded-2xl shadow-2xl mt-10 py-10 px-6 text-center space-y-6 max-w-3xl mx-auto">
