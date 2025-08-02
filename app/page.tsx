@@ -422,6 +422,35 @@ return (
   </p>
 </div>
 
+<section className="max-w-4xl mx-auto px-6 mt-20 bg-[#121524] rounded-xl shadow-lg py-8 text-gray-100">
+  <h2 className="text-3xl font-extrabold text-[#00C853] mb-4">
+    Ganhe Pontos e Conquiste Recompensas Incríveis!
+  </h2>
+  <p className="mb-6 text-lg">
+    A cada R$ 2 investidos, você ganha 1 ponto que pode ser trocado por prêmios exclusivos — de apps incríveis até viagens para Cancun!
+    Indique seus amigos e multiplique seus pontos: quanto mais indicações, mais chances de ganhar.
+  </p>
+
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+    <div className="bg-[#1b1f36] rounded-lg p-4 border-2 border-green-500">
+      <h3 className="text-xl font-bold mb-2">500 Pontos</h3>
+      <p>Acesso VIP a conteúdos exclusivos</p>
+    </div>
+    <div className="bg-[#1b1f36] rounded-lg p-4 border-2 border-yellow-400">
+      <h3 className="text-xl font-bold mb-2">1000 Pontos</h3>
+      <p>App exclusivo BetZila para celular</p>
+    </div>
+    <div className="bg-[#1b1f36] rounded-lg p-4 border-2 border-red-500">
+      <h3 className="text-xl font-bold mb-2">7000 Pontos</h3>
+      <p>Celular iPhone top de linha</p>
+    </div>
+  </div>
+
+  <p className="mt-8 text-sm text-gray-400 italic">
+    * Para garantir as recompensas mais valiosas, é necessário ter um volume mínimo investido e indicações ativas. Consulte nosso regulamento.
+  </p>
+</section>
+
 {/* Rodapé */}
 <footer className="w-full bg-[#0a0d1a] text-white py-16 mt-20 border-t border-gray-700 select-none">
   <div className="w-full max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 px-6 text-sm sm:text-base">
