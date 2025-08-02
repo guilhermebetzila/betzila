@@ -156,3 +156,40 @@
 .symbol-spin {
   animation: spinSymbol 0.6s linear infinite;
 }
+body, main {
+  background: linear-gradient(270deg, #0a0d1a, #121524, #001f1f, #0a0d1a);
+  background-size: 800% 800%;
+  animation: gradientShift 30s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+.animate-pulseDot {
+  animation-name: pulseDot;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  transform-origin: center;
+}
+
