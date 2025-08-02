@@ -16,6 +16,13 @@ export default function Home() {
   const [capacidadeIA, setCapacidadeIA] = useState(76);
   const [tempoRestante, setTempoRestante] = useState(45 * 60);
 
+  // Estados do simulador interativo
+  const [investimento, setInvestimento] = useState(200);
+  const [ganhoSimples, setGanhoSimples] = useState({ semana: 0, mes: 0, tresMeses: 0 });
+  const [ganhoIndicacao, setGanhoIndicacao] = useState({ semana: 0, mes: 0, tresMeses: 0 });
+  const [ganhoIndicado, setGanhoIndicado] = useState({ semana: 0, mes: 0, tresMeses: 0 });
+  const [ganhoTotal, setGanhoTotal] = useState(0);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setZilersAtivos((prev) => prev + Math.floor(Math.random() * 3));
@@ -34,6 +41,55 @@ export default function Home() {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Função para calcular ganhos do simulador com juros compostos e comissões
+  useEffect(() => {
+    const taxaDiaria = 0.025; // 2,5% ao dia
+    const diasSemana = 7;
+    const diasMes = 30;
+    const diasTresMeses = 90;
+
+    // Fórmula juros compostos: valor * (1 + taxa) ** dias - valor
+    const ganhoSimplesSemana = investimento * (1 + taxaDiaria) ** diasSemana - investimento;
+    const ganhoSimplesMes = investimento * (1 + taxaDiaria) ** diasMes - investimento;
+    const ganhoSimplesTresMeses = investimento * (1 + taxaDiaria) ** diasTresMeses - investimento;
+
+    // Ganhos com indicação direta (10%) - 1 indicado por dia com investimento fixo de 200
+    const investimentoIndicacao = 200;
+    const comissaoDireta = 0.10;
+    const ganhoIndicacaoSemana = investimentoIndicacao * comissaoDireta * diasSemana;
+    const ganhoIndicacaoMes = investimentoIndicacao * comissaoDireta * diasMes;
+    const ganhoIndicacaoTresMeses = investimentoIndicacao * comissaoDireta * diasTresMeses;
+
+    // Ganhos com indicação indireta (5%) - indicado do indicado
+    const comissaoIndireta = 0.05;
+    const ganhoIndicadoSemana = investimentoIndicacao * comissaoIndireta * diasSemana;
+    const ganhoIndicadoMes = investimentoIndicacao * comissaoIndireta * diasMes;
+    const ganhoIndicadoTresMeses = investimentoIndicacao * comissaoIndireta * diasTresMeses;
+
+    // Total ganhos em 3 meses (simples + direta + indireta)
+    const totalTresMeses = ganhoSimplesTresMeses + ganhoIndicacaoTresMeses + ganhoIndicadoTresMeses;
+
+    setGanhoSimples({
+      semana: ganhoSimplesSemana,
+      mes: ganhoSimplesMes,
+      tresMeses: ganhoSimplesTresMeses,
+    });
+
+    setGanhoIndicacao({
+      semana: ganhoIndicacaoSemana,
+      mes: ganhoIndicacaoMes,
+      tresMeses: ganhoIndicacaoTresMeses,
+    });
+
+    setGanhoIndicado({
+      semana: ganhoIndicadoSemana,
+      mes: ganhoIndicadoMes,
+      tresMeses: ganhoIndicadoTresMeses,
+    });
+
+    setGanhoTotal(totalTresMeses);
+  }, [investimento]);
 
   const formatarTempo = (segundos: number) => {
     const min = Math.floor(segundos / 60);
@@ -121,6 +177,7 @@ export default function Home() {
         <p>🏝️ Viajar o mundo.</p>
         <p>🏡 Dar uma casa nova pra família.</p>
         <p>🕊️ Ou simplesmente, nunca mais trabalhar para ninguém.</p>
+
         {/* Funil de Conversão Estratégico */}
         <div className="bg-[#0f172a] border border-green-600 rounded-2xl shadow-2xl mt-10 py-10 px-6 text-center space-y-6 max-w-3xl mx-auto">
           <h3 className="text-3xl font-bold text-green-400 select-none">🔓 3 Passos Simples para sua Virada</h3>
@@ -137,8 +194,52 @@ export default function Home() {
           </Button>
           <p className="text-gray-400 text-sm mt-2">100% seguro. Sem promessas vazias.</p>
         </div>
+        {/* Simulador Interativo de Ganhos */}
+        <section className="bg-[#111827] rounded-2xl p-8 mt-12 max-w-3xl mx-auto shadow-2xl text-white">
+          <h3 className="text-2xl font-bold text-yellow-400 mb-6 select-none">💰 Simulador Interativo de Ganhos</h3>
+          <p className="mb-4 text-gray-300">
+            Digite o valor que deseja investir e veja seus ganhos estimados com juros diários e comissões por indicação.
+          </p>
+          <input
+            type="number"
+            min={100}
+            step={50}
+            value={investimento}
+            onChange={(e) => setInvestimento(Number(e.target.value))}
+            className="w-full p-3 rounded-md text-black font-semibold text-lg mb-6 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            placeholder="Digite seu investimento (mínimo R$100)"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            <div className="bg-yellow-700 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105">
+              <h4 className="text-xl font-semibold mb-2">1 Semana</h4>
+              <p>R$ {ganhoSimples.semana.toFixed(2)}</p>
+              <p className="text-sm text-yellow-300">Juros 2,5% ao dia</p>
+              <p>+ R$ {ganhoIndicacao.semana.toFixed(2)} (10% indicação direta)</p>
+              <p>+ R$ {ganhoIndicado.semana.toFixed(2)} (5% indireta)</p>
+            </div>
+            <div className="bg-yellow-700 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105">
+              <h4 className="text-xl font-semibold mb-2">1 Mês</h4>
+              <p>R$ {ganhoSimples.mes.toFixed(2)}</p>
+              <p className="text-sm text-yellow-300">Juros 2,5% ao dia</p>
+              <p>+ R$ {ganhoIndicacao.mes.toFixed(2)} (10% indicação direta)</p>
+              <p>+ R$ {ganhoIndicado.mes.toFixed(2)} (5% indireta)</p>
+            </div>
+            <div className="bg-yellow-700 rounded-lg p-4 shadow-lg transform transition-transform hover:scale-105">
+              <h4 className="text-xl font-semibold mb-2">3 Meses</h4>
+              <p>R$ {ganhoSimples.tresMeses.toFixed(2)}</p>
+              <p className="text-sm text-yellow-300">Juros 2,5% ao dia</p>
+              <p>+ R$ {ganhoIndicacao.tresMeses.toFixed(2)} (10% indicação direta)</p>
+              <p>+ R$ {ganhoIndicado.tresMeses.toFixed(2)} (5% indireta)</p>
+            </div>
+          </div>
+          <div className="mt-8 text-center text-yellow-400 font-bold text-2xl animate-pulse">
+            Ganho Total em 3 meses: R$ {ganhoTotal.toFixed(2)}
+          </div>
+          <p className="mt-4 text-gray-300 text-sm max-w-prose mx-auto">
+            * Considerando 2,5% de rendimento diário composto + comissão de indicação direta (10%) e indireta (5%) para 1 pessoa indicada por dia com investimento fixo de R$200.
+          </p>
+        </section>
       </section>
-
       {/* Ranking Top 10 Zilers */}  
       <div className="w-full bg-[#111827] border border-yellow-600 rounded-2xl p-8 mt-12 text-center shadow-2xl hover:shadow-yellow-500/70 transition-shadow duration-500 overflow-x-auto">
         <h2 className="text-4xl font-extrabold text-yellow-400 mb-6 select-none">🏆 Top 10 Zilers do Mês</h2>
@@ -177,6 +278,7 @@ export default function Home() {
         <li>⚡ Rendimentos Diários com base em estratégias validadas em tempo real.</li>
         <li>🧠 IA Autônoma, treinada para operar nos bastidores enquanto você vive sua vida.</li>
         <li>🌍 Diversificação Inteligente: Wall Street, Bitcoin, Ethereum, Cassinos — tudo no mesmo ecossistema.</li>
+       
         <li>🔒 Segurança, Transparência e Controle direto no seu painel pessoal.</li>
       </ul>
 
