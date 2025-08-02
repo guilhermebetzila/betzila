@@ -58,7 +58,19 @@ export default function Home() {
 
         <p className="text-white font-semibold text-lg">📈 Essa é a BetZila.</p>
 
-        <ul className="text-gray-300 space-y-2 text-left w-full max-w-screen-md px-2">
+        {/* 🚨 ENGENHARIA SOCIAL - LEGIÃO BETZILA */}
+        <div className="w-full max-w-4xl bg-[#111827] border border-green-600 rounded-xl p-6 sm:p-8 mt-6 text-center shadow-xl">
+          <h2 className="text-3xl font-bold text-green-400 mb-2">💎 Legião BetZila</h2>
+          <p className="text-white text-lg sm:text-xl">
+            Você não é apenas um investidor.<br />
+            <strong className="text-green-400">Você é um Ziler</strong>, parte dos <strong className="text-green-500">0.1% mais visionários</strong> que usam inteligência artificial para prosperar enquanto dormem.
+          </p>
+          <p className="text-gray-400 mt-4 text-sm sm:text-base">
+            Sinta-se parte de uma comunidade VIP. Um movimento silencioso que está mudando o jogo financeiro no Brasil.
+          </p>
+        </div>
+
+        <ul className="text-gray-300 space-y-2 text-left w-full max-w-screen-md px-2 mt-6">
           <li>💸 Ganhar Dinheiro Dormindo Não É Mais Um Sonho. É Código.</li>
           <li>⚡ Rendimentos Diários com base em estratégias validadas em tempo real.</li>
           <li>🧠 IA Autônoma, treinada para operar nos bastidores enquanto você vive sua vida.</li>
