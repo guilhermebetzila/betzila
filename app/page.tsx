@@ -137,6 +137,15 @@ return (
   <main className="flex flex-col min-h-screen w-full bg-gradient-to-b from-[#0a0d1a] via-[#121524] to-[#1b1f36] text-gray-100 overflow-x-hidden font-sans">
     <EsteiraSaques />
 
+        <Image
+      src="/img/demo34.png"
+      alt="Robô Chat"
+      width={80}
+      height={80}
+      className="fixed top-4 right-4 z-50 animate-bounce"
+    />
+
+
     <div className="w-full flex justify-center mt-10 mb-6">
       <Image
         src="/img/betzila.png"
