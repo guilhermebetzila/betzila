@@ -4,9 +4,25 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import EsteiraSaques from '@/components/EsteiraSaques';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const router = useRouter();
+
+  // Contadores simulados (poderão ser integrados com backend futuramente)
+  const [zilersAtivos, setZilersAtivos] = useState(1249);
+  const [novosHoje, setNovosHoje] = useState(87);
+  const [lucrosDistribuidos, setLucrosDistribuidos] = useState(18450);
+
+  // Animação simples para parecer “ao vivo”
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setZilersAtivos(prev => prev + Math.floor(Math.random() * 3));
+      setNovosHoje(prev => prev + Math.floor(Math.random() * 2));
+      setLucrosDistribuidos(prev => prev + Math.floor(Math.random() * 50));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <main className="flex flex-col min-h-screen w-full bg-[#0a0d1a] text-white overflow-x-hidden">
@@ -40,7 +56,7 @@ export default function Home() {
         </Button>
       </div>
 
-      {/* Conteúdo principal */}
+      {/* Título e Introdução */}
       <div className="w-full flex flex-col items-center px-4 mt-6 space-y-6 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold text-green-400">
           🌐 Bem-vindo ao Futuro dos Investimentos
@@ -48,17 +64,14 @@ export default function Home() {
         <p className="text-xl font-semibold text-white">
           💥 A Nova Era de Riqueza Começa com um Clique.
         </p>
-
         <p className="text-gray-300 w-full max-w-screen-lg">
           Imagine uma inteligência artificial que nunca dorme.
           Ela estuda padrões, rastreia bilhões de dados em tempo real, detecta os movimentos mais lucrativos do mercado financeiro tradicional, criptoativos e até mesmo as jogadas mais vantajosas dos maiores cassinos online do mundo.
         </p>
-
         <p className="text-green-400 font-bold text-xl">Agora imagine que você pode investir nela.</p>
-
         <p className="text-white font-semibold text-lg">📈 Essa é a BetZila.</p>
 
-        {/* 🚨 ENGENHARIA SOCIAL - LEGIÃO BETZILA */}
+        {/* Legião BetZila */}
         <div className="w-full max-w-4xl bg-[#111827] border border-green-600 rounded-xl p-6 sm:p-8 mt-6 text-center shadow-xl">
           <h2 className="text-3xl font-bold text-green-400 mb-2">💎 Legião BetZila</h2>
           <p className="text-white text-lg sm:text-xl">
@@ -68,8 +81,25 @@ export default function Home() {
           <p className="text-gray-400 mt-4 text-sm sm:text-base">
             Sinta-se parte de uma comunidade VIP. Um movimento silencioso que está mudando o jogo financeiro no Brasil.
           </p>
+
+          {/* Contador ao vivo */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6 text-center">
+            <div>
+              <p className="text-2xl font-bold text-green-400">{zilersAtivos.toLocaleString()}</p>
+              <p className="text-gray-300">Zilers Ativos Agora</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-green-400">{novosHoje}</p>
+              <p className="text-gray-300">Novos Hoje</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-green-400">R$ {lucrosDistribuidos.toLocaleString('pt-BR')}</p>
+              <p className="text-gray-300">Lucros na Última Hora</p>
+            </div>
+          </div>
         </div>
 
+        {/* Benefícios */}
         <ul className="text-gray-300 space-y-2 text-left w-full max-w-screen-md px-2 mt-6">
           <li>💸 Ganhar Dinheiro Dormindo Não É Mais Um Sonho. É Código.</li>
           <li>⚡ Rendimentos Diários com base em estratégias validadas em tempo real.</li>
@@ -78,13 +108,13 @@ export default function Home() {
           <li>🔒 Segurança, Transparência e Controle direto no seu painel pessoal.</li>
         </ul>
 
+        {/* Prova social e call to action */}
         <h2 className="text-white text-xl font-bold mt-6">🎯 Por Que as Pessoas Estão Correndo para a BetZila?</h2>
         <p className="text-gray-300 w-full max-w-screen-md">
           Porque estão cansadas de promessas vazias.<br />
           Porque querem liberdade financeira de verdade.<br />
           Porque sentem que nasceram para mais.
         </p>
-
         <ul className="text-gray-300 space-y-1 text-left w-full max-w-screen-md px-2">
           <li>📍 Pagar dívidas.</li>
           <li>🏝️ Viajar o mundo.</li>
@@ -102,9 +132,7 @@ export default function Home() {
           Não entre para ver. <strong className="text-green-400">Entre para mudar sua vida.</strong>
         </p>
 
-        <p className="text-sm text-gray-400 mt-4">
-          🔒 Seguro. Rápido. Sem pegadinhas.
-        </p>
+        <p className="text-sm text-gray-400 mt-4">🔒 Seguro. Rápido. Sem pegadinhas.</p>
         <p className="text-white text-lg font-bold mt-4">
           O futuro pertence a quem age agora.<br />
           BetZila – O Investimento do Século Está a um Clique.
