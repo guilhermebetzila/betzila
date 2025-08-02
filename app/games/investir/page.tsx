@@ -15,10 +15,8 @@ export default function InvestirPage() {
   async function investirValor() {
     setError(null)
 
-    // Converter o valor digitado para número
     const valor = parseFloat(valorParaInvestir.replace(',', '.'))
 
-    // Validações básicas
     if (isNaN(valor) || valor <= 0) {
       setError('Digite um valor válido maior que zero.')
       return
@@ -31,11 +29,11 @@ export default function InvestirPage() {
     setLoading(true)
 
     try {
-      // Envia o valor para a API
       const res = await fetch('/api/investir', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ valor }),
+        credentials: 'include',  // Envia os cookies junto
       })
       const data = await res.json()
 
