@@ -224,7 +224,7 @@ export default function Home() {
     A única coisa entre você e a <span className="text-[#FFD600] font-bold">liberdade financeira</span> é o próximo clique.
   </p>
   <p>
-    📊 <span className="text-[#7C4DFF] font-bold">A Prova Está Nos Números:</span> Precisão validada de <span className="text-[#00C853] font-bold">87,9%</span> nas decisões da IA. Rendimento médio diário de <span className="text-[#FFD600] font-bold">2,5%</span> — o que representa até <span className="text-[#00C853] font-bold">R$75/dia</span> para quem investe R$3.000.
+    📊 <span className="text-[#7C4DFF] font-bold">A Prova Está Nos Números:</span> Precisão validada de <span className="text-[#00C853] font-bold">87,9%</span> nas decisões da IA. <span className="text-[#FFD600] font-bold">2,5%</span> .
   </p>
   <p>
     ⚠️ Restam apenas <span className="text-red-400 font-bold">{vagasRestantes}</span> vagas disponíveis para novos Zilers neste mês.
