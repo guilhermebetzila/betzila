@@ -10,6 +10,7 @@ import { signOut } from 'next-auth/react';
 const menuItems = [
   { label: '📥 Depositar', action: '/games/depositar' },
   { label: '📤 Saque via Pix', action: '/games/saque' },
+  { label: '📄 Cadastrar CPF', action: '/games/cadastrar-cpf' }, // ← novo botão
   { label: '🚪 Sair', action: 'logout' },
 ];
 

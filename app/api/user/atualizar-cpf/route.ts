@@ -1,34 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
-import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth'; // Para App Router, use sem o /next
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // Caminho certo para App Router
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user?.email) {
+    return NextResponse.json({ message: 'Não autorizado' }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const cpf = body.cpf;
+
+  if (!cpf || typeof cpf !== 'string' || cpf.replace(/\D/g, '').length !== 11) {
+    return NextResponse.json({ message: 'CPF inválido' }, { status: 400 });
+  }
+
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Token ausente' }, { status: 401 });
-    }
-
-    const decoded: any = jwt.verify(token, process.env.NEXTAUTH_SECRET!);
-    const userId = decoded?.id;
-
-    const { cpf } = await req.json();
-
-    if (!cpf || cpf.replace(/[^\d]/g, '').length !== 11) {
-      return NextResponse.json({ error: 'CPF inválido' }, { status: 400 });
-    }
-
     await prisma.user.update({
-      where: { id: userId },
+      where: { email: session.user.email },
       data: { cpf },
     });
 
-    return NextResponse.json({ sucesso: true });
+    return NextResponse.json({ message: 'CPF atualizado com sucesso' });
   } catch (error) {
     console.error('Erro ao atualizar CPF:', error);
-    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
+    return NextResponse.json({ message: 'Erro interno no servidor' }, { status: 500 });
   }
 }
