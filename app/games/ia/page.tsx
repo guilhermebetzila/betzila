@@ -14,12 +14,10 @@ function formatTempo(segundos: number) {
   return `${m}:${s}`;
 }
 
-// Helper para gerar pontos para gráficos
 function gerarPontos(num: number, max: number) {
   return Array.from({ length: num }).map(() => Math.random() * max);
 }
 
-// Gerar valores de barras para gráfico de barras
 function gerarBarras(num: number, max: number) {
   return Array.from({ length: num }).map(() => Math.random() * max);
 }
@@ -27,7 +25,7 @@ function gerarBarras(num: number, max: number) {
 function randomGainLoss() {
   const percentNum = Math.random() * 12 - 5;
   const percent = percentNum.toFixed(2);
-  const isGain = percentNum >= 0; // corrigido: comparar number com number
+  const isGain = percentNum >= 0;
   return {
     text: `${isGain ? '📈' : '📉'} ${isGain ? '+' : ''}${percent}%`,
     gain: isGain,
@@ -43,7 +41,6 @@ export default function IaTrabalhandoPage() {
   const [resultadoAtual, setResultadoAtual] = useState<{ text: string; gain: boolean } | null>(null);
   const [notificacoes, setNotificacoes] = useState<{ nome: string; lucro: number; badge: string }[]>([]);
 
-  // Dados dos módulos
   const [graficoMercado, setGraficoMercado] = useState<number[]>(gerarPontos(20, 100));
   const [deepWebData, setDeepWebData] = useState<string[]>([
     'Buscando fontes anônimas...',
@@ -63,14 +60,11 @@ export default function IaTrabalhandoPage() {
     }, 1000);
 
     const updateInterval = setInterval(() => {
-      // Atualiza ganho diário simulado
       const ganho = +(Math.random() * 0.05).toFixed(4);
       setGanhoDia((g) => +(g + ganho).toFixed(4));
 
-      // Resultado ganho/perda atual
       setResultadoAtual(randomGainLoss());
 
-      // Status operacional (frases variadas)
       const fases = [
         'Analisando o mercado...',
         'Validando sinais...',
@@ -81,7 +75,6 @@ export default function IaTrabalhandoPage() {
       ];
       setStatusOperacao(fases[Math.floor(Math.random() * fases.length)]);
 
-      // Atualiza notificações sociais
       const nomesAleatorios = ['Paulo', 'Juliana', 'Carlos', 'Amanda', 'Thiago', 'Fernanda'];
       const badgeOptions = ['Diamante', 'Platina', 'Ouro', 'Prata', 'Bronze'];
       if (Math.random() < 0.6) {
@@ -96,10 +89,8 @@ export default function IaTrabalhandoPage() {
         });
       }
 
-      // Atualiza vagas lentamente
       setVagasRestantes((v) => (v > 0 && Math.random() < 0.1 ? v - 1 : v));
 
-      // Varia precisão IA
       setPrecisao((p) => {
         let novo = p + (Math.random() * 0.4 - 0.2);
         if (novo < 85) novo = 85;
@@ -107,11 +98,9 @@ export default function IaTrabalhandoPage() {
         return +novo.toFixed(2);
       });
 
-      // Atualiza dados dos gráficos para dar sensação de movimento
       setGraficoMercado((g) => [...g.slice(1), Math.random() * 100]);
       setGraficoFinanceiro((g) => [...g.slice(1), Math.random() * 80]);
 
-      // Atualiza dados Deep Web (simula rolagem de mensagens)
       setDeepWebData((d) => {
         const msgs = [
           'Buscando fontes anônimas...',
@@ -126,7 +115,6 @@ export default function IaTrabalhandoPage() {
         return arr.slice(0, 5);
       });
 
-      // Atualiza monitoramento de bets
       setMonitorBets((bets) =>
         bets.map((bet) => {
           const oddsChange = (Math.random() - 0.5) * 0.1;
@@ -146,11 +134,14 @@ export default function IaTrabalhandoPage() {
 
   return (
     <main className="flex flex-col items-center justify-start min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-6 space-y-10 overflow-y-auto">
-      <h1 className="text-5xl font-extrabold text-green-400 mb-2 drop-shadow-lg">🤖 IA BetZila trabalhando...</h1>
+      <div className="flex items-center gap-3 mb-2">
+        <img src="/img/robo.png" alt="IA BetZila" className="w-12 h-12 drop-shadow-lg" />
+        <h1 className="text-5xl font-extrabold text-green-400 drop-shadow-lg">IA BetZila trabalhando...</h1>
+      </div>
       <p className="text-gray-300 max-w-xl text-center text-lg italic mb-8">
         Você é o protagonista dessa revolução financeira. A IA BetZila é seu mentor, seu Yoda nesta caminhada.
       </p>
-
+      
       {/* Indicadores gerais */}
       <section className="flex flex-col md:flex-row justify-center gap-10 w-full max-w-7xl">
         {/* Ativação IA */}
