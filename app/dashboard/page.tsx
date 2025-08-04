@@ -54,32 +54,6 @@ export default function DashboardPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (audioAtivado && !audioRef.current) {
-      const audio = new Audio('/audio/triunfo.mp3');
-      audio.loop = true;
-      audio.volume = 0.25;
-      audio.play().catch((err) => {
-        console.warn('Autoplay bloqueado:', err);
-      });
-      audioRef.current = audio;
-    }
-
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, [audioAtivado]);
-
-  const toggleMute = () => {
-    if (audioRef.current) {
-      audioRef.current.muted = !mutado;
-      setMutado(!mutado);
-    }
-  };
-
-  useEffect(() => {
     setSaques(gerarSaquesAleatorios());
 
     const fetchIndicacoes = async () => {
@@ -129,7 +103,18 @@ export default function DashboardPage() {
         {/* Botões de Som */}
         {!audioAtivado && (
           <button
-            onClick={() => setAudioAtivado(true)}
+            onClick={() => {
+              if (!audioRef.current) {
+                const audio = new Audio('/audio/triunfo.mp3');
+                audio.loop = true;
+                audio.volume = 0.25;
+                audio.play().catch((err) => {
+                  console.warn('Erro ao tocar áudio:', err);
+                });
+                audioRef.current = audio;
+                setAudioAtivado(true);
+              }
+            }}
             className="fixed top-4 right-4 z-50 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg shadow-lg text-sm font-semibold"
           >
             🔊 Ativar Som
@@ -137,10 +122,16 @@ export default function DashboardPage() {
         )}
         {audioAtivado && (
           <button
-            onClick={toggleMute}
-            className="fixed top-4 right-4 z-50 bg-gray-800 border border-green-400 px-4 py-2 rounded-lg shadow-md text-sm"
+            onClick={() => {
+              if (audioRef.current) {
+                const novoEstado = !mutado;
+                audioRef.current.muted = novoEstado;
+                setMutado(novoEstado);
+              }
+            }}
+            className="fixed top-16 right-4 z-50 bg-gray-800 border border-green-400 px-4 py-2 rounded-lg shadow-md text-sm"
           >
-            {mutado ? '🔇' : '🔊'}
+            {mutado ? '🔇 Mutado' : '🔊 Som Ativo'}
           </button>
         )}
 
