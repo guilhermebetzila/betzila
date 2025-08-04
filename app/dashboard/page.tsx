@@ -10,7 +10,6 @@ import { signOut } from 'next-auth/react';
 const menuItems = [
   { label: '📥 Depositar', action: '/games/depositar' },
   { label: '📤 Saque via Pix', action: '/games/saque' },
-  { label: '#️⃣ Jogar Bingo', action: '/games/jogo-da-velha' },
   { label: '🚪 Sair', action: 'logout' },
 ];
 
