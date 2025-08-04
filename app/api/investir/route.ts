@@ -1,3 +1,4 @@
+// Arquivo: /app/api/investir/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
@@ -11,10 +12,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
     }
 
-    const userId = Number(session.user.id) // Conversão para número
+    const userId = Number(session.user.id)
 
+    // Busca o usuário atual junto com quem ele indicou (não é necessário para pontos indiretos)
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
+      select: {
+        id: true,
+        saldo: true,
+        valorInvestido: true,
+        pontos: true,
+        indicadoPorId: true,
+      },
     })
 
     if (!user) {
@@ -33,17 +42,20 @@ export async function POST(req: NextRequest) {
     }
 
     const novoSaldo = user.saldo - valor
-    const novoInvestimento = (user.valorInvestido ?? 0) + valor
+    const novoInvestimento = user.valorInvestido + valor
+    const pontosGanhos = Math.floor(valor / 2)
 
+    // Atualiza saldo, valor investido e pontos do usuário
     const usuarioAtualizado = await prisma.user.update({
       where: { id: userId },
       data: {
         saldo: novoSaldo,
         valorInvestido: novoInvestimento,
+        pontos: { increment: pontosGanhos },
       },
     })
 
-    // ✅ Salvar o investimento no histórico
+    // Salva o investimento no histórico
     await prisma.investimento.create({
       data: {
         userId,
@@ -51,11 +63,37 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    // Atualiza pontos do indicado direto, se existir
+    if (user.indicadoPorId) {
+      await prisma.user.update({
+        where: { id: user.indicadoPorId },
+        data: {
+          pontos: { increment: pontosGanhos },
+        },
+      })
+
+      // Atualiza pontos do indicado indireto, se existir
+      const indicadorDireto = await prisma.user.findUnique({
+        where: { id: user.indicadoPorId },
+        select: { indicadoPorId: true },
+      })
+
+      if (indicadorDireto?.indicadoPorId) {
+        await prisma.user.update({
+          where: { id: indicadorDireto.indicadoPorId },
+          data: {
+            pontos: { increment: pontosGanhos },
+          },
+        })
+      }
+    }
+
     return NextResponse.json({
       message: 'Valor investido com sucesso!',
       user: {
         saldo: usuarioAtualizado.saldo,
         valorInvestido: usuarioAtualizado.valorInvestido,
+        pontos: usuarioAtualizado.pontos,
       },
     })
   } catch (error) {
