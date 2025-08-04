@@ -45,9 +45,18 @@ const comentariosEsteira = [
   '💖 "Dei orgulho pros meus pais. Finalmente ajudo em casa." — Camila, AM',
 ];
 
+// --- Aqui criamos uma tipagem que adiciona o codigoIndicacao opcional para evitar erro ---
+type UserWithCodigoIndicacao = typeof useAuth extends () => { user: infer U }
+  ? U & { codigoIndicacao?: string }
+  : { codigoIndicacao?: string };
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+
+  // Fazemos um cast do user para o tipo que inclui codigoIndicacao
+  const userTyped = user as UserWithCodigoIndicacao;
+
   const [totalIndicados, setTotalIndicados] = useState<number>(0);
   const [saldo, setSaldo] = useState<number>(0);
   const [saques, setSaques] = useState<string[]>([]);
@@ -124,6 +133,10 @@ export default function DashboardPage() {
   if (loading) return <p className="text-center mt-10 text-white">Carregando...</p>;
   if (!user) return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
+  // Monta o link de indicação usando codigoIndicacao, se não tiver, usa id do usuário
+  const codigoIndicacao = userTyped.codigoIndicacao || userTyped.id || '';
+  const linkIndicacao = `https://betzila.com/registro?indicador=${encodeURIComponent(codigoIndicacao)}`;
+
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative">
@@ -151,16 +164,41 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Saudação */}
+        {/* Saudação e saldo */}
         <div className="mb-6 max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold flex items-center gap-4">
-            Olá, {user.nome || user.email}
+            Olá, {userTyped.nome || userTyped.email}
             <span className="bg-green-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
               Saldo: R$ {saldo.toFixed(2)}
             </span>
           </h1>
           <p className="text-gray-400 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
           <p className="text-green-400 mt-2">📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!</p>
+
+          {/* Código de Indicação */}
+          <div className="mt-6 bg-gray-800 rounded-lg p-4 border border-green-500 shadow-md">
+            <h3 className="text-white text-sm font-semibold mb-2">📲 Seu Código de Indicação:</h3>
+            <div className="flex items-center justify-between bg-gray-900 text-green-400 px-3 py-2 rounded-md font-mono text-sm">
+              <a
+                href={linkIndicacao}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate underline hover:text-green-300"
+              >
+                {linkIndicacao}
+              </a>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(linkIndicacao);
+                }}
+                className="ml-4 bg-green-600 hover:bg-green-700 text-black font-semibold px-3 py-1 rounded transition-colors text-xs"
+              >
+                Copiar
+              </button>
+            </div>
+            <p className="text-gray-400 text-xs mt-1">Compartilhe este link com amigos e ganhe bônus por cada novo Ziler indicado.</p>
+          </div>
+
           <div className="mt-4">
             <p className="text-sm text-gray-300 mb-1">🎁 Pontos Acumulados: {pontos} pontos</p>
             <div className="w-full bg-gray-700 rounded-full h-4">
