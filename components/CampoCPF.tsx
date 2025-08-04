@@ -1,71 +1,66 @@
-'use client';
+'use client'
 
-import React, { useState, useEffect } from 'react';
-import InputMask from 'react-input-mask';
+import React, { useState } from 'react'
+import InputMask from 'react-input-mask'
 
-type Props = {
-  cpfInicial?: string;
-  onSalvar: (cpf: string) => void;
-};
+interface CampoCPFProps {
+  cpfInicial?: string
+  onSalvar: (cpf: string) => void
+}
 
-export default function CampoCPF({ cpfInicial = '', onSalvar }: Props) {
-  const [cpf, setCpf] = useState(cpfInicial);
-  const [editando, setEditando] = useState(!cpfInicial);
-  const [erro, setErro] = useState('');
-
-  useEffect(() => {
-    setCpf(cpfInicial);
-    setEditando(!cpfInicial);
-  }, [cpfInicial]);
+export default function CampoCPF({ cpfInicial = '', onSalvar }: CampoCPFProps) {
+  const [cpf, setCpf] = useState(cpfInicial)
+  const [salvando, setSalvando] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
 
   const validarCPF = (valor: string) => {
-    const somenteNumeros = valor.replace(/[^\d]/g, '');
-    return somenteNumeros.length === 11;
-  };
+    const cpfLimpo = valor.replace(/[^\d]/g, '')
+    return cpfLimpo.length === 11
+  }
 
-  const salvar = () => {
+  const handleSalvar = async () => {
     if (!validarCPF(cpf)) {
-      setErro('CPF inválido');
-      return;
+      setErro('CPF inválido. Digite os 11 dígitos corretamente.')
+      return
     }
-    setErro('');
-    setEditando(false);
-    onSalvar(cpf);
-  };
+
+    setSalvando(true)
+    setErro(null)
+    try {
+      await onSalvar(cpf)
+    } catch {
+      setErro('Erro ao salvar CPF.')
+    } finally {
+      setSalvando(false)
+    }
+  }
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg shadow border border-green-500 max-w-md mx-auto mb-6">
-      <label className="block text-sm font-semibold text-white mb-2">CPF (para depósitos via Pix)</label>
-
-      {editando ? (
-        <div className="flex gap-2 items-center">
-          <InputMask
-            mask="999.999.999-99"
-            value={cpf}
-            onChange={(e) => setCpf(e.target.value)}
-            className="bg-gray-700 text-white p-2 rounded w-full outline-none"
-            placeholder="Digite seu CPF"
-          />
-          <button
-            onClick={salvar}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold"
-          >
-            Salvar
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-center justify-between">
-          <span className="text-green-400">{cpf}</span>
-          <button
-            onClick={() => setEditando(true)}
-            className="text-sm text-blue-400 hover:underline"
-          >
-            Editar
-          </button>
-        </div>
-      )}
-
-      {erro && <p className="text-red-400 text-sm mt-2">{erro}</p>}
+    <div className="bg-gray-800 p-4 rounded-xl shadow-md max-w-md mx-auto mt-6 border border-green-500">
+      <label htmlFor="cpf" className="block text-sm font-medium text-gray-300 mb-2">
+        🧾 Digite seu CPF para continuar operando:
+      </label>
+      <InputMask
+        mask="999.999.999-99"
+        value={cpf}
+        onChange={(e) => setCpf(e.target.value)}
+      >
+        {/* Apenas o input, sem função */}
+        <input
+          id="cpf"
+          type="text"
+          placeholder="000.000.000-00"
+          className="w-full p-3 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </InputMask>
+      {erro && <p className="text-red-500 text-sm mt-2">{erro}</p>}
+      <button
+        onClick={handleSalvar}
+        disabled={salvando}
+        className="mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md w-full disabled:opacity-60"
+      >
+        {salvando ? 'Salvando...' : '💾 Salvar CPF'}
+      </button>
     </div>
-  );
+  )
 }
