@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/context/AuthContext';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import IAWorkingPanel from '@/components/IAWorkingPanel';
@@ -49,6 +49,35 @@ export default function DashboardPage() {
   const [totalIndicados, setTotalIndicados] = useState<number>(0);
   const [saldo, setSaldo] = useState<number>(0);
   const [saques, setSaques] = useState<string[]>([]);
+  const [audioAtivado, setAudioAtivado] = useState(false);
+  const [mutado, setMutado] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (audioAtivado && !audioRef.current) {
+      const audio = new Audio('/audio/triunfo.mp3');
+      audio.loop = true;
+      audio.volume = 0.25;
+      audio.play().catch((err) => {
+        console.warn('Autoplay bloqueado:', err);
+      });
+      audioRef.current = audio;
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, [audioAtivado]);
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !mutado;
+      setMutado(!mutado);
+    }
+  };
 
   useEffect(() => {
     setSaques(gerarSaquesAleatorios());
@@ -95,10 +124,28 @@ export default function DashboardPage() {
 
   return (
     <LayoutWrapper>
-      <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative">
+
+        {/* Botões de Som */}
+        {!audioAtivado && (
+          <button
+            onClick={() => setAudioAtivado(true)}
+            className="fixed top-4 right-4 z-50 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg shadow-lg text-sm font-semibold"
+          >
+            🔊 Ativar Som
+          </button>
+        )}
+        {audioAtivado && (
+          <button
+            onClick={toggleMute}
+            className="fixed top-4 right-4 z-50 bg-gray-800 border border-green-400 px-4 py-2 rounded-lg shadow-md text-sm"
+          >
+            {mutado ? '🔇' : '🔊'}
+          </button>
+        )}
 
         {/* MENU DE AÇÕES */}
-        <div className="mb-6 flex justify-center gap-4 flex-wrap">
+        <div className="mb-6 flex justify-center gap-4 flex-wrap mt-4">
           {menuItems.map((item, index) => (
             <button
               key={index}
