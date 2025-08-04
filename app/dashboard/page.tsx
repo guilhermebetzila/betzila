@@ -8,10 +8,11 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 
 const menuItems = [
+  { label: '🤖 IA', action: '/games/ia' },                // Botão IA adicionado
   { label: '📥 Depositar', action: '/games/depositar' },
   { label: '📤 Saque via Pix', action: '/games/saque' },
   { label: '📄 Cadastrar CPF', action: '/games/cadastrar-cpf' },
-  { label: '🔐 Ativar 2FA', action: '/2fa/setup' }, // ← Adicionado aqui
+  // Removi o botão 2FA conforme pedido
   { label: '🚪 Sair', action: 'logout' },
 ];
 
