@@ -1,25 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import jwt from 'jsonwebtoken'
-import { cookies } from 'next/headers'
+import { getServerSession } from "next-auth"
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get('token')?.value
+    const session = await getServerSession(authOptions)
 
-    if (!token) {
-      return NextResponse.json({ error: 'Token ausente' }, { status: 401 })
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
     }
 
-    const decoded: any = jwt.verify(token, process.env.NEXTAUTH_SECRET!) // 👈 alterado aqui
-    const userId = decoded?.id
+    const userId = Number(session.user.id) // Conversão para número
 
-    if (!userId) {
-      return NextResponse.json({ error: 'Token inválido' }, { status: 401 })
-    }
-
-    const user = await prisma.user.findUnique({ where: { id: userId } })
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    })
 
     if (!user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
