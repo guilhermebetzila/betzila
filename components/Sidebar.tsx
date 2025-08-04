@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   FaChartLine,
   FaRocket,
@@ -11,11 +12,21 @@ import {
 export function Sidebar() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-gray-900 text-white flex justify-around items-center h-16 z-50 border-t border-gray-800 md:hidden">
-      <SidebarItem icon={<FaChartLine />} label="Painel" />
-      <SidebarItem icon={<FaRocket />} label="IA" />
-      <SidebarItem icon={<FaWallet />} label="Investir" />
-      <SidebarItem icon={<FaBrain />} label="Como Funciona" />
-      <SidebarItem icon={<FaGlobe />} label="Ecosistema" />
+      <Link href="/dashboard">
+        <SidebarItem icon={<FaChartLine />} label="Painel" />
+      </Link>
+      <Link href="/games/ia">
+        <SidebarItem icon={<FaRocket />} label="IA" />
+      </Link>
+      <Link href="/games/investir">
+        <SidebarItem icon={<FaWallet />} label="Investir" />
+      </Link>
+      <Link href="/como-funciona">
+        <SidebarItem icon={<FaBrain />} label="Como Funciona" />
+      </Link>
+      <Link href="/ecossistema">
+        <SidebarItem icon={<FaGlobe />} label="Ecosistema" />
+      </Link>
     </nav>
   );
 }
