@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
-import { cookies } from 'next/headers'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get('token')?.value
+    const session = await getServerSession(authOptions)
 
-    if (!token) {
+    if (!session) {
       return NextResponse.json({ authenticated: false }, { status: 401 })
     }
 
-    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!)
-    return NextResponse.json({ authenticated: true, user: decoded })
+    return NextResponse.json({
+      authenticated: true,
+      user: session.user,
+    })
   } catch (error) {
-    return NextResponse.json({ authenticated: false }, { status: 401 })
+    console.error('[ERRO ME]', error)
+    return NextResponse.json({ authenticated: false }, { status: 500 })
   }
 }

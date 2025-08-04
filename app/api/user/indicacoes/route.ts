@@ -1,23 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
-import jwt from 'jsonwebtoken'
-import { cookies } from 'next/headers'
 
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get('token')?.value
+    const session = await getServerSession(authOptions)
 
-    if (!token) {
-      return NextResponse.json({ erro: 'Token não encontrado' }, { status: 401 })
-    }
-
-    const decoded: any = jwt.verify(token, process.env.NEXTAUTH_SECRET!) // 👈 ajuste aqui
-    const userId = decoded?.id
-
-    if (!userId) {
+    if (!session || !session.user?.id) {
       return NextResponse.json({ erro: 'Usuário não autenticado' }, { status: 401 })
     }
+
+    const userId = Number(session.user.id) // 👈 conversão importante
 
     const totalIndicados = await prisma.user.count({
       where: {
