@@ -24,6 +24,16 @@ model User {
 
   cartelas       Cartela[]
   investimentos  Investimento[]
+  depositos      Deposito[]  // Relacionamento para depósitos
+}
+
+model Deposito {
+  id        Int      @id @default(autoincrement())
+  valor     Float
+  criadoEm  DateTime @default(now())
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Investimento {

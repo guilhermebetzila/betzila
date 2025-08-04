@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 
@@ -9,8 +9,26 @@ export default function Depositar() {
   const [copiacola, setCopiacola] = useState('')
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(false)
+  const [historico, setHistorico] = useState<any[]>([]) // histórico de depósitos
 
   const { data: session } = useSession()
+
+  useEffect(() => {
+    buscarHistorico()
+  }, [])
+
+  // Função para buscar histórico
+  async function buscarHistorico() {
+    try {
+      const res = await fetch('/api/depositos/historico', { credentials: 'include' })
+      if (res.ok) {
+        const dados = await res.json()
+        setHistorico(dados)
+      }
+    } catch (error) {
+      console.error('Erro ao buscar histórico:', error)
+    }
+  }
 
   const gerarPix = async () => {
     setErro('')
@@ -18,12 +36,15 @@ export default function Depositar() {
     setLoading(true)
 
     try {
-      const response = await axios.post('/api/pix', { // ALTEREI AQUI: rota corrigida
+      const response = await axios.post('/api/pix', {
         amount: Number(valor),
         email: session?.user?.email,
       })
 
       setCopiacola(response.data.copia_e_cola)
+      setValor('') // limpa campo após gerar
+
+      await buscarHistorico() // atualiza histórico após gerar Pix
     } catch (error) {
       console.error('Erro ao criar pagamento:', error)
       setErro('Erro ao criar pagamento')
@@ -42,7 +63,7 @@ export default function Depositar() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white px-4 py-10">
       <h1 className="text-2xl font-bold mb-2">🕹️ Tela de Depósito</h1>
       <p className="mb-6 text-sm">Adicione saldo à sua conta via Pix.</p>
 
@@ -87,6 +108,22 @@ export default function Depositar() {
             </button>
           </div>
         )}
+
+        {/* Histórico de Depósitos */}
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold text-green-400 mb-4">📜 Histórico de Depósitos</h2>
+          {historico.length === 0 ? (
+            <p className="text-gray-400">Nenhum depósito registrado ainda.</p>
+          ) : (
+            <ul className="space-y-2 max-h-60 overflow-y-auto pr-2">
+              {historico.map((item) => (
+                <li key={item.id} className="text-sm text-gray-200 border-b border-gray-600 pb-2">
+                  💵 R$ {item.valor.toFixed(2)} – {new Date(item.criadoEm).toLocaleString('pt-BR')}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   )
