@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const SECRET = process.env.JWT_SECRET || 'sua-chave-super-secreta';
+const SECRET = process.env.NEXTAUTH_SECRET || 'sua-chave-super-secreta'; // 👈 alterado aqui
 
 export function signToken(payload: { id: number }) {
   return jwt.sign(payload, SECRET, { expiresIn: '7d' });

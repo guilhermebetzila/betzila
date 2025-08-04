@@ -5,14 +5,14 @@ import jwt from 'jsonwebtoken'
 
 export async function GET() {
   try {
-    const cookieStore = await cookies() // <-- usar await aqui
+    const cookieStore = await cookies() // <-- manter o await
     const token = cookieStore.get('token')?.value
 
     if (!token) {
       return NextResponse.json({ error: 'Token ausente' }, { status: 401 })
     }
 
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
+    const decoded: any = jwt.verify(token, process.env.NEXTAUTH_SECRET!) // 👈 alterado aqui
     const userName = decoded?.nome
 
     if (!userName) {

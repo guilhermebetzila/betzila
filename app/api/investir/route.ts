@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Token ausente' }, { status: 401 })
     }
 
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!)
+    const decoded: any = jwt.verify(token, process.env.NEXTAUTH_SECRET!) // 👈 alterado aqui
     const userId = decoded?.id
 
     if (!userId) {
@@ -25,7 +25,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
 
-    // Extrair valor enviado no corpo da requisição
     const body = await req.json()
     const valor = parseFloat(body.valor)
 
@@ -37,7 +36,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Saldo insuficiente para esse valor' }, { status: 400 })
     }
 
-    // Atualiza saldo e valorInvestido subtraindo o valor do saldo e somando ao valorInvestido
     const novoSaldo = user.saldo - valor
     const novoInvestimento = (user.valorInvestido ?? 0) + valor
 
