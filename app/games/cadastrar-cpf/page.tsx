@@ -86,6 +86,13 @@ export default function CadastrarCpfPage() {
         >
           {loading ? 'Salvando...' : 'Salvar CPF'}
         </button>
+
+        {/* Mostra o CPF salvo abaixo do botão, só se existir */}
+        {cpf && (
+          <p className="mt-4 text-green-400 text-center select-none">
+            CPF salvo: <span className="font-mono">{cpf}</span>
+          </p>
+        )}
       </div>
     </main>
   );
