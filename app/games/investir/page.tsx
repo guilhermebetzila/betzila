@@ -22,11 +22,13 @@ export default function InvestirPage() {
       }
       const data = await res.json();
       if (!data.user?.cpf || data.user.cpf.replace(/[^\d]/g, '').length !== 11) {
-        alert('❌ Por favor, cadastre um CPF válido em seu painel antes de investir.');
-        router.push('/dashboard');
-      } else {
-        setCpf(data.user.cpf);
+        alert('❌ Por favor, cadastre um CPF válido antes de investir.');
+        router.push('/games/cadastrar-cpf'); // redireciona para cadastrar CPF
+        return;
       }
+      setCpf(data.user.cpf);
+      setSaldo(data.user.saldo || 1500);
+      setValorInvestido(data.user.valorInvestido || 0);
     }
 
     async function buscarHistorico() {
@@ -146,7 +148,6 @@ export default function InvestirPage() {
 
         {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
 
-        {/* Histórico de Investimentos */}
         <div className="mt-8">
           <h3 className="text-xl font-semibold text-green-400 mb-4">📜 Histórico de Investimentos</h3>
           {historico.length === 0 ? (

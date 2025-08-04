@@ -1,21 +1,31 @@
+// /app/api/me/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   try {
-    // Extrai o token JWT da request, usando a chave secreta
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!token) {
+    if (!token?.email) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    // Você pode retornar o token (que tem dados do usuário), ou buscar dados adicionais no banco
+    // Buscar usuário no banco para pegar dados completos, como CPF
+    const user = await prisma.user.findUnique({
+      where: { email: token.email },
+      select: { id: true, email: true, cpf: true, saldo: true, valorInvestido: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ authenticated: false }, { status: 401 });
+    }
 
     return NextResponse.json({
       authenticated: true,
-      user: token, // token contém info do usuário (id, email, name etc)
+      user,
     });
   } catch (error) {
     console.error("[ERRO ME]", error);

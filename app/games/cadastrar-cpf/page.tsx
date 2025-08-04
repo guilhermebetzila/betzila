@@ -48,10 +48,11 @@ export default function CadastrarCpfPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cpf }),
+        credentials: 'include',
       });
       if (res.ok) {
         alert('✅ CPF salvo com sucesso!');
-        router.push('/dashboard');
+        router.push('/investir'); // redireciona para investir após salvar
       } else {
         alert('❌ Erro ao salvar CPF.');
       }
