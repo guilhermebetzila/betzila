@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/context/AuthContext';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import IAWorkingPanel from '@/components/IAWorkingPanel';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import CampoCPF from '@/components/CampoCPF';
 
 const menuItems = [
   { label: '📥 Depositar', action: '/games/depositar' },
@@ -50,12 +49,6 @@ export default function DashboardPage() {
   const [totalIndicados, setTotalIndicados] = useState<number>(0);
   const [saldo, setSaldo] = useState<number>(0);
   const [saques, setSaques] = useState<string[]>([]);
-  const [audioAtivado, setAudioAtivado] = useState(false);
-  const [mutado, setMutado] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Estado e função para CPF
-  const [cpf, setCpf] = useState<string>('');
 
   useEffect(() => {
     setSaques(gerarSaquesAleatorios());
@@ -80,22 +73,9 @@ export default function DashboardPage() {
       }
     };
 
-    const fetchCPF = async () => {
-      try {
-        const res = await fetch('/api/me');
-        const data = await res.json();
-        if (res.ok && data?.user?.cpf) {
-          setCpf(data.user.cpf);
-        }
-      } catch (error) {
-        console.error('Erro ao buscar CPF:', error);
-      }
-    };
-
     if (user) {
       fetchIndicacoes();
       fetchSaldo();
-      fetchCPF();
     }
   }, [user]);
 
@@ -113,46 +93,9 @@ export default function DashboardPage() {
   if (loading) return <p className="text-center mt-10 text-white">Carregando...</p>;
   if (!user) return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
-  const cpfValido = cpf && cpf.replace(/[^\d]/g, '').length === 11;
-
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative">
-
-        {/* Botões de Som */}
-        {!audioAtivado && (
-          <button
-            onClick={() => {
-              if (!audioRef.current) {
-                const audio = new Audio('/audio/triunfo.mp3');
-                audio.loop = true;
-                audio.volume = 0.25;
-                audio.play().catch((err) => {
-                  console.warn('Erro ao tocar áudio:', err);
-                });
-                audioRef.current = audio;
-                setAudioAtivado(true);
-              }
-            }}
-            className="fixed top-4 right-4 z-50 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg shadow-lg text-sm font-semibold"
-          >
-            🔊 Ativar Som
-          </button>
-        )}
-        {audioAtivado && (
-          <button
-            onClick={() => {
-              if (audioRef.current) {
-                const novoEstado = !mutado;
-                audioRef.current.muted = novoEstado;
-                setMutado(novoEstado);
-              }
-            }}
-            className="fixed top-16 right-4 z-50 bg-gray-800 border border-green-400 px-4 py-2 rounded-lg shadow-md text-sm"
-          >
-            {mutado ? '🔇 Mutado' : '🔊 Som Ativo'}
-          </button>
-        )}
 
         {/* MENU DE AÇÕES */}
         <div className="mb-6 flex justify-center gap-4 flex-wrap mt-4">
@@ -167,7 +110,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Saudação, saldo, indicações e CPF */}
+        {/* Saudação, saldo, indicações */}
         <div className="mb-6 max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user.nome || user.email}
@@ -185,31 +128,6 @@ export default function DashboardPage() {
               <div className="bg-green-400 h-4 rounded-full" style={{ width: `${progresso}%` }}></div>
             </div>
             <p className="text-xs text-gray-400 mt-1">Você precisa de 1000 pontos para desbloquear o próximo prêmio</p>
-          </div>
-
-          {/* Campo para CPF */}
-          <div className="mt-6">
-            <CampoCPF
-              cpfInicial={cpf}
-              onSalvar={async (novoCpf) => {
-                try {
-                  const res = await fetch('/api/user/atualizar-cpf', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cpf: novoCpf }),
-                  });
-                  if (res.ok) {
-                    setCpf(novoCpf);
-                    alert('✅ CPF salvo com sucesso!');
-                  } else {
-                    alert('❌ Erro ao salvar CPF.');
-                  }
-                } catch (e) {
-                  console.error('Erro ao salvar CPF:', e);
-                  alert('❌ Erro ao salvar CPF.');
-                }
-              }}
-            />
           </div>
         </div>
 
@@ -256,21 +174,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Botão Investir com bloqueio se CPF inválido */}
+        {/* Botão Investir */}
         <div className="flex justify-center mb-8">
           <button
-            onClick={() => {
-              if (!cpfValido) {
-                alert('❌ Por favor, cadastre um CPF válido antes de investir.');
-                return;
-              }
-              router.push('/games/investir');
-            }}
-            className={`${
-              !cpfValido
-                ? 'bg-gray-500 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600'
-            } text-black font-semibold py-2 px-5 rounded-lg shadow-md transition-all text-base`}
+            onClick={() => router.push('/games/investir')}
+            className="bg-green-500 hover:bg-green-600 text-black font-semibold py-2 px-5 rounded-lg shadow-md transition-all text-base"
           >
             💹 Investir Agora
           </button>

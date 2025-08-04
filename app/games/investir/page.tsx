@@ -75,7 +75,7 @@ export default function InvestirPage() {
         setSaldo(data.user.saldo);
         setValorInvestido(data.user.valorInvestido);
         setValorParaInvestir('');
-        await atualizarHistorico(); // atualizar a lista após investir
+        await atualizarHistorico();
       }
     } catch (err) {
       setError('Erro na conexão.');
