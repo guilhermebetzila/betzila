@@ -14,30 +14,38 @@ export const authOptions: NextAuthOptions = {
         senha: { label: "Senha", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.senha) {
-          throw new Error("Preencha todos os campos");
+        const email = credentials?.email
+        const senha = credentials?.senha
+
+        if (!email || !senha) {
+          return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email }
+          });
 
-        if (!user || !user.senha) {
-          throw new Error("Email não encontrado");
+          if (!user || !user.senha) {
+            return null
+          }
+
+          const senhaCorreta = await compare(senha, user.senha);
+
+          if (!senhaCorreta) {
+            return null
+          }
+
+          return {
+            id: user.id.toString(),
+            nome: user.nome,
+            email: user.email,
+            saldo: user.saldo
+          };
+        } catch (error) {
+          console.error("Erro no authorize:", error)
+          return null
         }
-
-        const senhaCorreta = await compare(credentials.senha, user.senha);
-
-        if (!senhaCorreta) {
-          throw new Error("Senha incorreta");
-        }
-
-        return {
-          id: user.id.toString(),
-          nome: user.nome,
-          email: user.email,
-          saldo: user.saldo
-        };
       }
     })
   ],

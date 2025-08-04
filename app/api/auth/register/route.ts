@@ -1,4 +1,3 @@
-// app/api/auth/register/route.ts
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcrypt'
@@ -6,7 +5,7 @@ import bcrypt from 'bcrypt'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { name, email, password, indicador } = body
+    const { nome, email, password, indicador } = body
 
     // Verifica se o email já existe
     const userExists = await prisma.user.findUnique({
@@ -26,7 +25,7 @@ export async function POST(req: Request) {
     // Cria o novo usuário
     const novoUsuario = await prisma.user.create({
       data: {
-        nome: name,
+        nome,
         email,
         senha: senhaCriptografada,
         indicador: indicador || null, // campo opcional
