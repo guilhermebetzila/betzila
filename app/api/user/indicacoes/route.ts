@@ -11,12 +11,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ erro: 'Usuário não autenticado' }, { status: 401 })
     }
 
-    const userId = Number(session.user.id) // 👈 conversão importante
+    const userId = Number(session.user.id)
 
     const totalIndicados = await prisma.user.count({
-      where: {
-        indicadoPorId: userId,
-      },
+      where: { indicadoPorId: userId },
     })
 
     return NextResponse.json({

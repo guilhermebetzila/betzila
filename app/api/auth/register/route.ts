@@ -1,43 +1,47 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { hash } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
-import bcrypt from 'bcrypt'
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { nome, email, password, indicador } = body
+    const { name, email, password, indicador } = await req.json()
 
-    // Verifica se o email já existe
-    const userExists = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email },
     })
 
-    if (userExists) {
-      return NextResponse.json(
-        { error: 'E-mail já cadastrado' },
-        { status: 400 }
-      )
+    if (existingUser) {
+      return NextResponse.json({ message: 'E-mail já cadastrado' }, { status: 400 })
     }
 
-    // Criptografa a senha
-    const senhaCriptografada = await bcrypt.hash(password, 10)
+    let indicadoPorId = null
 
-    // Cria o novo usuário
-    const novoUsuario = await prisma.user.create({
+    if (indicador) {
+      const userIndicador = await prisma.user.findFirst({
+        where: {
+          OR: [{ email: indicador }, { id: parseInt(indicador) }],
+        },
+      })
+
+      if (userIndicador) {
+        indicadoPorId = userIndicador.id
+      }
+    }
+
+    const hashedPassword = await hash(password, 10)
+
+    const newUser = await prisma.user.create({
       data: {
-        nome,
+        nome: name,
         email,
-        senha: senhaCriptografada,
-        indicador: indicador || null, // campo opcional
+        senha: hashedPassword, // <-- aqui está o nome correto
+        indicadoPorId,
       },
     })
 
-    return NextResponse.json({ sucesso: true, usuario: novoUsuario })
+    return NextResponse.json({ success: true, userId: newUser.id })
   } catch (error) {
-    console.error('Erro no cadastro:', error)
-    return NextResponse.json(
-      { error: 'Erro interno no servidor' },
-      { status: 500 }
-    )
+    console.error('Erro ao registrar:', error)
+    return NextResponse.json({ message: 'Erro interno no servidor' }, { status: 500 })
   }
 }

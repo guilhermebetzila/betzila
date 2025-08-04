@@ -1,8 +1,7 @@
-// /app/register/page.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function RegistroPage() {
   const [name, setName] = useState('')
@@ -11,14 +10,19 @@ export default function RegistroPage() {
   const [indicador, setIndicador] = useState('')
   const [erro, setErro] = useState('')
   const router = useRouter()
+  const searchParams = useSearchParams()
 
-  // ✅ Quando a página carregar, pega o indicador salvo no localStorage
+  // Pega ?indicador= na URL ou localStorage
   useEffect(() => {
-    const indicacao = localStorage.getItem('indicador')
-    if (indicacao) {
-      setIndicador(indicacao)
+    const indicacaoURL = searchParams.get('indicador')
+    if (indicacaoURL) {
+      localStorage.setItem('indicador', indicacaoURL)
+      setIndicador(indicacaoURL)
+    } else {
+      const indicacaoLocal = localStorage.getItem('indicador')
+      if (indicacaoLocal) setIndicador(indicacaoLocal)
     }
-  }, [])
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,15 +31,13 @@ export default function RegistroPage() {
       name: name.trim(),
       email: email.trim(),
       password: password.trim(),
-      indicador: indicador.trim() || null, // envia null se vazio
+      indicador: indicador.trim() || null,
     }
 
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
 
