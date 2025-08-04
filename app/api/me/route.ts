@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await cookies() // <-- FALTAVA O await
+    const cookieStore = await cookies()
     const token = cookieStore.get('token')?.value
 
     if (!token) {

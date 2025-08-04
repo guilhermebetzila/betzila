@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         email: user.email,
         saldo: user.saldo
       },
-      process.env.NEXTAUTH_SECRET!,
+      process.env.NEXTAUTH_SECRET!, // 👈 aqui usa NEXTAUTH_SECRET
       { expiresIn: '7d' }
     )
 
