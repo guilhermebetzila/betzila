@@ -1,22 +1,30 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { useEffect, useState } from 'react'
 
 export default function InvestirPage() {
   const router = useRouter()
-  const [saldo, setSaldo] = useState(1500) // Substitua com fetch real do saldo
+  const [saldo, setSaldo] = useState(1500)
   const [valorInvestido, setValorInvestido] = useState(0)
   const [valorParaInvestir, setValorParaInvestir] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  useEffect(() => {
+    async function checkAuth() {
+      const res = await fetch('/api/me', { credentials: 'include' })
+      if (!res.ok) {
+        router.push('/login')
+      }
+    }
+    checkAuth()
+  }, [router])
+
   async function investirValor() {
     setError(null)
 
     const valor = parseFloat(valorParaInvestir.replace(',', '.'))
-
     if (isNaN(valor) || valor <= 0) {
       setError('Digite um valor válido maior que zero.')
       return
@@ -27,13 +35,12 @@ export default function InvestirPage() {
     }
 
     setLoading(true)
-
     try {
       const res = await fetch('/api/investir', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ valor }),
-        credentials: 'include', // ENVIA O COOKIE COM O TOKEN
+        credentials: 'include', // envia cookie com token
       })
       const data = await res.json()
 
