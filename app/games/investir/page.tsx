@@ -1,80 +1,94 @@
-'use client'
+'use client';
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function InvestirPage() {
-  const router = useRouter()
-  const [saldo, setSaldo] = useState(1500)
-  const [valorInvestido, setValorInvestido] = useState(0)
-  const [valorParaInvestir, setValorParaInvestir] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [historico, setHistorico] = useState<any[]>([])
+  const router = useRouter();
+  const [saldo, setSaldo] = useState(1500);
+  const [valorInvestido, setValorInvestido] = useState(0);
+  const [valorParaInvestir, setValorParaInvestir] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [historico, setHistorico] = useState<any[]>([]);
+  const [cpf, setCpf] = useState<string>('');
 
   useEffect(() => {
     async function checkAuth() {
-      const res = await fetch('/api/me', { credentials: 'include' })
+      const res = await fetch('/api/me', { credentials: 'include' });
       if (!res.ok) {
-        router.push('/login')
+        router.push('/login');
+        return;
+      }
+      const data = await res.json();
+      if (!data.user?.cpf || data.user.cpf.replace(/[^\d]/g, '').length !== 11) {
+        alert('❌ Por favor, cadastre um CPF válido em seu painel antes de investir.');
+        router.push('/dashboard');
+      } else {
+        setCpf(data.user.cpf);
       }
     }
 
     async function buscarHistorico() {
-      const res = await fetch('/api/investir/historico')
+      const res = await fetch('/api/investir/historico');
       if (res.ok) {
-        const dados = await res.json()
-        setHistorico(dados)
+        const dados = await res.json();
+        setHistorico(dados);
       }
     }
 
-    checkAuth()
-    buscarHistorico()
-  }, [router])
+    checkAuth();
+    buscarHistorico();
+  }, [router]);
 
   async function investirValor() {
-    setError(null)
+    setError(null);
 
-    const valor = parseFloat(valorParaInvestir.replace(',', '.'))
+    const valor = parseFloat(valorParaInvestir.replace(',', '.'));
     if (isNaN(valor) || valor <= 0) {
-      setError('Digite um valor válido maior que zero.')
-      return
+      setError('Digite um valor válido maior que zero.');
+      return;
     }
     if (valor > saldo) {
-      setError('Saldo insuficiente para esse investimento.')
-      return
+      setError('Saldo insuficiente para esse investimento.');
+      return;
     }
 
-    setLoading(true)
+    if (!cpf || cpf.replace(/[^\d]/g, '').length !== 11) {
+      setError('Você precisa cadastrar um CPF válido para investir.');
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await fetch('/api/investir', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ valor }),
         credentials: 'include',
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Erro ao investir valor.')
+        setError(data.error || 'Erro ao investir valor.');
       } else {
-        setSaldo(data.user.saldo)
-        setValorInvestido(data.user.valorInvestido)
-        setValorParaInvestir('')
-        await atualizarHistorico() // atualizar a lista após investir
+        setSaldo(data.user.saldo);
+        setValorInvestido(data.user.valorInvestido);
+        setValorParaInvestir('');
+        await atualizarHistorico(); // atualizar a lista após investir
       }
     } catch (err) {
-      setError('Erro na conexão.')
+      setError('Erro na conexão.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function atualizarHistorico() {
-    const res = await fetch('/api/investir/historico')
+    const res = await fetch('/api/investir/historico');
     if (res.ok) {
-      const dados = await res.json()
-      setHistorico(dados)
+      const dados = await res.json();
+      setHistorico(dados);
     }
   }
 
@@ -149,5 +163,5 @@ export default function InvestirPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }
