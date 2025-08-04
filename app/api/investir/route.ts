@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from "next-auth"
+import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 
 export async function POST(req: NextRequest) {
@@ -40,6 +40,14 @@ export async function POST(req: NextRequest) {
       data: {
         saldo: novoSaldo,
         valorInvestido: novoInvestimento,
+      },
+    })
+
+    // ✅ Salvar o investimento no histórico
+    await prisma.investimento.create({
+      data: {
+        userId,
+        valor,
       },
     })
 

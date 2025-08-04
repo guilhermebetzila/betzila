@@ -10,6 +10,7 @@ export default function InvestirPage() {
   const [valorParaInvestir, setValorParaInvestir] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [historico, setHistorico] = useState<any[]>([])
 
   useEffect(() => {
     async function checkAuth() {
@@ -18,7 +19,17 @@ export default function InvestirPage() {
         router.push('/login')
       }
     }
+
+    async function buscarHistorico() {
+      const res = await fetch('/api/investir/historico')
+      if (res.ok) {
+        const dados = await res.json()
+        setHistorico(dados)
+      }
+    }
+
     checkAuth()
+    buscarHistorico()
   }, [router])
 
   async function investirValor() {
@@ -40,7 +51,7 @@ export default function InvestirPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ valor }),
-        credentials: 'include', // envia cookie com token
+        credentials: 'include',
       })
       const data = await res.json()
 
@@ -50,11 +61,20 @@ export default function InvestirPage() {
         setSaldo(data.user.saldo)
         setValorInvestido(data.user.valorInvestido)
         setValorParaInvestir('')
+        await atualizarHistorico() // atualizar a lista após investir
       }
     } catch (err) {
       setError('Erro na conexão.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function atualizarHistorico() {
+    const res = await fetch('/api/investir/historico')
+    if (res.ok) {
+      const dados = await res.json()
+      setHistorico(dados)
     }
   }
 
@@ -111,6 +131,22 @@ export default function InvestirPage() {
         </div>
 
         {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
+
+        {/* Histórico de Investimentos */}
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold text-green-400 mb-4">📜 Histórico de Investimentos</h3>
+          {historico.length === 0 ? (
+            <p className="text-gray-400">Nenhum investimento registrado ainda.</p>
+          ) : (
+            <ul className="space-y-2 max-h-60 overflow-y-auto pr-2">
+              {historico.map((item) => (
+                <li key={item.id} className="text-sm text-gray-200 border-b border-gray-600 pb-2">
+                  💵 R$ {item.valor.toFixed(2)} – {new Date(item.criadoEm).toLocaleString('pt-BR')}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </main>
   )
