@@ -134,8 +134,8 @@ export default function DashboardPage() {
   if (!user) return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
   // Monta o link de indicação usando codigoIndicacao, se não tiver, usa id do usuário
-  const codigoIndicacao = userTyped.codigoIndicacao || userTyped.id || '';
-  const linkIndicacao = `https://betzila.com/registro?indicador=${encodeURIComponent(codigoIndicacao)}`;
+ const codigoIndicacao = user.nome || user.email || user.id;
+const linkIndicacao = `https://www.betzila.com.br/register?indicador=${encodeURIComponent(codigoIndicacao)}`;
 
   return (
     <LayoutWrapper>
