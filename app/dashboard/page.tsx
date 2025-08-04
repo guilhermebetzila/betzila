@@ -8,11 +8,10 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 
 const menuItems = [
-  { label: '🤖 IA', action: '/games/ia' },                // Botão IA adicionado
+  { label: '🤖 IA', action: '/games/ia' },
   { label: '📥 Depositar', action: '/games/depositar' },
   { label: '📤 Saque via Pix', action: '/games/saque' },
   { label: '📄 Cadastrar CPF', action: '/games/cadastrar-cpf' },
-  // Removi o botão 2FA conforme pedido
   { label: '🚪 Sair', action: 'logout' },
 ];
 
@@ -52,6 +51,35 @@ export default function DashboardPage() {
   const [totalIndicados, setTotalIndicados] = useState<number>(0);
   const [saldo, setSaldo] = useState<number>(0);
   const [saques, setSaques] = useState<string[]>([]);
+
+  const [isMuted, setIsMuted] = useState(true);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const newAudio = new Audio('/audio/triunfo.mp3');
+    newAudio.loop = true;
+    newAudio.volume = 0.3;
+    newAudio.muted = true;
+    setAudio(newAudio);
+
+    const playOnInteraction = () => {
+      newAudio.play().catch(() => {});
+      window.removeEventListener('click', playOnInteraction);
+    };
+    window.addEventListener('click', playOnInteraction);
+
+    return () => {
+      newAudio.pause();
+    };
+  }, []);
+
+  const toggleMute = () => {
+    if (audio) {
+      const nextMuted = !isMuted;
+      audio.muted = nextMuted;
+      setIsMuted(nextMuted);
+    }
+  };
 
   useEffect(() => {
     setSaques(gerarSaquesAleatorios());
@@ -100,6 +128,16 @@ export default function DashboardPage() {
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative">
 
+        {/* Botão de som */}
+        <div className="absolute top-4 right-4 z-50">
+          <button
+            onClick={toggleMute}
+            className="bg-gray-800 hover:bg-green-600 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-300 text-sm"
+          >
+            {isMuted ? '🔇 Som' : '🔊 Som'}
+          </button>
+        </div>
+
         {/* MENU DE AÇÕES */}
         <div className="mb-6 flex justify-center gap-4 flex-wrap mt-4">
           {menuItems.map((item, index) => (
@@ -113,7 +151,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Saudação, saldo, indicações */}
+        {/* Saudação */}
         <div className="mb-6 max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user.nome || user.email}
@@ -122,9 +160,7 @@ export default function DashboardPage() {
             </span>
           </h1>
           <p className="text-gray-400 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
-          <p className="text-green-400 mt-2">
-            📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!
-          </p>
+          <p className="text-green-400 mt-2">📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!</p>
           <div className="mt-4">
             <p className="text-sm text-gray-300 mb-1">🎁 Pontos Acumulados: {pontos} pontos</p>
             <div className="w-full bg-gray-700 rounded-full h-4">
@@ -148,6 +184,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
+        {/* Painel da IA */}
         <div className="mb-6"><IAWorkingPanel /></div>
 
         {/* Prova Social */}
@@ -162,7 +199,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Esteira de Comentários */}
+        {/* Comentários */}
         <div className="mb-8">
           <h3 className="text-lg text-center text-green-400 font-semibold mb-3">💬 Transformações Reais com a BetZila</h3>
           <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-green-700">
@@ -209,7 +246,9 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-300">Você é o protagonista dessa revolução financeira.</p>
             </div>
           </div>
-          <div className="text-center mt-12 text-sm text-gray-500">© {new Date().getFullYear()} BetZila • Todos os direitos reservados</div>
+          <div className="text-center mt-12 text-sm text-gray-500">
+            © {new Date().getFullYear()} BetZila • Todos os direitos reservados
+          </div>
         </footer>
       </div>
     </LayoutWrapper>
