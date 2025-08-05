@@ -54,7 +54,8 @@ export async function POST(req: NextRequest) {
         nome: name,
         email,
         senha: hashedPassword,
-        indicadoPorId,
+        indicadoPorId: indicadoPorId ?? null,  // garante null em vez de undefined
+        indicador: indicador || null,          // salva indicador como string se vier
       },
     });
 
@@ -63,6 +64,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, userId: newUser.id });
   } catch (error: any) {
     console.error('[REGISTER] Erro inesperado:', error);
-    return NextResponse.json({ message: `Erro interno: ${error?.message || 'Erro desconhecido'}` }, { status: 500 });
+    return NextResponse.json(
+      { message: `Erro interno: ${error?.message || 'Erro desconhecido'}` },
+      { status: 500 },
+    );
   }
 }
