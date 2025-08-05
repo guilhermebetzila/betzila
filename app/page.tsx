@@ -213,6 +213,18 @@ export default function Home() {
   </Button>
 </div>
 
+{/* 🎥 VÍDEO ADICIONADO AQUI */}
+<div className="mt-6 w-full flex justify-center">
+  <video
+    className="w-full max-w-[500px] rounded-xl shadow-xl"
+    src="/meuvideo.mp4"
+    controls
+    autoPlay
+    muted
+    loop
+  />
+</div>
+
 <section className="w-full max-w-4xl px-6 mt-14 mx-auto text-center leading-relaxed text-xl sm:text-2xl space-y-6">
   <h2 className="text-4xl sm:text-5xl font-extrabold text-[#00C853] mb-6 select-none">
     🛡️ Sua Jornada Começa Aqui
