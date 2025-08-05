@@ -19,7 +19,11 @@ export async function POST(req: NextRequest) {
     if (indicador) {
       const userIndicador = await prisma.user.findFirst({
         where: {
-          OR: [{ email: indicador }, { id: parseInt(indicador) }],
+          OR: [
+            { email: indicador },
+            { nome: indicador },
+            { id: isNaN(Number(indicador)) ? -1 : Number(indicador) }
+          ],
         },
       })
 
@@ -34,7 +38,7 @@ export async function POST(req: NextRequest) {
       data: {
         nome: name,
         email,
-        senha: hashedPassword, // <-- aqui está o nome correto
+        senha: hashedPassword,
         indicadoPorId,
       },
     })
