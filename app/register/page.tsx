@@ -7,6 +7,7 @@ export default function RegistroPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [cpf, setCpf] = useState('')
   const [indicador, setIndicador] = useState('')
   const [erro, setErro] = useState('')
   const router = useRouter()
@@ -31,6 +32,7 @@ export default function RegistroPage() {
       name: name.trim(),
       email: email.trim(),
       password: password.trim(),
+      cpf: cpf.trim(),
       indicador: indicador.trim() || null,
     }
 
@@ -84,6 +86,14 @@ export default function RegistroPage() {
           placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
+          required
+        />
+        <input
+          type="text"
+          placeholder="CPF"
+          value={cpf}
+          onChange={(e) => setCpf(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded"
           required
         />

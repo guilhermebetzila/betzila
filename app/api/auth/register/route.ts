@@ -4,12 +4,12 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, password, indicador } = await req.json();
+    const { name, email, password, indicador, cpf } = await req.json();
 
-    console.log('[REGISTER] Dados recebidos:', { name, email, indicador });
+    console.log('[REGISTER] Dados recebidos:', { name, email, cpf, indicador });
 
     // Validação básica
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !cpf) {
       return NextResponse.json({ message: 'Todos os campos são obrigatórios' }, { status: 400 });
     }
 
@@ -17,9 +17,16 @@ export async function POST(req: NextRequest) {
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
-
     if (existingUser) {
       return NextResponse.json({ message: 'E-mail já cadastrado' }, { status: 400 });
+    }
+
+    // Verificar se o CPF já existe
+    const existingCpf = await prisma.user.findUnique({
+      where: { cpf },
+    });
+    if (existingCpf) {
+      return NextResponse.json({ message: 'CPF já cadastrado' }, { status: 400 });
     }
 
     let indicadoPorId: number | null = null;
@@ -55,6 +62,7 @@ export async function POST(req: NextRequest) {
           nome: name,
           email,
           senha: hashedPassword,
+          cpf,
           indicadoPorId: indicadoPorId ?? null,
           indicador: indicador || null,
         },
@@ -66,7 +74,6 @@ export async function POST(req: NextRequest) {
     } catch (prismaError: any) {
       console.error('[REGISTER] Erro ao criar usuário:', prismaError);
 
-      // Trata erro de violação de unique constraint (por exemplo, e-mail ou cpf duplicado)
       if (prismaError.code === 'P2002') {
         const targetField = prismaError.meta?.target?.[0] || 'campo único';
         return NextResponse.json(
@@ -75,7 +82,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      throw prismaError; // Propaga erro para o catch externo
+      throw prismaError;
     }
 
   } catch (error: any) {
