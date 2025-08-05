@@ -1,19 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function RegistroPage() {
+function FormularioRegistro() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [cpf, setCpf] = useState('')
+  const [password, setPassword] = useState('')
   const [indicador, setIndicador] = useState('')
   const [erro, setErro] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Pega ?indicador= na URL ou localStorage
+  // Pegando indicador da URL ou localStorage
   useEffect(() => {
     const indicacaoURL = searchParams.get('indicador')
     if (indicacaoURL) {
@@ -31,8 +31,8 @@ export default function RegistroPage() {
     const payload = {
       name: name.trim(),
       email: email.trim(),
-      password: password.trim(),
       cpf: cpf.trim(),
+      password: password.trim(),
       indicador: indicador.trim() || null,
     }
 
@@ -82,18 +82,18 @@ export default function RegistroPage() {
           required
         />
         <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded"
-          required
-        />
-        <input
           type="text"
           placeholder="CPF"
           value={cpf}
           onChange={(e) => setCpf(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded"
           required
         />
@@ -113,5 +113,13 @@ export default function RegistroPage() {
         </button>
       </form>
     </div>
+  )
+}
+
+export default function RegistroPage() {
+  return (
+    <Suspense fallback={<p className="text-center">Carregando...</p>}>
+      <FormularioRegistro />
+    </Suspense>
   )
 }
