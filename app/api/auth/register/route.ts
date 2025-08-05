@@ -42,28 +42,44 @@ export async function POST(req: NextRequest) {
         indicadoPorId = userIndicador.id;
       } else {
         console.log('[REGISTER] Indicador informado não encontrado:', indicador);
-        // Opcional: se quiser bloquear registro com indicador inválido, descomente abaixo:
+        // Se quiser obrigar indicador válido, descomente abaixo:
         // return NextResponse.json({ message: 'Indicador inválido' }, { status: 400 });
       }
     }
 
     const hashedPassword = await hash(password, 10);
 
-    const newUser = await prisma.user.create({
-      data: {
-        nome: name,
-        email,
-        senha: hashedPassword,
-        indicadoPorId: indicadoPorId ?? null,  // garante null em vez de undefined
-        indicador: indicador || null,          // salva indicador como string se vier
-      },
-    });
+    try {
+      const newUser = await prisma.user.create({
+        data: {
+          nome: name,
+          email,
+          senha: hashedPassword,
+          indicadoPorId: indicadoPorId ?? null,
+          indicador: indicador || null,
+        },
+      });
 
-    console.log('[REGISTER] Novo usuário criado com ID:', newUser.id);
+      console.log('[REGISTER] Novo usuário criado com ID:', newUser.id);
 
-    return NextResponse.json({ success: true, userId: newUser.id });
+      return NextResponse.json({ success: true, userId: newUser.id });
+    } catch (prismaError: any) {
+      console.error('[REGISTER] Erro ao criar usuário:', prismaError);
+
+      // Trata erro de violação de unique constraint (por exemplo, e-mail ou cpf duplicado)
+      if (prismaError.code === 'P2002') {
+        const targetField = prismaError.meta?.target?.[0] || 'campo único';
+        return NextResponse.json(
+          { message: `Já existe um usuário com este ${targetField}.` },
+          { status: 400 },
+        );
+      }
+
+      throw prismaError; // Propaga erro para o catch externo
+    }
+
   } catch (error: any) {
-    console.error('[REGISTER] Erro inesperado:', error);
+    console.error('[REGISTER] Erro inesperado:', error, error?.stack);
     return NextResponse.json(
       { message: `Erro interno: ${error?.message || 'Erro desconhecido'}` },
       { status: 500 },
