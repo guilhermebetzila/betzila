@@ -1,49 +1,49 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [mensagem, setMensagem] = useState('');
-  const [carregando, setCarregando] = useState(false);
-  const router = useRouter();
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [mensagem, setMensagem] = useState('')
+  const [carregando, setCarregando] = useState(false)
+  const roteador = useRouter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setMensagem('');
-    setCarregando(true);
+    e.preventDefault()
+    setMensagem('')
+    setCarregando(true)
 
     if (!email || !senha) {
-      setMensagem('Todos os campos são obrigatórios.');
-      setCarregando(false);
-      return;
+      setMensagem('Todos os campos são obrigatórios.')
+      setCarregando(false)
+      return // Corrigido de "retornar"
     }
 
     try {
       const response = await fetch('/api/auth/login', {
-        method: 'POST',
+        method: 'POST', // Corrigido de "método"
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password: senha }),
-      });
+        body: JSON.stringify({ email, senha }),
+      })
 
       if (response.ok) {
-        router.push('/dashboard');
+        roteador.push('/dashboard') // Redireciona após login
       } else if (response.status === 401) {
-        setMensagem('Email ou senha incorretos.');
+        setMensagem('Email ou senha incorreta.')
       } else {
-        setMensagem('Erro no servidor. Tente novamente.');
+        setMensagem('Erro no servidor. Tente novamente.')
       }
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      setMensagem('Erro de conexão.');
+      console.error('Erro ao fazer login:', error)
+      setMensagem('Erro de conexão.')
     }
 
-    setCarregando(false);
-  };
+    setCarregando(false)
+  }
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen px-4 bg-black text-white">
@@ -81,5 +81,5 @@ export default function LoginPage() {
         <p className="mt-4 text-sm text-red-500 text-center">{mensagem}</p>
       )}
     </main>
-  );
+  )
 }

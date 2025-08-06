@@ -9,6 +9,7 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!token
   const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard')
 
+  // Se a rota for protegida e o usuário não estiver autenticado, redireciona para login
   if (isDashboardRoute && !isAuthenticated) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
@@ -18,5 +19,5 @@ export async function middleware(request: NextRequest) {
 
 // Define quais rotas o middleware irá monitorar
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*'], // protege /dashboard e todas subrotas
 }
