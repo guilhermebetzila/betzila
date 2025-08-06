@@ -22,15 +22,16 @@ export async function POST(req: Request) {
         email: user.email,
         saldo: user.saldo
       },
-      process.env.NEXTAUTH_SECRET!, // 👈 aqui usa NEXTAUTH_SECRET
+      process.env.NEXTAUTH_SECRET!,
       { expiresIn: '7d' }
     )
 
     const response = NextResponse.json({ message: 'Login com sucesso' })
 
+    // Definindo o cookie com nome padrão usado pelo next-auth/jwt
     response.headers.set(
       'Set-Cookie',
-      `token=${token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7}`
+      `next-auth.session-token=${token}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7}`
     )
 
     return response
