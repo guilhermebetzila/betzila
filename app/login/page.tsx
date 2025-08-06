@@ -18,16 +18,16 @@ export default function LoginPage() {
     if (!email || !senha) {
       setMensagem('Todos os campos são obrigatórios.')
       setCarregando(false)
-      return // Corrigido de "retornar"
+      return
     }
 
     try {
       const response = await fetch('/api/auth/login', {
-        method: 'POST', // Corrigido de "método"
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, senha }),
+        body: JSON.stringify({ email, password: senha }), // ✅ Correção aqui!
       })
 
       if (response.ok) {

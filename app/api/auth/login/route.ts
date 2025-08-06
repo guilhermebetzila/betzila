@@ -12,8 +12,8 @@ export async function POST(req: Request) {
     // Busca usuário no banco
     const user = await prisma.user.findUnique({ where: { email } })
 
-    // Verifica se usuário existe e a senha bate
-    if (!user || !(await compare(password, user.senha))) {
+    // Protege contra usuário inexistente ou senha faltando
+    if (!user || !user.senha || !(await compare(password, user.senha))) {
       return NextResponse.json({ message: 'Credenciais inválidas' }, { status: 401 })
     }
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
         nome: user.nome,
         email: user.email
       },
-      process.env.JWT_SECRET!, // você deve ter essa variável no seu .env
+      process.env.JWT_SECRET!, // você deve ter essa variável no seu .env e na Vercel
       { expiresIn: '7d' }
     )
 
