@@ -198,18 +198,18 @@ export default function Home() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-6 mt-4 px-4">
-        <Button
-          onClick={() => router.push('/login')}
-          className="bg-gradient-to-r from-[#00E676] to-[#00C853] hover:opacity-90 text-white font-extrabold text-lg px-8 py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-        >
-          Entrar
-        </Button>
-        <Button
-          onClick={() => router.push('/register')}
-          className="bg-gradient-to-r from-[#00E676] to-[#00C853] hover:opacity-90 text-white font-extrabold text-lg px-8 py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-        >
-          Registrar-se
-        </Button>
+       <Button
+  onClick={() => router.push('/login')}
+  className="bg-black hover:opacity-90 text-white font-extrabold text-lg px-8 py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+>
+  Entrar
+</Button>
+<Button
+  onClick={() => router.push('/register')}
+  className="bg-black hover:opacity-90 text-white font-extrabold text-lg px-8 py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+>
+  Registrar-se
+</Button>
       </div>
 
       {/* 🎥 VÍDEO ADICIONADO AQUI */}
