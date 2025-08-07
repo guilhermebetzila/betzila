@@ -1,4 +1,3 @@
-// app/api/auth/[...nextauth]/authOptions.ts
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
@@ -7,9 +6,11 @@ import type { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+
   session: {
     strategy: "jwt",
   },
+
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -31,7 +32,7 @@ export const authOptions: NextAuthOptions = {
 
         // Retorno compatível com sua tipagem
         return {
-          id: String(user.id), // ← ID como string
+          id: String(user.id),
           email: user.email,
           nome: user.nome,
           saldo: user.saldo,
@@ -39,6 +40,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -50,16 +52,30 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.nome = token.nome;
-        session.user.email = token.email;
-        session.user.saldo = token.saldo;
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.nome = token.nome as string;
+        session.user.email = token.email as string;
+        session.user.saldo = token.saldo as number;
       }
       return session;
     },
   },
+
   pages: {
     signIn: "/login",
+  },
+
+  // Configuração explícita do cookie para funcionar bem no mobile (HTTPS obrigatório)
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "none",
+        path: "/",
+        secure: true,
+      },
+    },
   },
 };
