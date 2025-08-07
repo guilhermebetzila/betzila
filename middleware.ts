@@ -1,23 +1,30 @@
+import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET, // 👈 ESSENCIAL NA VERCEL
-  })
-
-  const isAuthenticated = !!token
-  const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard')
-
-  if (isDashboardRoute && !isAuthenticated) {
-    return NextResponse.redirect(new URL('/login', request.url))
+// Configura o middleware com proteção via NextAuth
+export default withAuth(
+  function middleware(req: NextRequest) {
+    // Aqui você pode adicionar verificações adicionais se quiser
+    return NextResponse.next()
+  },
+  {
+    callbacks: {
+      // Redireciona se o usuário não estiver autenticado
+      authorized({ token }) {
+        return !!token
+      },
+    },
   }
+)
 
-  return NextResponse.next()
-}
-
+// Define quais rotas serão protegidas
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: [
+    '/dashboard/:path*',
+    '/painel/:path*',
+    '/minha-conta/:path*',
+    '/investimentos/:path*',
+    '/indicacoes/:path*',
+  ],
 }

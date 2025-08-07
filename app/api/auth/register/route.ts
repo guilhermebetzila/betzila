@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { hash } from 'bcryptjs'
+import { sign } from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(req: NextRequest) {
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
         indicadoPorId = userIndicador.id
       } else {
         console.log('[REGISTER] Indicador inválido:', indicador)
-        // Descomente se quiser bloquear cadastro com indicador inválido:
+        // Se quiser bloquear cadastro com indicador inválido, descomente:
         // return NextResponse.json({ message: 'Indicador inválido.' }, { status: 400 });
       }
     }
@@ -79,7 +80,29 @@ export async function POST(req: NextRequest) {
 
     console.log('[REGISTER] Novo usuário criado:', newUser.id)
 
-    return NextResponse.json({ success: true, userId: newUser.id })
+    // ✅ Gera token JWT e envia cookie como no login
+    const token = sign(
+      {
+        id: newUser.id,
+        nome: newUser.nome,
+        email: newUser.email
+      },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    )
+
+    const response = NextResponse.json({
+      success: true,
+      userId: newUser.id,
+      message: 'Cadastro realizado com sucesso'
+    })
+
+    response.headers.set(
+      'Set-Cookie',
+      `token=${token}; Path=/; HttpOnly; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax`
+    )
+
+    return response
   } catch (error: any) {
     console.error('[REGISTER] Erro inesperado:', error)
 
