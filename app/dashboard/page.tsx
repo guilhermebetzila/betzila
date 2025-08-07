@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/context/AuthContext';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import IAWorkingPanel from '@/components/IAWorkingPanel';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 const menuItems = [
   { label: '🤖 IA', action: '/games/ia' },
@@ -45,24 +44,17 @@ const comentariosEsteira = [
   '💖 "Dei orgulho pros meus pais. Finalmente ajudo em casa." — Camila, AM',
 ];
 
-// --- Aqui criamos uma tipagem que adiciona o codigoIndicacao opcional para evitar erro ---
-type UserWithCodigoIndicacao = typeof useAuth extends () => { user: infer U }
-  ? U & { codigoIndicacao?: string }
-  : { codigoIndicacao?: string };
-
 export default function DashboardPage() {
-  const { user, loading } = useAuth();
+  const { data: session, status } = useSession();
   const router = useRouter();
-
-  // Fazemos um cast do user para o tipo que inclui codigoIndicacao
-  const userTyped = user as UserWithCodigoIndicacao;
 
   const [totalIndicados, setTotalIndicados] = useState<number>(0);
   const [saldo, setSaldo] = useState<number>(0);
   const [saques, setSaques] = useState<string[]>([]);
-
   const [isMuted, setIsMuted] = useState(true);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+
+  const user = session?.user;
 
   useEffect(() => {
     const newAudio = new Audio('/audio/triunfo.mp3');
@@ -130,17 +122,15 @@ export default function DashboardPage() {
   const pontos = totalIndicados * 10;
   const progresso = Math.min((pontos / 1000) * 100, 100);
 
-  if (loading) return <p className="text-center mt-10 text-white">Carregando...</p>;
-  if (!user) return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
+  if (status === 'loading') return <p className="text-center mt-10 text-white">Carregando...</p>;
+  if (status === 'unauthenticated') return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
-  // Monta o link de indicação usando codigoIndicacao, se não tiver, usa id do usuário
- const codigoIndicacao = user.nome || user.email || user.id;
-const linkIndicacao = `https://www.betzila.com.br/register?indicador=${encodeURIComponent(codigoIndicacao)}`;
+  const codigoIndicacao = user?.nome || user?.email || user?.id;
+  const linkIndicacao = `https://www.betzila.com.br/register?indicador=${encodeURIComponent(codigoIndicacao || '')}`;
 
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative">
-
         {/* Botão de som */}
         <div className="absolute top-4 right-4 z-50">
           <button
@@ -167,14 +157,13 @@ const linkIndicacao = `https://www.betzila.com.br/register?indicador=${encodeURI
         {/* Saudação e saldo */}
         <div className="mb-6 max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold flex items-center gap-4">
-            Olá, {userTyped.nome || userTyped.email}
+            Olá, {user?.nome || user?.email}
             <span className="bg-green-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
               Saldo: R$ {saldo.toFixed(2)}
             </span>
           </h1>
           <p className="text-gray-400 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
           <p className="text-green-400 mt-2">📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!</p>
-
           {/* Código de Indicação */}
           <div className="mt-6 bg-gray-800 rounded-lg p-4 border border-green-500 shadow-md">
             <h3 className="text-white text-sm font-semibold mb-2">📲 Seu Código de Indicação:</h3>
@@ -188,15 +177,15 @@ const linkIndicacao = `https://www.betzila.com.br/register?indicador=${encodeURI
                 {linkIndicacao}
               </a>
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(linkIndicacao);
-                }}
+                onClick={() => navigator.clipboard.writeText(linkIndicacao)}
                 className="ml-4 bg-green-600 hover:bg-green-700 text-black font-semibold px-3 py-1 rounded transition-colors text-xs"
               >
                 Copiar
               </button>
             </div>
-            <p className="text-gray-400 text-xs mt-1">Compartilhe este link com amigos e ganhe bônus por cada novo Ziler indicado.</p>
+            <p className="text-gray-400 text-xs mt-1">
+              Compartilhe este link com amigos e ganhe bônus por cada novo Ziler indicado.
+            </p>
           </div>
 
           <div className="mt-4">
@@ -204,22 +193,10 @@ const linkIndicacao = `https://www.betzila.com.br/register?indicador=${encodeURI
             <div className="w-full bg-gray-700 rounded-full h-4">
               <div className="bg-green-400 h-4 rounded-full" style={{ width: `${progresso}%` }}></div>
             </div>
-            <p className="text-xs text-gray-400 mt-1">Você precisa de 1000 pontos para desbloquear o próximo prêmio</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Você precisa de 1000 pontos para desbloquear o próximo prêmio
+            </p>
           </div>
-        </div>
-
-        {/* Barra Pontos */}
-        <div className="mb-6 max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-inner p-4 border-2 border-green-400">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-white font-semibold text-sm">🎁 Pontos Acumulados</span>
-            <span className="text-green-400 font-bold text-sm">{pontos} pts</span>
-          </div>
-          <div className="w-full bg-gray-700 h-4 rounded-full overflow-hidden">
-            <div className="bg-green-400 h-4" style={{ width: `${progresso}%` }}></div>
-          </div>
-          <p className="text-gray-300 text-xs mt-2">
-            Faltam <span className="text-green-400 font-semibold">{1000 - pontos} pts</span> para desbloquear o <strong>App Exclusivo BetZila!</strong>
-          </p>
         </div>
 
         {/* Painel da IA */}
@@ -239,7 +216,9 @@ const linkIndicacao = `https://www.betzila.com.br/register?indicador=${encodeURI
 
         {/* Comentários */}
         <div className="mb-8">
-          <h3 className="text-lg text-center text-green-400 font-semibold mb-3">💬 Transformações Reais com a BetZila</h3>
+          <h3 className="text-lg text-center text-green-400 font-semibold mb-3">
+            💬 Transformações Reais com a BetZila
+          </h3>
           <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-green-700">
             {comentariosEsteira.map((comentario, index) => (
               <span
@@ -261,34 +240,36 @@ const linkIndicacao = `https://www.betzila.com.br/register?indicador=${encodeURI
             💹 Investir Agora
           </button>
         </div>
-
-        {/* Rodapé */}
-        <footer className="w-full mt-20 bg-gray-900 text-white py-12 px-6 border-t border-green-800">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-green-400 text-lg font-bold mb-4">🔐 Segurança & Confiança</h3>
-              <p className="text-sm text-gray-300 mb-2">Auditoria independente concluída com sucesso.</p>
-              <p className="text-sm text-gray-300 mb-2">IA operando com precisão validada de 87,9%.</p>
-              <p className="text-sm text-gray-300">Certificados e parcerias disponíveis no painel.</p>
-            </div>
-            <div>
-              <h3 className="text-green-400 text-lg font-bold mb-4">📈 Transparência Total</h3>
-              <p className="text-sm text-gray-300 mb-2">Painel de controle com histórico completo.</p>
-              <p className="text-sm text-gray-300 mb-2">Saque e depósito via Pix 100% transparente.</p>
-              <p className="text-sm text-gray-300">Controle total do seu investimento, em tempo real.</p>
-            </div>
-            <div>
-              <h3 className="text-green-400 text-lg font-bold mb-4">🤝 Comunidade Ziler</h3>
-              <p className="text-sm text-gray-300 mb-2">Top 10 Zilers com maiores ganhos do mês.</p>
-              <p className="text-sm text-gray-300 mb-2">Missão: Pagar dívidas, viver de renda, transformar vidas.</p>
-              <p className="text-sm text-gray-300">Você é o protagonista dessa revolução financeira.</p>
-            </div>
-          </div>
-          <div className="text-center mt-12 text-sm text-gray-500">
-            © {new Date().getFullYear()} BetZila • Todos os direitos reservados
-          </div>
-        </footer>
       </div>
+
+      {/* Rodapé */}
+      <footer className="w-full mt-20 bg-gray-900 text-white py-12 px-6 border-t border-green-800">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div>
+            <h3 className="text-green-400 text-lg font-bold mb-4">🔐 Segurança & Confiança</h3>
+            <p className="text-sm text-gray-300 mb-2">Auditoria independente concluída com sucesso.</p>
+            <p className="text-sm text-gray-300 mb-2">IA operando com precisão validada de 87,9%.</p>
+            <p className="text-sm text-gray-300">Certificados e parcerias disponíveis no painel.</p>
+          </div>
+          <div>
+            <h3 className="text-green-400 text-lg font-bold mb-4">📈 Transparência Total</h3>
+            <p className="text-sm text-gray-300 mb-2">Painel de controle com histórico completo.</p>
+            <p className="text-sm text-gray-300 mb-2">Saque e depósito via Pix 100% transparente.</p>
+            <p className="text-sm text-gray-300">Controle total do seu investimento, em tempo real.</p>
+          </div>
+          <div>
+            <h3 className="text-green-400 text-lg font-bold mb-4">🤝 Comunidade Ziler</h3>
+            <p className="text-sm text-gray-300 mb-2">Top 10 Zilers com maiores ganhos do mês.</p>
+            <p className="text-sm text-gray-300 mb-2">
+              Missão: Pagar dívidas, viver de renda, transformar vidas.
+            </p>
+            <p className="text-sm text-gray-300">Você é o protagonista dessa revolução financeira.</p>
+          </div>
+        </div>
+        <div className="text-center mt-12 text-sm text-gray-500">
+          © {new Date().getFullYear()} BetZila • Todos os direitos reservados
+        </div>
+      </footer>
     </LayoutWrapper>
   );
 }

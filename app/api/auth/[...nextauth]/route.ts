@@ -1,6 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from 'bcryptjs';
+import { compare } from "bcryptjs";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
@@ -11,43 +11,33 @@ export const authOptions: NextAuthOptions = {
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        senha: { label: "Senha", type: "password" }
+        senha: { label: "Senha", type: "password" },
       },
       async authorize(credentials) {
-        const email = credentials?.email
-        const senha = credentials?.senha
+        const email = credentials?.email;
+        const senha = credentials?.senha;
 
-        if (!email || !senha) {
-          return null
-        }
+        if (!email || !senha) return null;
 
         try {
-          const user = await prisma.user.findUnique({
-            where: { email }
-          });
-
-          if (!user || !user.senha) {
-            return null
-          }
+          const user = await prisma.user.findUnique({ where: { email } });
+          if (!user || !user.senha) return null;
 
           const senhaCorreta = await compare(senha, user.senha);
-
-          if (!senhaCorreta) {
-            return null
-          }
+          if (!senhaCorreta) return null;
 
           return {
             id: user.id.toString(),
             nome: user.nome,
             email: user.email,
-            saldo: user.saldo
+            saldo: user.saldo,
           };
         } catch (error) {
-          console.error("Erro no authorize:", error)
-          return null
+          console.error("Erro no authorize:", error);
+          return null;
         }
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -60,24 +50,24 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user = {
           id: token.id as string,
           nome: token.nome as string,
           email: token.email as string,
-          saldo: token.saldo as number
+          saldo: token.saldo as number,
         };
       }
       return session;
-    }
+    },
   },
   pages: {
-    signIn: "/login"
+    signIn: "/login",
   },
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
