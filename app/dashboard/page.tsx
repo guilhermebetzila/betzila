@@ -122,7 +122,7 @@ export default function DashboardPage() {
   const pontos = totalIndicados * 10;
   const progresso = Math.min((pontos / 1000) * 100, 100);
 
-  if (status === 'loading') return <p className="text-center mt-10 text-white">Carregando...</p>;
+  if (status === 'loading') return <p className="text-center mt-10 text-black">Carregando...</p>;
   if (status === 'unauthenticated') return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
   const codigoIndicacao = user?.nome || user?.email || user?.id;
@@ -130,83 +130,78 @@ export default function DashboardPage() {
 
   return (
     <LayoutWrapper>
-      <div className="min-h-screen px-4 py-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative">
-        {/* Botão de som */}
+      <div className="min-h-screen px-4 py-4 bg-white text-black relative">
         <div className="absolute top-4 right-4 z-50">
           <button
             onClick={toggleMute}
-            className="bg-gray-800 hover:bg-green-600 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-300 text-sm"
+            className="bg-black hover:bg-gray-800 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-300 text-sm"
           >
             {isMuted ? '🔇 Som' : '🔊 Som'}
           </button>
         </div>
 
-        {/* MENU DE AÇÕES */}
         <div className="mb-6 flex justify-center gap-4 flex-wrap mt-4">
           {menuItems.map((item, index) => (
             <button
               key={index}
               onClick={() => handleMenuClick(item)}
-              className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md shadow-md font-semibold text-sm transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-md shadow-md font-semibold text-sm transition-colors duration-300 ease-in-out focus:outline-none"
             >
               {item.label}
             </button>
           ))}
         </div>
 
-        {/* Saudação e saldo */}
         <div className="mb-6 max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user?.nome || user?.email}
-            <span className="bg-green-400 text-black px-3 py-1 text-sm rounded shadow-sm font-semibold">
+            <span className="bg-black text-white px-3 py-1 text-sm rounded shadow-sm font-semibold">
               Saldo: R$ {saldo.toFixed(2)}
             </span>
           </h1>
-          <p className="text-gray-400 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
-          <p className="text-green-400 mt-2">📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!</p>
-          {/* Código de Indicação */}
-          <div className="mt-6 bg-gray-800 rounded-lg p-4 border border-green-500 shadow-md">
-            <h3 className="text-white text-sm font-semibold mb-2">📲 Seu Código de Indicação:</h3>
-            <div className="flex items-center justify-between bg-gray-900 text-green-400 px-3 py-2 rounded-md font-mono text-sm">
+          <p className="text-gray-600 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
+          <p className="text-green-600 mt-2">📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!</p>
+
+          <div className="mt-6 bg-gray-100 rounded-lg p-4 border border-black shadow-md">
+            <h3 className="text-black text-sm font-semibold mb-2">📲 Seu Código de Indicação:</h3>
+            <div className="flex items-center justify-between bg-white text-black px-3 py-2 rounded-md font-mono text-sm border">
               <a
                 href={linkIndicacao}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="truncate underline hover:text-green-300"
+                className="truncate underline hover:text-green-600"
               >
                 {linkIndicacao}
               </a>
               <button
                 onClick={() => navigator.clipboard.writeText(linkIndicacao)}
-                className="ml-4 bg-green-600 hover:bg-green-700 text-black font-semibold px-3 py-1 rounded transition-colors text-xs"
+                className="ml-4 bg-black hover:bg-gray-800 text-white font-semibold px-3 py-1 rounded transition-colors text-xs"
               >
                 Copiar
               </button>
             </div>
-            <p className="text-gray-400 text-xs mt-1">
+            <p className="text-gray-500 text-xs mt-1">
               Compartilhe este link com amigos e ganhe bônus por cada novo Ziler indicado.
             </p>
           </div>
 
           <div className="mt-4">
-            <p className="text-sm text-gray-300 mb-1">🎁 Pontos Acumulados: {pontos} pontos</p>
-            <div className="w-full bg-gray-700 rounded-full h-4">
-              <div className="bg-green-400 h-4 rounded-full" style={{ width: `${progresso}%` }}></div>
+            <p className="text-sm text-gray-700 mb-1">🎁 Pontos Acumulados: {pontos} pontos</p>
+            <div className="w-full bg-gray-200 rounded-full h-4">
+              <div className="bg-black h-4 rounded-full" style={{ width: `${progresso}%` }}></div>
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-500 mt-1">
               Você precisa de 1000 pontos para desbloquear o próximo prêmio
             </p>
           </div>
         </div>
 
-        {/* Painel da IA */}
         <div className="mb-6"><IAWorkingPanel /></div>
 
-        {/* Prova Social */}
         <div className="mb-12">
-          <h3 className="text-xl font-semibold text-center text-white mb-4">🎯 Prova Social: Saques Recentes</h3>
-          <div className="bg-gray-800 rounded-xl p-4 max-h-40 overflow-y-auto shadow-inner border border-green-400">
-            <ul className="space-y-1 text-sm text-green-300 font-mono">
+          <h3 className="text-xl font-semibold text-center text-black mb-4">🎯 Prova Social: Saques Recentes</h3>
+          <div className="bg-gray-100 rounded-xl p-4 max-h-40 overflow-y-auto shadow-inner border border-black">
+            <ul className="space-y-1 text-sm text-black font-mono">
               {saques.slice(0, 20).map((item, index) => (
                 <li key={index}>{item}</li>
               ))}
@@ -214,16 +209,15 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Comentários */}
         <div className="mb-8">
-          <h3 className="text-lg text-center text-green-400 font-semibold mb-3">
+          <h3 className="text-lg text-center text-black font-semibold mb-3">
             💬 Transformações Reais com a BetZila
           </h3>
-          <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-green-700">
+          <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-gray-300">
             {comentariosEsteira.map((comentario, index) => (
               <span
                 key={index}
-                className="inline-block bg-gray-700 text-white text-sm px-4 py-2 rounded-full shadow-sm border border-green-500 min-w-[250px]"
+                className="inline-block bg-gray-200 text-black text-sm px-4 py-2 rounded-full shadow-sm border border-black min-w-[250px]"
               >
                 {comentario}
               </span>
@@ -231,42 +225,40 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Botão Investir */}
         <div className="flex justify-center mb-8">
           <button
             onClick={() => router.push('/games/investir')}
-            className="bg-green-500 hover:bg-green-600 text-black font-semibold py-2 px-5 rounded-lg shadow-md transition-all text-base"
+            className="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all text-base"
           >
             💹 Investir Agora
           </button>
         </div>
       </div>
 
-      {/* Rodapé */}
-      <footer className="w-full mt-20 bg-gray-900 text-white py-12 px-6 border-t border-green-800">
+      <footer className="w-full mt-20 bg-white text-black py-12 px-6 border-t border-gray-400">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-green-400 text-lg font-bold mb-4">🔐 Segurança & Confiança</h3>
-            <p className="text-sm text-gray-300 mb-2">Auditoria independente concluída com sucesso.</p>
-            <p className="text-sm text-gray-300 mb-2">IA operando com precisão validada de 87,9%.</p>
-            <p className="text-sm text-gray-300">Certificados e parcerias disponíveis no painel.</p>
+            <h3 className="text-black text-lg font-bold mb-4">🔐 Segurança & Confiança</h3>
+            <p className="text-sm text-gray-700 mb-2">Auditoria independente concluída com sucesso.</p>
+            <p className="text-sm text-gray-700 mb-2">IA operando com precisão validada de 87,9%.</p>
+            <p className="text-sm text-gray-700">Certificados e parcerias disponíveis no painel.</p>
           </div>
           <div>
-            <h3 className="text-green-400 text-lg font-bold mb-4">📈 Transparência Total</h3>
-            <p className="text-sm text-gray-300 mb-2">Painel de controle com histórico completo.</p>
-            <p className="text-sm text-gray-300 mb-2">Saque e depósito via Pix 100% transparente.</p>
-            <p className="text-sm text-gray-300">Controle total do seu investimento, em tempo real.</p>
+            <h3 className="text-black text-lg font-bold mb-4">📈 Transparência Total</h3>
+            <p className="text-sm text-gray-700 mb-2">Painel de controle com histórico completo.</p>
+            <p className="text-sm text-gray-700 mb-2">Saque e depósito via Pix 100% transparente.</p>
+            <p className="text-sm text-gray-700">Controle total do seu investimento, em tempo real.</p>
           </div>
           <div>
-            <h3 className="text-green-400 text-lg font-bold mb-4">🤝 Comunidade Ziler</h3>
-            <p className="text-sm text-gray-300 mb-2">Top 10 Zilers com maiores ganhos do mês.</p>
-            <p className="text-sm text-gray-300 mb-2">
+            <h3 className="text-black text-lg font-bold mb-4">🤝 Comunidade Ziler</h3>
+            <p className="text-sm text-gray-700 mb-2">Top 10 Zilers com maiores ganhos do mês.</p>
+            <p className="text-sm text-gray-700 mb-2">
               Missão: Pagar dívidas, viver de renda, transformar vidas.
             </p>
-            <p className="text-sm text-gray-300">Você é o protagonista dessa revolução financeira.</p>
+            <p className="text-sm text-gray-700">Você é o protagonista dessa revolução financeira.</p>
           </div>
         </div>
-        <div className="text-center mt-12 text-sm text-gray-500">
+        <div className="text-center mt-12 text-sm text-gray-600">
           © {new Date().getFullYear()} BetZila • Todos os direitos reservados
         </div>
       </footer>
