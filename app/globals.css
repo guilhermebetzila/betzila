@@ -5,26 +5,25 @@
 /* ========== 🌈 TEMA GLOBAL E VARIÁVEIS ========== */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 100%; /* branco */
+    --foreground: 0 0% 0%; /* preto */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 0%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 0%;
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary-foreground: 0 0% 0%;
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 210 40% 96%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent-foreground: 0 0% 0%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    --ring: 0 0% 0%;
 
     /* 🎲 Cores para gráficos */
     --chart-1: 12 76% 61%;
@@ -80,7 +79,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
     font-family: 'Inter', sans-serif;
     font-smooth: always;
     -webkit-font-smoothing: antialiased;
@@ -93,7 +92,7 @@
   input,
   textarea,
   select {
-    @apply text-white bg-gray-800 border border-gray-600 rounded px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500;
+    @apply text-black bg-gray-100 border border-gray-400 rounded px-3 py-2 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500;
   }
 
   ::-webkit-scrollbar {
@@ -156,11 +155,13 @@
 .symbol-spin {
   animation: spinSymbol 0.6s linear infinite;
 }
-body, main {
+
+/* REMOVIDO o fundo animado para fundo branco fixo */
+/* body, main {
   background: linear-gradient(270deg, #0a0d1a, #121524, #001f1f, #0a0d1a);
   background-size: 800% 800%;
   animation: gradientShift 30s ease infinite;
-}
+} */
 
 @keyframes gradientShift {
   0% {
