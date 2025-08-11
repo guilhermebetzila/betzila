@@ -2,16 +2,18 @@
 
 import { useEffect, useState } from 'react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
 export default function CartelaAoVivo() {
   const [cartela, setCartela] = useState<number[]>([]);
   const [bolas, setBolas] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchTudo = async () => {
-      const resCart = await fetch('/api/cartelas/minha');
+      const resCart = await fetch(`${API_BASE_URL}/api/cartelas/minha`);
       const dataCart = resCart.ok ? await resCart.json() : null;
 
-      const resBolas = await fetch('/api/partida/bolasSorteadas');
+      const resBolas = await fetch(`${API_BASE_URL}/api/partida/bolasSorteadas`);
       const dataBolas = resBolas.ok ? await resBolas.json() : null;
 
       if (dataCart?.cartelas?.[0]?.numeros) {

@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
 export default function CadastrarCpfPage() {
   const router = useRouter();
   const [cpf, setCpf] = useState('');
@@ -10,7 +12,7 @@ export default function CadastrarCpfPage() {
 
   useEffect(() => {
     async function fetchCpf() {
-      const res = await fetch('/api/me', { credentials: 'include' });
+      const res = await fetch(`${API_BASE_URL}/api/me`, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         if (data.user?.cpf) setCpf(data.user.cpf);
@@ -44,7 +46,7 @@ export default function CadastrarCpfPage() {
     }
     setLoading(true);
     try {
-      const res = await fetch('/api/user/atualizar-cpf', {
+      const res = await fetch(`${API_BASE_URL}/api/user/atualizar-cpf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cpf }),
@@ -62,7 +64,7 @@ export default function CadastrarCpfPage() {
       setLoading(false);
     }
   }
-
+  
   return (
     <main className="min-h-screen bg-[#0a0d1a] flex flex-col items-center justify-center px-4 py-10 text-white">
       <h1 className="text-3xl font-bold mb-8 text-green-500">📝 Cadastro de CPF</h1>

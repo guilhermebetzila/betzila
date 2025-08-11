@@ -6,11 +6,6 @@ import type { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
-
-  session: {
-    strategy: "jwt",
-  },
-
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -19,40 +14,44 @@ export const authOptions: NextAuthOptions = {
         senha: { label: "Senha", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.senha) return null;
+        if (!credentials?.email || !credentials?.senha) {
+          throw new Error("Preencha todos os campos");
+        }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
-        if (!user || !user.senha) return null;
+        if (!user || !user.senha) {
+          throw new Error("Email não encontrado");
+        }
 
         const senhaCorreta = await compare(credentials.senha, user.senha);
-        if (!senhaCorreta) return null;
+        if (!senhaCorreta) {
+          throw new Error("Senha incorreta");
+        }
 
-        // Retorno compatível com sua tipagem
         return {
           id: String(user.id),
-          email: user.email,
           nome: user.nome,
-          saldo: user.saldo,
+          email: user.email,
+          saldo: user.saldo ?? 0,
         };
       },
     }),
   ],
-
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.nome = user.nome;
+        token.nome = (user as any).nome;
         token.email = user.email;
-        token.saldo = user.saldo;
+        token.saldo = (user as any).saldo;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token && session.user) {
+      if (session.user) {
         session.user.id = token.id as string;
         session.user.nome = token.nome as string;
         session.user.email = token.email as string;
@@ -61,21 +60,15 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 dias de sessão
+  },
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 dias para o token JWT
+  },
   pages: {
     signIn: "/login",
   },
-
-  // Configuração explícita do cookie para funcionar bem no mobile (HTTPS obrigatório)
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "none",
-        path: "/",
-        secure: true,
-      },
-    },
-  },
+  secret: process.env.NEXTAUTH_SECRET,
 };

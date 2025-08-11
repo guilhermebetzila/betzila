@@ -15,6 +15,8 @@ interface Cartela {
   numeros: number[];
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
 export default function BingoPage() {
   const { user, loading } = useAuth();
   const [quantidade, setQuantidade] = useState(1);
@@ -54,7 +56,7 @@ export default function BingoPage() {
     const verificarCartela = async () => {
       setCarregandoCartela(true);
       try {
-        const res = await fetch('/api/cartelas/minha');
+        const res = await fetch(`${API_BASE_URL}/api/cartelas/minha`);
         const data = await res.json();
         setTemCartela(!!data?.cartela);
       } catch (error) {
@@ -78,10 +80,9 @@ export default function BingoPage() {
   // 💳 Fallback: compra via fetch
   const comprarCartela = async () => {
     try {
-      const res = await fetch('/api/cartelas/comprar', {
+      const res = await fetch(`${API_BASE_URL}/api/cartelas/comprar`, {
         method: 'POST',
       });
-
       if (res.ok) {
         setTemCartela(true);
         alert('Cartela comprada com sucesso!');

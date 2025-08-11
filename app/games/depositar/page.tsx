@@ -1,32 +1,34 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import axios from 'axios'
-import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 export default function Depositar() {
-  const [valor, setValor] = useState('')
-  const [copiacola, setCopiacola] = useState('')
-  const [erro, setErro] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [historico, setHistorico] = useState<any[]>([]) // histórico de depósitos
+  const [valor, setValor] = useState('');
+  const [copiacola, setCopiacola] = useState('');
+  const [erro, setErro] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [historico, setHistorico] = useState<any[]>([]); // histórico de depósitos
 
-  const { data: session } = useSession()
+  const { data: session } = useSession();
 
   useEffect(() => {
-    buscarHistorico()
-  }, [])
+    buscarHistorico();
+  }, []);
 
   // Função para buscar histórico
   async function buscarHistorico() {
     try {
-      const res = await fetch('/api/depositos/historico', { credentials: 'include' })
+      const res = await fetch(`${API_BASE_URL}/api/depositos/historico`, { credentials: 'include' });
       if (res.ok) {
-        const dados = await res.json()
-        setHistorico(dados)
+        const dados = await res.json();
+        setHistorico(dados);
       }
     } catch (error) {
-      console.error('Erro ao buscar histórico:', error)
+      console.error('Erro ao buscar histórico:', error);
     }
   }
 

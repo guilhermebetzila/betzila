@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
 export default function InvestirPage() {
   const router = useRouter();
   const [saldo, setSaldo] = useState(1500);
@@ -15,7 +17,7 @@ export default function InvestirPage() {
 
   useEffect(() => {
     async function checkAuth() {
-      const res = await fetch('/api/me', { credentials: 'include' });
+      const res = await fetch(`${API_BASE_URL}/api/me`, { credentials: 'include' });
       if (!res.ok) {
         router.push('/login');
         return;
@@ -32,7 +34,7 @@ export default function InvestirPage() {
     }
 
     async function buscarHistorico() {
-      const res = await fetch('/api/investir/historico');
+      const res = await fetch(`${API_BASE_URL}/api/investir/historico`);
       if (res.ok) {
         const dados = await res.json();
         setHistorico(dados);
@@ -63,7 +65,7 @@ export default function InvestirPage() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/investir', {
+      const res = await fetch(`${API_BASE_URL}/api/investir`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ valor }),
@@ -87,7 +89,7 @@ export default function InvestirPage() {
   }
 
   async function atualizarHistorico() {
-    const res = await fetch('/api/investir/historico');
+    const res = await fetch(`${API_BASE_URL}/api/investir/historico`);
     if (res.ok) {
       const dados = await res.json();
       setHistorico(dados);

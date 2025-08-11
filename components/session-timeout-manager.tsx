@@ -36,14 +36,14 @@ const defaultConfig: TimeoutConfig = {
 
 interface SessionTimeoutManagerProps {
   isLoggedIn: boolean
-  rememberLogin: boolean
+  isRemembered: boolean
   onLogout: () => void
   onExtendSession: () => void
 }
 
 export function SessionTimeoutManager({
   isLoggedIn,
-  rememberLogin,
+  isRemembered,
   onLogout,
   onExtendSession,
 }: SessionTimeoutManagerProps) {
@@ -93,8 +93,8 @@ export function SessionTimeoutManager({
       }
     }
 
-    return rememberLogin ? config.rememberTimeout * 60 * 1000 : config.normalTimeout * 60 * 1000
-  }, [config, rememberLogin])
+    return isRemembered ? config.rememberTimeout * 60 * 1000 : config.normalTimeout * 60 * 1000
+  }, [config, isRemembered])
 
   // Resetar timer quando usuário faz login
   useEffect(() => {
@@ -115,12 +115,10 @@ export function SessionTimeoutManager({
         const newTime = prev - 1000
         const warningThreshold = config.warningTime * 60 * 1000
 
-        // Mostrar aviso quando restam poucos minutos
         if (newTime <= warningThreshold && newTime > 0) {
           setShowWarning(true)
         }
 
-        // Logout automático
         if (newTime <= 0) {
           onLogout()
           setShowWarning(false)
@@ -200,13 +198,11 @@ export function SessionTimeoutManager({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Timer visual */}
           <div className="text-center">
             <div className="text-3xl font-bold text-yellow-400 mb-2">{formatTime(timeLeft)}</div>
             <p className="text-gray-300 text-sm">Sua sessão expirará em breve</p>
           </div>
 
-          {/* Barra de progresso */}
           <div className="space-y-2">
             <Progress value={progress} className="h-2" />
             <div className="flex justify-between text-xs text-gray-400">
@@ -215,7 +211,6 @@ export function SessionTimeoutManager({
             </div>
           </div>
 
-          {/* Informações de extensão */}
           {config.enableAutoExtend && !config.securityMode && (
             <div className="bg-gray-800 border border-gray-700 rounded-lg p-3">
               <div className="flex items-center justify-between text-sm">
@@ -227,7 +222,6 @@ export function SessionTimeoutManager({
             </div>
           )}
 
-          {/* Modo segurança ativo */}
           {config.securityMode && (
             <div className="bg-red-900/30 border border-red-700 rounded-lg p-3">
               <div className="flex items-center gap-2">
@@ -238,7 +232,6 @@ export function SessionTimeoutManager({
             </div>
           )}
 
-          {/* Botões de ação */}
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -257,7 +250,6 @@ export function SessionTimeoutManager({
             )}
           </div>
 
-          {/* Aviso sobre extensões esgotadas */}
           {!canExtend && config.enableAutoExtend && !config.securityMode && (
             <p className="text-center text-gray-400 text-xs">Limite de extensões atingido</p>
           )}

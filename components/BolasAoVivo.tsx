@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
 let socket: Socket;
 
 export default function BolasAoVivo() {
@@ -12,7 +15,7 @@ export default function BolasAoVivo() {
   useEffect(() => {
     const fetchBolas = async () => {
       try {
-        const res = await fetch('/api/partida/bolasSorteadas');
+        const res = await fetch(`${API_BASE_URL}/api/partida/bolasSorteadas`);
         const data = await res.json();
         if (!Array.isArray(data)) throw new Error('Resposta inválida');
 

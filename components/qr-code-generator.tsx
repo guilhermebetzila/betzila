@@ -14,13 +14,11 @@ export function QRCodeGenerator({ text, size = 200, className = "" }: QRCodeGene
   useEffect(() => {
     if (!canvasRef.current) return
 
-    // Função simples para gerar QR Code usando uma API pública
     const generateQRCode = async () => {
       try {
         const canvas = canvasRef.current!
         const ctx = canvas.getContext("2d")!
 
-        // Usar API pública para gerar QR Code
         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&format=png&bgcolor=1f2937&color=ffffff&margin=2`
 
         const img = new Image()
@@ -31,13 +29,11 @@ export function QRCodeGenerator({ text, size = 200, className = "" }: QRCodeGene
           ctx.drawImage(img, 0, 0, size, size)
         }
         img.onerror = () => {
-          // Fallback: desenhar um QR Code simples manualmente
           drawFallbackQR(ctx, size)
         }
         img.src = qrCodeUrl
       } catch (error) {
         console.error("Erro ao gerar QR Code:", error)
-        // Fallback em caso de erro
         const canvas = canvasRef.current!
         const ctx = canvas.getContext("2d")!
         drawFallbackQR(ctx, size)
@@ -48,14 +44,12 @@ export function QRCodeGenerator({ text, size = 200, className = "" }: QRCodeGene
   }, [text, size])
 
   const drawFallbackQR = (ctx: CanvasRenderingContext2D, size: number) => {
-    // Desenhar um QR Code simples como fallback
     ctx.fillStyle = "#1f2937"
     ctx.fillRect(0, 0, size, size)
 
     ctx.fillStyle = "#ffffff"
     const moduleSize = size / 25
 
-    // Padrão simples de QR Code
     const pattern = [
       [1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
       [1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
@@ -91,7 +85,6 @@ export function QRCodeGenerator({ text, size = 200, className = "" }: QRCodeGene
 
   const downloadQRCode = () => {
     if (!canvasRef.current) return
-
     const link = document.createElement("a")
     link.download = "betdreams-qrcode.png"
     link.href = canvasRef.current.toDataURL()
@@ -108,7 +101,6 @@ export function QRCodeGenerator({ text, size = 200, className = "" }: QRCodeGene
 
         if (navigator.share && navigator.canShare) {
           const file = new File([blob], "betdreams-qrcode.png", { type: "image/png" })
-
           if (navigator.canShare({ files: [file] })) {
             await navigator.share({
               title: "QR Code BetDreams",
@@ -118,8 +110,6 @@ export function QRCodeGenerator({ text, size = 200, className = "" }: QRCodeGene
             return
           }
         }
-
-        // Fallback: download
         downloadQRCode()
       }, "image/png")
     } catch (error) {

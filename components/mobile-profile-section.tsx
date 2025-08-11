@@ -1,12 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
+import { QRCodeGenerator } from "@/components/qr-code-generator"  // Apenas um import do QRCodeGenerator
+
 import {
   User,
   Settings,
@@ -31,8 +34,8 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react"
-import { QRCodeGenerator } from "./qr-code-generator"
-import { QRScanner } from "./qr-scanner"
+
+import { QRScanner } from "./qr-scanner"  // Mantém o QRScanner normalmente
 
 interface UserProfile {
   name: string
@@ -499,7 +502,7 @@ export function MobileProfileSection() {
                         <QrCode className="h-4 w-4 text-blue-400" />
                         <span className="text-white font-medium text-sm">QR Code de Indicação</span>
                       </div>
-                      <QRCodeGenerator data={userProfile.referralLink} />
+                      <QRCodeGenerator text={userProfile.referralLink} />
                       <p className="text-gray-400 text-xs mt-2 text-center">
                         Compartilhe este QR Code para facilitar o cadastro
                       </p>

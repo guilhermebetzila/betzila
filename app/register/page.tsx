@@ -1,32 +1,34 @@
-'use client'
+'use client';
 
-import { Suspense, useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 function FormularioRegistro() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [cpf, setCpf] = useState('')
-  const [password, setPassword] = useState('')
-  const [indicador, setIndicador] = useState('')
-  const [erro, setErro] = useState('')
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [password, setPassword] = useState('');
+  const [indicador, setIndicador] = useState('');
+  const [erro, setErro] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Pegando indicador da URL ou localStorage
   useEffect(() => {
-    const indicacaoURL = searchParams.get('indicador')
+    const indicacaoURL = searchParams.get('indicador');
     if (indicacaoURL) {
-      localStorage.setItem('indicador', indicacaoURL)
-      setIndicador(indicacaoURL)
+      localStorage.setItem('indicador', indicacaoURL);
+      setIndicador(indicacaoURL);
     } else {
-      const indicacaoLocal = localStorage.getItem('indicador')
-      if (indicacaoLocal) setIndicador(indicacaoLocal)
+      const indicacaoLocal = localStorage.getItem('indicador');
+      if (indicacaoLocal) setIndicador(indicacaoLocal);
     }
-  }, [searchParams])
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     const payload = {
       name: name.trim(),
@@ -34,14 +36,14 @@ function FormularioRegistro() {
       cpf: cpf.trim(),
       password: password.trim(),
       indicador: indicador.trim() || null,
-    }
+    };
 
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      })
+      });
 
       if (res.ok) {
         router.push('/login')

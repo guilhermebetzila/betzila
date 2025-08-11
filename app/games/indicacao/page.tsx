@@ -1,36 +1,38 @@
-'use client'
+'use client';
 
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { useAuth } from '@/hooks/context/AuthContext'
-import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/context/AuthContext';
+import { useEffect, useState } from 'react';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 export default function IndicacaoPage() {
-  const router = useRouter()
-  const { user } = useAuth()
-  const [linkConvite, setLinkConvite] = useState('')
-  const [quantidadeIndicados, setQuantidadeIndicados] = useState<number | null>(null)
+  const router = useRouter();
+  const { user } = useAuth();
+  const [linkConvite, setLinkConvite] = useState('');
+  const [quantidadeIndicados, setQuantidadeIndicados] = useState<number | null>(null);
 
   useEffect(() => {
     if (user?.nome) {
       // Gera o link baseado no nome do usuário
-      const nomeFormatado = user.nome.toLowerCase().replace(/\s+/g, '')
-      const link = `https://betdreams.com/convite/${nomeFormatado}`
-      setLinkConvite(link)
+      const nomeFormatado = user.nome.toLowerCase().replace(/\s+/g, '');
+      const link = `https://betdreams.com/convite/${nomeFormatado}`;
+      setLinkConvite(link);
 
       // Busca a quantidade de indicados do usuário
-      fetch('/api/indicacoes/quantidade')
+      fetch(`${API_BASE_URL}/api/indicacoes/quantidade`)
         .then(res => res.json())
         .then(data => {
           if (data.quantidade !== undefined) {
-            setQuantidadeIndicados(data.quantidade)
+            setQuantidadeIndicados(data.quantidade);
           }
         })
         .catch(() => {
-          setQuantidadeIndicados(null)
-        })
+          setQuantidadeIndicados(null);
+        });
     }
-  }, [user])
+  }, [user]);
 
   const copiarLink = async () => {
     try {

@@ -6,6 +6,8 @@ import IAWorkingPanel from '@/components/IAWorkingPanel';
 import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
 const menuItems = [
   { label: '🤖 IA', action: '/games/ia' },
   { label: '📥 Depositar', action: '/games/depositar' },
@@ -87,7 +89,7 @@ export default function DashboardPage() {
 
     const fetchIndicacoes = async () => {
       try {
-        const res = await fetch('/api/user/indicacoes');
+        const res = await fetch(`${API_BASE_URL}/api/user/indicacoes`);
         const data = await res.json();
         if (res.ok) setTotalIndicados(data.totalIndicados || 0);
       } catch (error) {
@@ -97,7 +99,7 @@ export default function DashboardPage() {
 
     const fetchSaldo = async () => {
       try {
-        const res = await fetch('/api/saldo');
+        const res = await fetch(`${API_BASE_URL}/api/saldo`);
         const data = await res.json();
         if (res.ok) setSaldo(data.saldo || 0);
       } catch (error) {

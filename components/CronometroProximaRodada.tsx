@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+
 export default function CronometroProximaRodada() {
   const [tempo, setTempo] = useState<number | null>(null);
   const [usandoFallback, setUsandoFallback] = useState(false);
@@ -11,7 +13,7 @@ export default function CronometroProximaRodada() {
 
     const carregarTempo = async () => {
       try {
-        const res = await fetch('/api/partida/tempo-restante');
+        const res = await fetch(`${API_BASE_URL}/api/partida/tempo-restante`);
         const data = await res.json();
 
         const tempoApi = Number(data.tempoRestante);

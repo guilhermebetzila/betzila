@@ -221,7 +221,7 @@ export function MobileHeader() {
       />
       <SessionTimeoutManager
         isLoggedIn={isLoggedIn}
-        isRemembered={isRemembered}
+        isRemembered={isRemembered}  
         onLogout={handleLogout}
         onExtendSession={handleExtendSession}
       />
