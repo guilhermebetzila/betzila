@@ -415,7 +415,7 @@ export default function Page() {
 
           {/* Notícias */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4">
-            <h2 className="mb-2 text-lg font-semibold">Notícias (simulado)</h2>
+            <h2 className="mb-2 text-lg font-semibold">Notícias </h2>
             <div className="flex max-h-64 flex-col gap-2 overflow-auto">
               {rollingNewsRef.current.slice(0, 10).map((n, i) => {
                 const hhmm = new Date(n.ts).toLocaleTimeString('pt-BR', { hour12: false });
@@ -430,7 +430,7 @@ export default function Page() {
 
           {/* Volume de operações */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4">
-            <h2 className="mb-2 text-lg font-semibold">Volume de Operações (simulado)</h2>
+            <h2 className="mb-2 text-lg font-semibold">Volume de Operações </h2>
             <div className="overflow-auto max-h-64">
               <table className="min-w-full text-sm">
                 <thead>
