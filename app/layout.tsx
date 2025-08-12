@@ -6,8 +6,8 @@ import Sidebar from '@/components/Sidebar'  // <-- Ajustado aqui para import def
 import { EsteiraParceiros } from '@/components/EsteiraParceiros'
 
 export const metadata = {
-  title: 'Betdreams',
-  description: 'App oficial Betdreams',
+  title: 'Ziller.Ia',
+  description: 'App oficial Ziller.Ia',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
