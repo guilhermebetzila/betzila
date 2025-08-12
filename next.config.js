@@ -1,18 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // comando export vai gerar arquivos estáticos em /out
-  output: 'export', // importante para next export
+  // Removi o output: 'export' para que o Next.js rode em modo SSR normal, permitindo rotas API
+  // output: 'export',
 
-  // configura para gerar a pasta out
   distDir: '.next', // padrão
 
-  // para evitar problemas de roteamento, deixa assim
-  trailingSlash: true, 
+  trailingSlash: true,
 
-  // domínio para imagens externas
   images: {
-    domains: ['blob.v0.dev'], 
-  }
+    domains: ['blob.v0.dev'],
+  },
 };
 
 module.exports = nextConfig;
