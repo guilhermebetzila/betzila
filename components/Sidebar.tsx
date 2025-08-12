@@ -25,15 +25,13 @@ export default function Sidebar() {
   );
 }
 
-function SidebarItem({
-  href,
-  icon,
-  label
-}: {
+type SidebarItemProps = {
   href: string;
   icon: React.ReactNode;
   label: string;
-}) {
+};
+
+function SidebarItem({ href, icon, label }: SidebarItemProps) {
   return (
     <Link
       href={href}

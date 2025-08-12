@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { ReactNode } from 'react'
-import { SessionProvider } from 'next-auth/react'
-import { AuthProvider } from '@/hooks/context/AuthContext'
-import { SidebarProvider } from '@/hooks/context/sidebar-context'
-import { Sidebar } from '@/components/Sidebar'
-import { Topbar } from '@/components/TopBar'
+import { ReactNode } from 'react';
+import { SessionProvider } from 'next-auth/react';
+import { AuthProvider } from '@/hooks/context/AuthContext';
+import { SidebarProvider } from '@/hooks/context/sidebar-context';
+import Sidebar from '@/components/Sidebar';
+import { Topbar } from '@/components/TopBar';
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
@@ -23,5 +23,5 @@ export default function Providers({ children }: { children: ReactNode }) {
         </SidebarProvider>
       </AuthProvider>
     </SessionProvider>
-  )
+  );
 }
