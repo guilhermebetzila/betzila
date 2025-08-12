@@ -188,7 +188,7 @@ export default function Home() {
 
       <div className="w-full flex justify-center mt-10 mb-6">
         <Image
-          src="/img/betzila.png"
+          src="/img/betzillaa.png"
           alt="Logo BetZila"
           width={180}
           height={180}
