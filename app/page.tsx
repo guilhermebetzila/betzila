@@ -381,7 +381,7 @@ export default function Home() {
 <div className="bg-gray-100 border border-black rounded-2xl shadow-2xl mt-10 py-10 px-6 text-center space-y-6 max-w-3xl mx-auto">
   <h3 className="text-3xl font-bold text-black select-none">🔓 3 Passos Simples para sua Virada</h3>
   <ol className="text-black text-lg sm:text-xl space-y-3 list-decimal list-inside text-left max-w-md mx-auto font-medium">
-    <li>Crie seu perfil BetZila</li>
+    <li>Crie seu perfil Ziller.Ia</li>
     <li>Ative a IA com qualquer valor</li>
     <li>Veja seus ganhos começarem amanhã</li>
   </ol>
@@ -480,10 +480,10 @@ export default function Home() {
   <li>🔒 Segurança, Transparência e Controle direto no seu painel pessoal.</li>
 </ul>
 
-{/* Razões para escolha BetZila */}
+{/* Razões para escolha Ziller.Ia */}
 <div className="max-w-3xl mx-auto px-4 mt-12">
   <h2 className="text-black text-2xl sm:text-3xl font-bold mb-4 select-none">
-    🎯 Por Que as Pessoas Estão Correndo para a BetZila?
+    🎯 Por Que as Pessoas Estão Correndo para a Ziller.Ia?
   </h2>
   <p className="text-gray-700 text-lg mb-6 leading-relaxed max-w-prose">
     Porque estão cansadas de promessas vazias...
@@ -510,7 +510,7 @@ export default function Home() {
   <p className="text-sm text-gray-600 mt-5 select-none">🔒 Seguro. Rápido. Sem pegadinhas.</p>
   <p className="text-black text-2xl font-extrabold mt-6 leading-snug">
     O futuro pertence a quem age agora.<br />
-    BetZila – O Investimento do Século Está a um Clique.
+    Ziller.Ia – O Investimento do Século Está a um Clique.
   </p>
 </div>
 
@@ -530,7 +530,7 @@ export default function Home() {
     </div>
     <div className="bg-gray-300 rounded-lg p-4 border-2 border-yellow-500">
       <h3 className="text-xl font-bold mb-2">1000 Pontos</h3>
-      <p>App exclusivo BetZila para celular</p>
+      <p>App exclusivo Ziller.Ia para celular</p>
     </div>
     <div className="bg-gray-300 rounded-lg p-4 border-2 border-red-700">
       <h3 className="text-xl font-bold mb-2">7000 Pontos</h3>
@@ -549,7 +549,7 @@ export default function Home() {
     <div>
       <h3 className="font-extrabold mb-6 text-black uppercase tracking-wide">🔹 SOBRE NÓS</h3>
       <ul className="space-y-3 leading-relaxed">
-        <li className="hover:text-yellow-500 cursor-pointer transition-colors">O que é a BetZila</li>
+        <li className="hover:text-yellow-500 cursor-pointer transition-colors">O que é a Ziller.Ia</li>
         <li className="hover:text-yellow-500 cursor-pointer transition-colors">Inteligência Artificial e Estratégias</li>
         <li className="hover:text-yellow-500 cursor-pointer transition-colors">Transparência e Tecnologia</li>
         <li className="hover:text-yellow-500 cursor-pointer transition-colors">Nossa Missão</li>
@@ -587,10 +587,10 @@ export default function Home() {
 
   <div className="mt-14 text-center text-gray-600 text-sm px-6 max-w-4xl mx-auto select-none">
     <div className="mb-3">🔒 Criptografia SSL 256 bits — Site Seguro</div>
-    <div className="mb-3">🌐 BetZila © 2025 — Todos os direitos reservados.</div>
+    <div className="mb-3">🌐 Ziller.Ia © 2025 — Todos os direitos reservados.</div>
     <div className="italic">Tecnologia, Liberdade Financeira e Transparência em um só clique.</div>
     <div className="mt-4 text-xs text-gray-500 max-w-prose mx-auto">
-      Este site não oferece serviços de jogos de azar. A BetZila é uma plataforma tecnológica voltada para inteligência financeira.
+      Este site não oferece serviços de jogos de azar. A Ziller.Ia é uma plataforma tecnológica voltada para inteligência financeira.
     </div>
           </div>
         </footer>
