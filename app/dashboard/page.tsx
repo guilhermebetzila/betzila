@@ -34,15 +34,15 @@ function gerarSaquesAleatorios(qtd = 1000) {
 }
 
 const comentariosEsteira = [
-  '🌍 "Agora posso viajar com minha esposa. A BetZila me deu asas!" — Paulo, MG',
-  '👨‍👩‍👧‍👦 "Consegui pagar a escola das minhas filhas. Obrigado, BetZila!" — Juliana, SP',
+  '🌍 "Agora posso viajar com minha esposa. A Ziller.Ia me deu asas!" — Paulo, MG',
+  '👨‍👩‍👧‍👦 "Consegui pagar a escola das minhas filhas. Obrigado, Ziller.Ia!" — Juliana, SP',
   '🚀 "Investi R$ 200 e hoje vivo de renda com a IA." — Carlos, BA',
   '🎯 "Não acreditava em mim até ver meus resultados. A IA me fez acreditar!" — Amanda, DF',
-  '💼 "Montei minha loja virtual com os lucros da BetZila." — Tiago, RJ',
+  '💼 "Montei minha loja virtual com os lucros da Ziller.Ia." — Tiago, RJ',
   '🏠 "Minha primeira reforma da casa foi com os rendimentos diários." — Larissa, CE',
   '📈 "Não é só dinheiro. É liberdade. É escolha." — Rafael, SC',
   '🎓 "Pude voltar a estudar graças ao lucro diário." — Bianca, PR',
-  '💡 "A BetZila virou meu sócio invisível. A IA trabalha por mim!" — Victor, RS',
+  '💡 "A Ziller.Ia virou meu sócio invisível. A IA trabalha por mim!" — Victor, RS',
   '💖 "Dei orgulho pros meus pais. Finalmente ajudo em casa." — Camila, AM',
 ];
 
@@ -128,7 +128,7 @@ export default function DashboardPage() {
   if (status === 'unauthenticated') return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
   const codigoIndicacao = user?.nome || user?.email || user?.id;
-  const linkIndicacao = `https://www.betzila.com.br/register?indicador=${encodeURIComponent(codigoIndicacao || '')}`;
+  const linkIndicacao = `https://www.ziller.ia.com.br/register?indicador=${encodeURIComponent(codigoIndicacao || '')}`;
 
   return (
     <LayoutWrapper>
@@ -213,7 +213,7 @@ export default function DashboardPage() {
 
         <div className="mb-8">
           <h3 className="text-lg text-center text-black font-semibold mb-3">
-            💬 Transformações Reais com a BetZila
+            💬 Transformações Reais com a Ziller.Ia
           </h3>
           <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-gray-300">
             {comentariosEsteira.map((comentario, index) => (
@@ -261,7 +261,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="text-center mt-12 text-sm text-gray-600">
-          © {new Date().getFullYear()} BetZila • Todos os direitos reservados
+          © {new Date().getFullYear()} Ziller.Ia • Todos os direitos reservados
         </div>
       </footer>
     </LayoutWrapper>

@@ -135,11 +135,11 @@ export default function IaTrabalhandoPage() {
   return (
     <main className="flex flex-col items-center justify-start min-h-screen bg-white text-black p-6 space-y-10 overflow-y-auto">
       <div className="flex items-center gap-3 mb-2">
-        <img src="/img/robo.png" alt="IA BetZila" className="w-12 h-12 drop-shadow-lg" />
-        <h1 className="text-5xl font-extrabold text-black drop-shadow-lg">IA BetZila trabalhando...</h1>
+        <img src="/img/robo.png" alt="Ziller.Ia" className="w-12 h-12 drop-shadow-lg" />
+        <h1 className="text-5xl font-extrabold text-black drop-shadow-lg">Ziller.ia trabalhando...</h1>
       </div>
       <p className="text-gray-700 max-w-xl text-center text-lg italic mb-8">
-        Você é o protagonista dessa revolução financeira. A IA BetZila é seu mentor, seu Yoda nesta caminhada.
+        Você é o protagonista dessa revolução financeira. A IA Ziller é seu mentor, seu Yoda nesta caminhada.
       </p>
 
       {/* Indicadores gerais */}

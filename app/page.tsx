@@ -230,7 +230,7 @@ export default function Home() {
     🛡️ Sua Jornada Começa Aqui
   </h2>
   <p>
-    Você é o <span className="text-black font-bold">protagonista</span> dessa revolução financeira. A <span className="text-black font-bold">IA BetZila</span> é seu mentor, seu Yoda nesta caminhada.
+    Você é o <span className="text-black font-bold">protagonista</span> dessa revolução financeira. A <span className="text-black font-bold">Ziller.Ia </span> é seu mentor, seu Yoda nesta caminhada.
   </p>
   <p>
     A única coisa entre você e a <span className="text-[#FFD600] font-bold">liberdade financeira</span> é o próximo clique.
