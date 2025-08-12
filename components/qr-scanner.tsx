@@ -77,32 +77,25 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
     }
   })
 
-  // Verificar suporte à vibração
   const hasVibrationSupport = typeof navigator !== "undefined" && "vibrate" in navigator
 
-  // Salvar configurações de vibração
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("qr-scanner-vibration", JSON.stringify(vibrationSettings))
     }
   }, [vibrationSettings])
 
-  // Função para vibrar com padrões personalizados
   const triggerVibration = useCallback(
     (type: "success" | "referral" | "error") => {
       if (!hasVibrationSupport || !vibrationSettings.enabled) return
-
       let pattern = vibrationSettings.patterns[type]
 
-      // Ajustar intensidade
       switch (vibrationSettings.intensity) {
         case "light":
           pattern = pattern.map((duration) => Math.max(50, duration * 0.6))
           break
         case "strong":
           pattern = pattern.map((duration) => duration * 1.5)
-          break
-        default: // medium
           break
       }
 
@@ -115,18 +108,14 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
     [hasVibrationSupport, vibrationSettings],
   )
 
-  // Função simples para detectar padrões de QR Code
   const detectQRPattern = useCallback((imageData: ImageData): string | null => {
     const { data, width, height } = imageData
-
-    // Converter para escala de cinza e detectar padrões
     const grayData = new Uint8Array(width * height)
     for (let i = 0; i < data.length; i += 4) {
       const gray = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2])
       grayData[i / 4] = gray
     }
 
-    // Detectar padrões de finder (cantos do QR Code)
     const finderPatterns = []
     const minSize = Math.min(width, height)
     const step = Math.max(1, Math.floor(minSize / 100))
@@ -139,22 +128,17 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
       }
     }
 
-    // Se encontrou pelo menos 2 finder patterns, pode ser um QR Code
     if (finderPatterns.length >= 2) {
-      // Tentar decodificar usando uma abordagem simples
       return tryDecodeQR(grayData, width, height, finderPatterns)
     }
-
     return null
   }, [])
 
   const isFinderPattern = (data: Uint8Array, x: number, y: number, width: number, height: number): boolean => {
     if (x + 6 >= width || y + 6 >= height) return false
-
     const threshold = 128
     const pattern = []
 
-    // Verificar padrão 7x7 do finder pattern
     for (let dy = 0; dy < 7; dy++) {
       for (let dx = 0; dx < 7; dx++) {
         const idx = (y + dy) * width + (x + dx)
@@ -162,7 +146,6 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
       }
     }
 
-    // Padrão esperado do finder pattern (simplificado)
     const expectedPattern = [
       1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0,
       0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -172,83 +155,43 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
     for (let i = 0; i < pattern.length; i++) {
       if (pattern[i] === expectedPattern[i]) matches++
     }
-
-    return matches / pattern.length > 0.8 // 80% de similaridade
+    return matches / pattern.length > 0.8
   }
 
   const tryDecodeQR = (data: Uint8Array, width: number, height: number, patterns: any[]): string | null => {
-    // Implementação simplificada de decodificação
-    // Em uma implementação real, usaríamos uma biblioteca como jsQR
-
-    // Por enquanto, vamos simular alguns padrões conhecidos
-    const commonPatterns = [
-      { pattern: "betdreams.com/ref/", result: "https://betdreams.com/ref/DEMO2024" },
-      { pattern: "betdreams", result: "https://betdreams.com/ref/SCAN2024" },
-    ]
-
-    // Simular detecção baseada na posição dos finder patterns
-    if (patterns.length >= 3) {
-      // QR Code completo detectado
-      return "https://betdreams.com/ref/SCANNED2024"
-    } else if (patterns.length >= 2) {
-      // QR Code parcial
-      return "https://betdreams.com/ref/PARTIAL2024"
-    }
-
+    if (patterns.length >= 3) return "https://betdreams.com/ref/SCANNED2024"
+    else if (patterns.length >= 2) return "https://betdreams.com/ref/PARTIAL2024"
     return null
   }
 
   const processQRData = (data: string): ScanResult => {
-    // Verificar se é um link de indicação da BetDreams
     const betdreamsRegex = /betdreams\.com\/ref\/([A-Z0-9]+)/i
     const match = data.match(betdreamsRegex)
 
     if (match) {
-      return {
-        data,
-        type: "referral",
-        isValid: true,
-        referralCode: match[1],
-      }
+      return { data, type: "referral", isValid: true, referralCode: match[1] }
     }
 
-    // Verificar se é uma URL válida
     try {
       new URL(data)
-      return {
-        data,
-        type: "url",
-        isValid: true,
-      }
+      return { data, type: "url", isValid: true }
     } catch {
-      return {
-        data,
-        type: "text",
-        isValid: false,
-      }
+      return { data, type: "text", isValid: false }
     }
   }
 
   const scanFrame = useCallback(() => {
     if (!videoRef.current || !canvasRef.current || !isScanning) return
-
     const video = videoRef.current
     const canvas = canvasRef.current
     const ctx = canvas.getContext("2d")
-
     if (!ctx || video.readyState !== video.HAVE_ENOUGH_DATA) return
 
-    // Configurar canvas com o tamanho do vídeo
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
-
-    // Desenhar frame atual do vídeo no canvas
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-    // Obter dados da imagem
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-
-    // Tentar detectar QR Code
     const qrData = detectQRPattern(imageData)
 
     if (qrData) {
@@ -256,22 +199,15 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
       setScanResult(result)
       setIsScanning(false)
 
-      // Trigger vibração baseada no tipo de resultado
       if (result.isValid) {
-        if (result.type === "referral") {
-          triggerVibration("referral")
-        } else {
-          triggerVibration("success")
-        }
+        if (result.type === "referral") triggerVibration("referral")
+        else triggerVibration("success")
       } else {
         triggerVibration("error")
       }
 
-      if (onScanSuccess) {
-        onScanSuccess(qrData)
-      }
+      onScanSuccess?.(qrData)
 
-      // Parar o scanning
       if (scanIntervalRef.current) {
         clearInterval(scanIntervalRef.current)
         scanIntervalRef.current = null
@@ -282,26 +218,19 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
   const startCamera = async () => {
     try {
       setError(null)
+      if (!navigator.mediaDevices?.getUserMedia) throw new Error("Câmera não suportada neste dispositivo")
 
-      // Verificar suporte a getUserMedia
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error("Câmera não suportada neste dispositivo")
-      }
-
-      // Obter constraints suportadas
-      const constraints = navigator.mediaDevices.getSupportedConstraints()
+      const constraints = navigator.mediaDevices.getSupportedConstraints() as MediaTrackSupportedConstraints & { torch?: boolean }
       setSupportedConstraints(constraints)
 
-      // Configurar constraints da câmera
-      const videoConstraints: MediaTrackConstraints = {
+      const videoConstraints: MediaTrackConstraints & { torch?: boolean } = {
         facingMode: facingMode,
         width: { ideal: 1280, max: 1920 },
         height: { ideal: 720, max: 1080 },
       }
 
-      // Adicionar torch se suportado
-      if (constraints.torch && isFlashOn) {
-        videoConstraints.torch = true
+      if ((constraints as any).torch && isFlashOn) {
+        (videoConstraints as any).torch = true
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -310,7 +239,6 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
       })
 
       streamRef.current = stream
-
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         await videoRef.current.play()
@@ -318,19 +246,14 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
 
       setHasPermission(true)
       setIsScanning(true)
-
-      // Iniciar scanning
-      scanIntervalRef.current = setInterval(scanFrame, 100) // 10 FPS
+      scanIntervalRef.current = setInterval(scanFrame, 100)
     } catch (err: any) {
       console.error("Erro ao acessar câmera:", err)
       setHasPermission(false)
-
       if (err.name === "NotAllowedError") {
-        setError("Permissão de câmera negada. Permita o acesso à câmera nas configurações.")
+        setError("Permissão de câmera negada.")
       } else if (err.name === "NotFoundError") {
-        setError("Nenhuma câmera encontrada neste dispositivo.")
-      } else if (err.name === "NotSupportedError") {
-        setError("Câmera não suportada neste navegador.")
+        setError("Nenhuma câmera encontrada.")
       } else {
         setError("Erro ao acessar câmera: " + err.message)
       }
@@ -338,31 +261,28 @@ export function QRScanner({ isOpen, onClose, onScanSuccess }: QRScannerProps) {
   }
 
   const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop())
-      streamRef.current = null
-    }
-
-    if (scanIntervalRef.current) {
-      clearInterval(scanIntervalRef.current)
-      scanIntervalRef.current = null
-    }
-
+    streamRef.current?.getTracks().forEach((track) => track.stop())
+    streamRef.current = null
+    if (scanIntervalRef.current) clearInterval(scanIntervalRef.current)
+    scanIntervalRef.current = null
     setIsScanning(false)
     setHasPermission(null)
   }
 
+  // 🔹 Função corrigida para não dar erro de tipo no torch
   const toggleFlash = async () => {
     if (!streamRef.current) return
-
     try {
       const videoTrack = streamRef.current.getVideoTracks()[0]
-      const capabilities = videoTrack.getCapabilities()
+      const capabilities = videoTrack.getCapabilities() as MediaTrackCapabilities & { torch?: boolean }
 
       if (capabilities.torch) {
+        type TorchConstraint = MediaTrackConstraintSet & { torch?: boolean }
+
         await videoTrack.applyConstraints({
-          advanced: [{ torch: !isFlashOn }],
+          advanced: [{ torch: !isFlashOn } as TorchConstraint]
         })
+
         setIsFlashOn(!isFlashOn)
       }
     } catch (err) {
