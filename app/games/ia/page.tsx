@@ -3,12 +3,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 // ---------- Utilidades ----------
-function randnBoxMuller() {
-  let u = 0, v = 0;
-  while (u === 0) u = Math.random();
-  while (v === 0) v = Math.random();
-  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-}
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
@@ -50,6 +44,20 @@ type ClosedTrade = OpenTrade & {
   exitReason: 'STOP' | 'TAKE' | 'TTL';
   pnlBRL: number;
 };
+type VolumeTrade = {
+  id: number;
+  sym: string;
+  side: 'BUY' | 'SELL';
+  qty: number;
+  entryPrice: number;
+  exitPrice: number;
+  entryTs: string;
+  exitTs: string;
+  pnl: number;
+  fee: number;
+  tax: number;
+  result: 'GAIN' | 'LOSS';
+};
 
 export default function Page() {
   // ---------- Estado base ----------
@@ -66,9 +74,12 @@ export default function Page() {
   const lossesRef = useRef(0);
   const idSeqRef = useRef(1);
 
-  const [tick, setTick] = useState(0); // força render a cada segundo
+  const simulatedVolumeTradesRef = useRef<VolumeTrade[]>([]);
+  const volumeIdRef = useRef(1);
 
-  // ---------- Notícias & Agenda simuladas ----------
+  const [tick, setTick] = useState(0);
+
+  // ---------- Notícias & Agenda ----------
   const newsPool = useMemo(
     () => [
       { headline: 'Tech avança após resultados acima do esperado', region: 'US' },
@@ -92,22 +103,43 @@ export default function Page() {
     ];
   }, []);
 
-  // ---------- Simuladores ----------
-  function simulatePrices() {
-    setInstruments((prev) => {
-      const next = { ...prev };
-      Object.keys(next).forEach((sym) => {
-        const inst = next[sym];
-        const drift = 0.00005;
-        const shock = inst.vol * randnBoxMuller();
-        const ret = drift + shock;
-        inst.price = clamp(inst.price * (1 + ret), 0.01, 1e6);
+  // ---------- Fetch cotações reais ----------
+  async function fetchRealPrices() {
+    try {
+      const symbols = ['VALE3.SA', 'SPY'];
+      const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data.quoteResponse || !data.quoteResponse.result) return;
+
+      const quotes = data.quoteResponse.result;
+      setInstruments((prev) => {
+        const next = { ...prev };
+        quotes.forEach((q: any) => {
+          const sym = q.symbol === 'VALE3.SA' ? 'BR:VALE3' : 'US:SPY';
+          const inst = next[sym];
+          if (inst) inst.price = q.regularMarketPrice || inst.price;
+        });
+        return next;
       });
-      return next;
-    });
-    setUsdbrl((u) => clamp(u * (1 + 0.0002 * randnBoxMuller()), 3.0, 8.0));
+    } catch (err) {
+      console.error('Erro ao buscar cotações reais:', err);
+    }
   }
 
+  async function fetchUSDReal() {
+    try {
+      const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=USDBRL=X`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const quote = data.quoteResponse.result[0];
+      if (quote && quote.regularMarketPrice) setUsdbrl(quote.regularMarketPrice);
+    } catch (err) {
+      console.error('Erro ao buscar USD/BRL:', err);
+    }
+  }
+
+  // ---------- Operações simuladas ----------
   function maybeOpenTrade() {
     if (Math.random() < 0.18) {
       const syms = Object.keys(instruments);
@@ -147,21 +179,11 @@ export default function Page() {
       let exitReason: ClosedTrade['exitReason'] = 'TTL';
 
       if (t.side === 'BUY') {
-        if (px <= t.stop) {
-          exit = true;
-          exitReason = 'STOP';
-        } else if (px >= t.take) {
-          exit = true;
-          exitReason = 'TAKE';
-        }
+        if (px <= t.stop) exit = true, exitReason = 'STOP';
+        else if (px >= t.take) exit = true, exitReason = 'TAKE';
       } else {
-        if (px >= t.stop) {
-          exit = true;
-          exitReason = 'STOP';
-        } else if (px <= t.take) {
-          exit = true;
-          exitReason = 'TAKE';
-        }
+        if (px >= t.stop) exit = true, exitReason = 'STOP';
+        else if (px <= t.take) exit = true, exitReason = 'TAKE';
       }
 
       if (!exit && t.age < t.ttl) {
@@ -170,9 +192,8 @@ export default function Page() {
       }
 
       const exitPrice = instruments[t.sym].price;
-      const feeRate = 0.0003; // 0,03% por lado (fictício)
-      const gross =
-        (t.side === 'BUY' ? exitPrice - t.entryPrice : t.entryPrice - exitPrice) * t.qty;
+      const feeRate = 0.0003;
+      const gross = (t.side === 'BUY' ? exitPrice - t.entryPrice : t.entryPrice - exitPrice) * t.qty;
       const fees = t.entryPrice * t.qty * feeRate + exitPrice * t.qty * feeRate;
 
       let pnlBRL = gross - fees;
@@ -197,7 +218,6 @@ export default function Page() {
     openTradesRef.current = remain;
   }
 
-  // Notícias de tempos em tempos
   function maybePushNews() {
     if (Math.random() < 0.3) {
       const n = newsPool[Math.floor(Math.random() * newsPool.length)];
@@ -208,20 +228,81 @@ export default function Page() {
     }
   }
 
-  // ---------- Loop de 1s ----------
+  // ---------- Simulação de volume realista ----------
+  function maybeSimulateVolumeTrade() {
+    const now = new Date();
+    const hourUS = now.getUTCHours() - 4; // NY timezone approx
+    const hourBR = now.getUTCHours() - 3; // SP timezone approx
+    const isPeak = (hour: number, market: 'US' | 'BR') => {
+      if (market === 'US') return hour >= 10 && hour <= 11 || hour >= 14 && hour <= 16;
+      else return hour >= 10 && hour <= 11 || hour >= 14 && hour <= 16;
+    };
+
+    const syms = Object.keys(instruments);
+    const batchSize = 2 + Math.floor(Math.random() * 4); // 2-5 trades por batch
+
+    for (let i = 0; i < batchSize; i++) {
+      const sym = syms[Math.floor(Math.random() * syms.length)];
+      const inst = instruments[sym];
+      const side: 'BUY' | 'SELL' = Math.random() < 0.5 ? 'BUY' : 'SELL';
+
+      // Ajuste de probabilidade por horário
+      const hour = inst.market === 'US' ? hourUS : hourBR;
+      if (!isPeak(hour, inst.market) && Math.random() > 0.3) continue;
+
+      // Quantidade proporcional à liquidez
+      const baseQty = sym.includes('SPY') ? 50 : 20;
+      const qty = baseQty + Math.floor(Math.random() * baseQty);
+
+      // Preço flutuando ±0,5%
+      const entryPrice = inst.price * (1 + (Math.random() - 0.5) / 100);
+      const exitPrice = entryPrice * (1 + (Math.random() - 0.5) / 50);
+
+      const entryTs = new Date().toISOString();
+      const exitTs = new Date(Date.now() + Math.floor(Math.random() * 10 * 60_000)).toISOString();
+
+      const feeRate = 0.0003;
+      const gross = (side === 'BUY' ? exitPrice - entryPrice : entryPrice - exitPrice) * qty;
+      const fee = (entryPrice + exitPrice) * qty * feeRate;
+      const pnl = gross - fee;
+      const tax = pnl > 0 ? pnl * 0.15 : 0;
+      const result: VolumeTrade['result'] = pnl >= 0 ? 'GAIN' : 'LOSS';
+
+      simulatedVolumeTradesRef.current = [
+        {
+          id: volumeIdRef.current++,
+          sym,
+          side,
+          qty,
+          entryPrice,
+          exitPrice,
+          entryTs,
+          exitTs,
+          pnl,
+          fee,
+          tax,
+          result,
+        },
+        ...simulatedVolumeTradesRef.current,
+      ].slice(0, 100);
+    }
+  }
+
+  // ---------- Loop 1s ----------
   useEffect(() => {
     const id = setInterval(() => {
-      simulatePrices();
+      fetchRealPrices();
+      fetchUSDReal();
       maybeOpenTrade();
       updateOpenTrades();
       maybePushNews();
+      maybeSimulateVolumeTrade();
       setTick((t) => t + 1);
     }, 1000);
     return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [instruments]); // instruments no deps para ler preço atualizado
+  }, [instruments]);
 
-  // ---------- Derivados p/ UI ----------
+  // ---------- Derivados ----------
   const clocks = useMemo(
     () => ({
       br: nowInTZ('America/Sao_Paulo'),
@@ -233,12 +314,10 @@ export default function Page() {
   const nextEcon = useMemo(() => {
     const now = Date.now();
     const in60 = now + 60 * 60 * 1000;
-    return econEventsRef.current
-      .filter((e) => {
-        const t = new Date(e.when).getTime();
-        return t > now && t < in60;
-      })
-      .slice(0, 5);
+    return econEventsRef.current.filter((e) => {
+      const t = new Date(e.when).getTime();
+      return t > now && t < in60;
+    }).slice(0, 5);
   }, [tick]);
 
   const metrics = useMemo(() => {
@@ -261,9 +340,7 @@ export default function Page() {
         <div className="flex items-center gap-2 text-xs sm:text-sm">
           <span className="rounded-full border border-gray-300 px-2 py-1">BR — {clocks.br}</span>
           <span className="rounded-full border border-gray-300 px-2 py-1">NY — {clocks.us}</span>
-          <span className="rounded-full border border-gray-300 px-2 py-1">
-            USD/BRL — {usdbrl.toFixed(4)}
-          </span>
+          <span className="rounded-full border border-gray-300 px-2 py-1">USD/BRL — {usdbrl.toFixed(4)}</span>
         </div>
       </header>
 
@@ -275,15 +352,10 @@ export default function Page() {
             <h2 className="mb-3 text-lg font-semibold">Mercados</h2>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {Object.entries(instruments).map(([sym, inst]) => (
-                <div
-                  key={sym}
-                  className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2"
-                >
+                <div key={sym} className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2">
                   <div className="text-sm">
                     <div className="font-bold">{sym}</div>
-                    <div className="text-xs text-gray-600">
-                      {inst.market} · {inst.currency}
-                    </div>
+                    <div className="text-xs text-gray-600">{inst.market} · {inst.currency}</div>
                   </div>
                   <div className="text-right font-semibold">{fmt(inst.price)}</div>
                 </div>
@@ -318,20 +390,12 @@ export default function Page() {
                       <td className="px-2 py-2 text-right">{fmt(r.entryPrice)}</td>
                       <td className="px-2 py-2 text-right">{fmt(r.exitPrice)}</td>
                       <td className="px-2 py-2">{r.exitReason}</td>
-                      <td
-                        className={`px-2 py-2 text-right ${
-                          r.pnlBRL >= 0 ? 'text-green-600' : 'text-red-600'
-                        }`}
-                      >
-                        {fmt(r.pnlBRL)}
-                      </td>
+                      <td className={`px-2 py-2 text-right ${r.pnlBRL >= 0 ? 'text-green-600' : 'text-red-600'}`}>{fmt(r.pnlBRL)}</td>
                     </tr>
                   ))}
                   {closed.length === 0 && (
                     <tr>
-                      <td className="px-2 py-4 text-gray-500" colSpan={8}>
-                        Aguarde… as primeiras operações estão a caminho.
-                      </td>
+                      <td className="px-2 py-4 text-gray-500" colSpan={8}>Aguarde… as primeiras operações estão a caminho.</td>
                     </tr>
                   )}
                 </tbody>
@@ -345,12 +409,8 @@ export default function Page() {
           {/* Resumo */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4">
             <h2 className="mb-2 text-lg font-semibold">Resumo</h2>
-            <div className="text-2xl font-extrabold">
-              PnL Realizado (BRL): {fmt(metrics.realizedPnLBRL)}
-            </div>
-            <div className="mt-1 text-sm text-gray-700">
-              Trades: {metrics.totalTrades} · Win rate: {fmt(metrics.winRate, 2)}%
-            </div>
+            <div className="text-2xl font-extrabold">PnL Realizado (BRL): {fmt(metrics.realizedPnLBRL)}</div>
+            <div className="mt-1 text-sm text-gray-700">Trades: {metrics.totalTrades} · Win rate: {fmt(metrics.winRate, 2)}%</div>
           </div>
 
           {/* Notícias */}
@@ -360,59 +420,68 @@ export default function Page() {
               {rollingNewsRef.current.slice(0, 10).map((n, i) => {
                 const hhmm = new Date(n.ts).toLocaleTimeString('pt-BR', { hour12: false });
                 return (
-                  <div
-                    key={i}
-                    className="flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-2 py-1"
-                  >
-                    <span className="rounded-full border border-gray-300 px-2 py-0.5 text-xs">
-                      {n.region}
-                    </span>
-                    <span className="text-xs text-gray-600">{hhmm}</span>
-                    <span className="text-sm">{n.headline}</span>
+                  <div key={i} className="text-sm">
+                    [{n.region}] {hhmm} — {n.headline}
                   </div>
                 );
               })}
-              {rollingNewsRef.current.length === 0 && (
-                <div className="text-sm text-gray-500">Sem notícias no momento…</div>
-              )}
             </div>
           </div>
 
-          {/* Agenda econômica */}
+          {/* Volume de operações */}
           <div className="rounded-2xl border border-gray-200 bg-white p-4">
-            <h2 className="mb-2 text-lg font-semibold">Calendário Econômico (próx. 60 min)</h2>
-            <div className="flex max-h-64 flex-col gap-2 overflow-auto">
-              {nextEcon.map((e, i) => {
-                const hhmm = new Date(e.when).toLocaleTimeString('pt-BR', { hour12: false });
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center gap-2 rounded border border-gray-200 bg-gray-50 px-2 py-1"
-                  >
-                    <span className="rounded-full border border-gray-300 px-2 py-0.5 text-xs">
-                      {e.region}
-                    </span>
-                    <span className="text-xs text-gray-600">{hhmm}</span>
-                    <span className="text-sm">{e.title}</span>
-                    <span className="ml-auto rounded-full border border-gray-300 px-2 py-0.5 text-xs">
-                      {e.impact}
-                    </span>
-                  </div>
-                );
-              })}
-              {nextEcon.length === 0 && (
-                <div className="text-sm text-gray-500">
-                  Sem eventos relevantes na próxima hora.
-                </div>
-              )}
+            <h2 className="mb-2 text-lg font-semibold">Volume de Operações (simulado)</h2>
+            <div className="overflow-auto max-h-64">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 text-xs text-gray-600 uppercase">
+                    <th className="px-2 py-1">Ativo</th>
+                    <th className="px-2 py-1">Side</th>
+                    <th className="px-2 py-1">Qtd</th>
+                    <th className="px-2 py-1 text-right">Entrada</th>
+                    <th className="px-2 py-1 text-right">Saída</th>
+                    <th className="px-2 py-1 text-right">PNL</th>
+                    <th className="px-2 py-1 text-right">Taxa</th>
+                    <th className="px-2 py-1 text-right">Imposto</th>
+                    <th className="px-2 py-1">Resultado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {simulatedVolumeTradesRef.current.map((v) => (
+                    <tr key={v.id} className="border-b border-gray-100">
+                      <td className="px-2 py-1">{v.sym}</td>
+                      <td className="px-2 py-1">{v.side}</td>
+                      <td className="px-2 py-1">{v.qty}</td>
+                      <td className="px-2 py-1 text-right">{fmt(v.entryPrice)}</td>
+                      <td className="px-2 py-1 text-right">{fmt(v.exitPrice)}</td>
+                      <td className={`px-2 py-1 text-right ${v.result === 'GAIN' ? 'text-green-600' : 'text-red-600'}`}>{fmt(v.pnl)}</td>
+                      <td className="px-2 py-1 text-right">{fmt(v.fee)}</td>
+                      <td className="px-2 py-1 text-right">{fmt(v.tax)}</td>
+                      <td className="px-2 py-1">{v.result}</td>
+                    </tr>
+                  ))}
+                  {simulatedVolumeTradesRef.current.length === 0 && (
+                    <tr>
+                      <td className="px-2 py-2 text-gray-500" colSpan={9}>Aguardando operações simuladas…</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
+          </div>
+
+          {/* Próximos eventos econômicos */}
+          <div className="rounded-2xl border border-gray-200 bg-white p-4">
+            <h2 className="mb-2 text-lg font-semibold">Eventos Econômicos Próximos</h2>
+            <ul className="text-sm text-gray-700">
+              {nextEcon.map((e, i) => (
+                <li key={i}>[{e.region}] {new Date(e.when).toLocaleTimeString('pt-BR', { hour12: false })} — {e.title} ({e.impact})</li>
+              ))}
+              {nextEcon.length === 0 && <li>Aguardando eventos próximos…</li>}
+            </ul>
           </div>
         </aside>
       </main>
-
-      <footer className="px-4 py-6 text-center text-xs text-gray-500">
-        Demo educacional — dados e eventos simulados.
-      </footer>
     </div>
   );
 }
