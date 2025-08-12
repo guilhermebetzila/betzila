@@ -1,5 +1,3 @@
-// prisma/seed.ts
-
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -7,9 +5,9 @@ const prisma = new PrismaClient()
 async function main() {
   await prisma.user.createMany({
     data: [   
-      { email: 'joao@email.com', name: 'João', senha: '123456' },
-      { email: 'ana@email.com', name: 'Ana', senha: 'abc123' },
-      { email: 'maria@email.com', name: 'Maria', senha: 'senha123' }
+      { email: 'joao@email.com', nome: 'João', senha: '123456' },
+      { email: 'ana@email.com', nome: 'Ana', senha: 'abc123' },
+      { email: 'maria@email.com', nome: 'Maria', senha: 'senha123' }
     ],
   })
 

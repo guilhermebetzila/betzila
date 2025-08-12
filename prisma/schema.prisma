@@ -16,7 +16,7 @@ model User {
   cpf            String?   @unique // Temporariamente opcional
   saldo          Float     @default(0)
   valorInvestido Float     @default(0)
-  pontos         Int       @default(0) // ✅ NOVO CAMPO ADICIONADO
+  pontos         Int       @default(0)
   indicador      String?
 
   indicadoPorId  Int?
