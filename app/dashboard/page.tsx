@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import LayoutWrapper from '@/components/LayoutWrapper';
-import IAWorkingPanel from '@/components/IAWorkingPanel';
 import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 
@@ -14,10 +13,9 @@ const menuItems = [
   { label: '📤 Saque via Pix', action: '/games/saque' },
   { label: '📄 Cadastrar CPF', action: '/games/cadastrar-cpf' },
   { label: '💰 Bolsão da IA', action: '/games/bolsao' },
-  { label: '🎓 Mentoria', action: '/games/mentoria' }, // <-- BOTÃO ADICIONADO
+  { label: '🎓 Mentoria', action: '/games/mentoria' },
   { label: '🚪 Sair', action: 'logout' },
 ];
-
 
 const nomesFicticios = [
   'Ana Clara', 'Bruno Silva', 'Carlos Eduardo', 'Daniela Souza', 'Eduardo Lima',
@@ -31,22 +29,22 @@ function gerarSaquesAleatorios(qtd = 1000) {
   for (let i = 0; i < qtd; i++) {
     const nome = nomesFicticios[Math.floor(Math.random() * nomesFicticios.length)];
     const valor = (Math.random() * (2000 - 300) + 300).toFixed(2);
-    saques.push(`💸 ${nome} sacou R$ ${valor}`);
+    saques.push(`${nome} sacou R$ ${valor}`);
   }
   return saques;
 }
 
 const comentariosEsteira = [
-  '🌍 "Agora posso viajar com minha esposa. A Ziller.Ia me deu asas!" — Paulo, MG',
-  '👨‍👩‍👧‍👦 "Consegui pagar a escola das minhas filhas. Obrigado, Ziller.Ia!" — Juliana, SP',
-  '🚀 "Investi R$ 200 e hoje vivo de renda com a IA." — Carlos, BA',
-  '🎯 "Não acreditava em mim até ver meus resultados. A IA me fez acreditar!" — Amanda, DF',
-  '💼 "Montei minha loja virtual com os lucros da Ziller.Ia." — Tiago, RJ',
-  '🏠 "Minha primeira reforma da casa foi com os rendimentos diários." — Larissa, CE',
-  '📈 "Não é só dinheiro. É liberdade. É escolha." — Rafael, SC',
-  '🎓 "Pude voltar a estudar graças ao lucro diário." — Bianca, PR',
-  '💡 "A Ziller.Ia virou meu sócio invisível. A IA trabalha por mim!" — Victor, RS',
-  '💖 "Dei orgulho pros meus pais. Finalmente ajudo em casa." — Camila, AM',
+  '"Agora posso viajar com minha esposa. A Ziller.Ia me deu asas!" — Paulo, MG',
+  '"Consegui pagar a escola das minhas filhas. Obrigado, Ziller.Ia!" — Juliana, SP',
+  '"Investi R$ 200 e hoje vivo de renda com a IA." — Carlos, BA',
+  '"Não acreditava em mim até ver meus resultados. A IA me fez acreditar!" — Amanda, DF',
+  '"Montei minha loja virtual com os lucros da Ziller.Ia." — Tiago, RJ',
+  '"Minha primeira reforma da casa foi com os rendimentos diários." — Larissa, CE',
+  '"Não é só dinheiro. É liberdade. É escolha." — Rafael, SC',
+  '"Pude voltar a estudar graças ao lucro diário." — Bianca, PR',
+  '"A Ziller.Ia virou meu sócio invisível. A IA trabalha por mim!" — Victor, RS',
+  '"Dei orgulho pros meus pais. Finalmente ajudo em casa." — Camila, AM',
 ];
 
 export default function DashboardPage() {
@@ -165,10 +163,10 @@ export default function DashboardPage() {
             </span>
           </h1>
           <p className="text-gray-600 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
-          <p className="text-green-600 mt-2">📢 Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!</p>
+          <p className="text-green-600 mt-2">Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!</p>
 
           <div className="mt-6 bg-gray-100 rounded-lg p-4 border border-black shadow-md">
-            <h3 className="text-black text-sm font-semibold mb-2">📲 Seu Código de Indicação:</h3>
+            <h3 className="text-black text-sm font-semibold mb-2">Seu Código de Indicação:</h3>
             <div className="flex items-center justify-between bg-white text-black px-3 py-2 rounded-md font-mono text-sm border">
               <a
                 href={linkIndicacao}
@@ -191,7 +189,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="mt-4">
-            <p className="text-sm text-gray-700 mb-1">🎁 Pontos Acumulados: {pontos} pontos</p>
+            <p className="text-sm text-gray-700 mb-1">Pontos Acumulados: {pontos} pontos</p>
             <div className="w-full bg-gray-200 rounded-full h-4">
               <div className="bg-black h-4 rounded-full" style={{ width: `${progresso}%` }}></div>
             </div>
@@ -201,10 +199,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="mb-6"><IAWorkingPanel /></div>
-
         <div className="mb-12">
-          <h3 className="text-xl font-semibold text-center text-black mb-4">🎯 Prova Social: Saques Recentes</h3>
+          <h3 className="text-xl font-semibold text-center text-black mb-4">Prova Social: Saques Recentes</h3>
           <div className="bg-gray-100 rounded-xl p-4 max-h-40 overflow-y-auto shadow-inner border border-black">
             <ul className="space-y-1 text-sm text-black font-mono">
               {saques.slice(0, 20).map((item, index) => (
@@ -216,7 +212,7 @@ export default function DashboardPage() {
 
         <div className="mb-8">
           <h3 className="text-lg text-center text-black font-semibold mb-3">
-            💬 Transformações Reais com a Ziller.Ia
+            Transformações Reais com a Ziller.Ia
           </h3>
           <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-gray-300">
             {comentariosEsteira.map((comentario, index) => (
@@ -235,7 +231,7 @@ export default function DashboardPage() {
             onClick={() => router.push('/games/investir')}
             className="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all text-base"
           >
-            💹 Investir Agora
+            Investir Agora
           </button>
         </div>
       </div>
@@ -243,19 +239,19 @@ export default function DashboardPage() {
       <footer className="w-full mt-20 bg-white text-black py-12 px-6 border-t border-gray-400">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-black text-lg font-bold mb-4">🔐 Segurança & Confiança</h3>
+            <h3 className="text-black text-lg font-bold mb-4">Segurança & Confiança</h3>
             <p className="text-sm text-gray-700 mb-2">Auditoria independente concluída com sucesso.</p>
             <p className="text-sm text-gray-700 mb-2">IA operando com precisão validada de 87,9%.</p>
             <p className="text-sm text-gray-700">Certificados e parcerias disponíveis no painel.</p>
           </div>
           <div>
-            <h3 className="text-black text-lg font-bold mb-4">📈 Transparência Total</h3>
+            <h3 className="text-black text-lg font-bold mb-4">Transparência Total</h3>
             <p className="text-sm text-gray-700 mb-2">Painel de controle com histórico completo.</p>
             <p className="text-sm text-gray-700 mb-2">Saque e depósito via Pix 100% transparente.</p>
             <p className="text-sm text-gray-700">Controle total do seu investimento, em tempo real.</p>
           </div>
           <div>
-            <h3 className="text-black text-lg font-bold mb-4">🤝 Comunidade Ziler</h3>
+            <h3 className="text-black text-lg font-bold mb-4">Comunidade Ziler</h3>
             <p className="text-sm text-gray-700 mb-2">Top 10 Zilers com maiores ganhos do mês.</p>
             <p className="text-sm text-gray-700 mb-2">
               Missão: Pagar dívidas, viver de renda, transformar vidas.
