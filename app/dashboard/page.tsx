@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
+import { FaBell, FaRobot, FaSearch } from 'react-icons/fa';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
@@ -133,16 +134,27 @@ export default function DashboardPage() {
 
   return (
     <LayoutWrapper>
-      <div className="min-h-screen px-4 py-4 bg-white text-black relative">
-        <div className="absolute top-4 right-4 z-50">
-          <button
-            onClick={toggleMute}
-            className="bg-black hover:bg-gray-800 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-300 text-sm"
-          >
-            {isMuted ? '🔇 Som' : '🔊 Som'}
+      <div className="min-h-screen px-4 py-4 text-black relative">
+
+        {/* Barra superior: Pesquisa, Robô, Sino */}
+        <div className="flex justify-between items-center mb-6 max-w-6xl mx-auto gap-4">
+          <div className="flex flex-1 items-center border border-black rounded-lg overflow-hidden">
+            <input
+              type="text"
+              placeholder="Pesquisar..."
+              className="flex-1 px-3 py-2 text-sm focus:outline-none"
+            />
+            <button className="px-3 text-black"><FaSearch /></button>
+          </div>
+          <button className="px-4 py-2 border border-black rounded-lg text-black flex items-center gap-2">
+            <FaRobot /> Atendimento
+          </button>
+          <button className="px-4 py-2 border border-black rounded-lg text-black flex items-center gap-2">
+            <FaBell /> Notificações
           </button>
         </div>
 
+        {/* Botões do menu */}
         <div className="mb-6 flex justify-center gap-4 flex-wrap mt-4">
           {menuItems.map((item, index) => (
             <button
@@ -155,6 +167,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
+        {/* Painel do usuário */}
         <div className="mb-6 max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold flex items-center gap-4">
             Olá, {user?.nome || user?.email}
@@ -199,6 +212,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Saques recentes */}
         <div className="mb-12">
           <h3 className="text-xl font-semibold text-center text-black mb-4">Prova Social: Saques Recentes</h3>
           <div className="bg-gray-100 rounded-xl p-4 max-h-40 overflow-y-auto shadow-inner border border-black">
@@ -210,6 +224,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Esteira de comentários */}
         <div className="mb-8">
           <h3 className="text-lg text-center text-black font-semibold mb-3">
             Transformações Reais com a Ziller.Ia
@@ -236,7 +251,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <footer className="w-full mt-20 bg-white text-black py-12 px-6 border-t border-gray-400">
+      {/* Footer */}
+      <footer className="w-full mt-20 text-black py-12 px-6 border-t border-gray-400">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div>
             <h3 className="text-black text-lg font-bold mb-4">Segurança & Confiança</h3>
