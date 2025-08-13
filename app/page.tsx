@@ -73,19 +73,6 @@ export default function Home() {
         </Button>
       </div>
 
-      {/* Vídeo */}
-      <div className="mt-6 w-full flex justify-center px-4">
-        <video
-          className="w-full max-w-[500px] rounded-xl shadow-xl aspect-video object-cover"
-          src="/video/meuvideo.mp4"
-          controls
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
-      </div>
-
       {/* Texto Estratégico da IA */}
       <section className="max-w-4xl mx-auto mt-12 px-6 text-lg leading-relaxed text-white space-y-6">
         <h2 className="text-3xl font-extrabold text-center">
