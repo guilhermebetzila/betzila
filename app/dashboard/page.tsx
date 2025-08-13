@@ -13,9 +13,11 @@ const menuItems = [
   { label: '📥 Depositar', action: '/games/depositar' },
   { label: '📤 Saque via Pix', action: '/games/saque' },
   { label: '📄 Cadastrar CPF', action: '/games/cadastrar-cpf' },
-  { label: '💰 Bolsão da IA', action: '/games/bolsao' }, // <-- NOVO BOTÃO
+  { label: '💰 Bolsão da IA', action: '/games/bolsao' },
+  { label: '🎓 Mentoria', action: '/games/mentoria' }, // <-- BOTÃO ADICIONADO
   { label: '🚪 Sair', action: 'logout' },
 ];
+
 
 const nomesFicticios = [
   'Ana Clara', 'Bruno Silva', 'Carlos Eduardo', 'Daniela Souza', 'Eduardo Lima',
