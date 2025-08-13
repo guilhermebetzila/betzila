@@ -13,6 +13,7 @@ const menuItems = [
   { label: '📥 Depositar', action: '/games/depositar' },
   { label: '📤 Saque via Pix', action: '/games/saque' },
   { label: '📄 Cadastrar CPF', action: '/games/cadastrar-cpf' },
+  { label: '💰 Bolsão da IA', action: '/games/bolsao' }, // <-- NOVO BOTÃO
   { label: '🚪 Sair', action: 'logout' },
 ];
 
