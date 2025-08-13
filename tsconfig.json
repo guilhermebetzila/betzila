@@ -8,8 +8,8 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -32,7 +32,8 @@
     "types/**/*.d.ts",
     ".next/types/**/*.ts",
     "server.ts",
-    "app/scripts/iniciarAutomatico.ts"
+    "app/scripts/iniciarAutomatico.ts",
+    "app/scripts/atualizarInvestimentos.ts"
   ],
   "exclude": ["node_modules"]
 }

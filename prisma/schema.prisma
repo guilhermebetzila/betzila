@@ -45,6 +45,9 @@ model Investimento {
   rendimentoAcumulado Float    @default(0)
   criadoEm            DateTime @default(now())
 
+  limite              Float    @default(0)      // máximo que o investimento pode render (200%)
+  ativo               Boolean  @default(true)   // se o investimento ainda está ativo
+
   userId              Int
   user                User     @relation(fields: [userId], references: [id])
 }
