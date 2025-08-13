@@ -126,17 +126,23 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Botões do menu */}
-        <div className="mb-6 flex justify-center gap-4 flex-wrap mt-4">
-          {menuItems.map((item, index) => (
-            <button
-              key={index}
-              onClick={() => handleMenuClick(item)}
-              className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-md shadow-md font-semibold text-sm transition-colors duration-300 ease-in-out focus:outline-none"
-            >
-              {item.label}
-            </button>
-          ))}
+        {/* Esteira de imagens no lugar dos botões */}
+        <div className="mb-6 overflow-x-auto">
+          <div className="flex gap-4 px-2 py-4">
+            {menuItems.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => handleMenuClick(item)}
+                className="flex-shrink-0 w-20 h-20 rounded-full border-2 border-white overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
+              >
+                <img
+                  src={`/img/${index + 1}.png`} // coloque suas imagens 1.png a 7.png em /public/img
+                  alt={item.label}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Painel do usuário */}
