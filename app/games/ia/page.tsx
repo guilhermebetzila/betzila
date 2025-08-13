@@ -71,50 +71,74 @@ export default function RedePage() {
   }
 
   function renderNode(node: UsuarioRede) {
+    const filhos = node.indicados.length;
+    const spacing = Math.max(80, filhos * 20); // horizontal adaptativo
+
     return (
-      <div key={node.id} className="relative flex flex-col items-center mt-6">
+      <div key={node.id} className="relative flex flex-col items-center mt-4">
         <div
           className="flex items-center gap-2 cursor-pointer select-none z-10"
           onClick={() => toggleNode(node)}
         >
-          {node.indicados.length > 0 && (
+          {filhos > 0 && (
             <span className="text-white font-bold">{node.aberto ? '▼' : '▶'}</span>
           )}
           <div
             className={`bg-gradient-to-r ${getGradient(
               node.nivel
-            )} text-white px-4 py-2 rounded-lg shadow-lg hover:scale-105 transition transform`}
+            )} text-white px-3 py-1 rounded-md shadow-lg hover:scale-105 transition transform text-sm md:text-base`}
           >
             {node.nome}
           </div>
         </div>
 
         <AnimatePresence>
-          {node.aberto && node.indicados.length > 0 && (
+          {node.aberto && filhos > 0 && (
             <motion.div
               key="children"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="flex mt-8 justify-center relative space-x-8"
+              className="relative flex mt-6 justify-center space-x-2 md:space-x-6 overflow-visible"
             >
-              {node.indicados.map((ind, index) => (
+              <svg
+                className="absolute top-0 left-0 w-full h-8 md:h-10 overflow-visible"
+                style={{ pointerEvents: 'none' }}
+              >
+                {node.indicados.map((_, i) => {
+                  const total = node.indicados.length;
+                  const x = (i - (total - 1) / 2) * spacing;
+                  return (
+                    <path
+                      key={i}
+                      d={`M 0 0 C 0 15, ${x} 0, ${x} 30`}
+                      stroke="white"
+                      strokeWidth={2}
+                      fill="transparent"
+                    />
+                  );
+                })}
+
+                {filhos > 1 && (
+                  <path
+                    d={(() => {
+                      const startX = -(filhos - 1) / 2 * spacing;
+                      const endX = (filhos - 1) / 2 * spacing;
+                      return `M ${startX} 30 H ${endX}`;
+                    })()}
+                    stroke="white"
+                    strokeWidth={2}
+                    fill="transparent"
+                  />
+                )}
+              </svg>
+
+              {node.indicados.map((ind) => (
                 <div key={ind.id} className="relative flex flex-col items-center">
-                  {/* Linha vertical */}
-                  <div className="absolute top-0 left-1/2 w-px h-6 bg-white/50"></div>
-
-                  {/* Linha horizontal conectando irmãos */}
-                  {index > 0 && (
-                    <div className="absolute top-3 left-0 w-full h-px bg-white/50"></div>
-                  )}
-
                   {renderNode(ind)}
                 </div>
               ))}
-
-              {/* Linha vertical para o nó pai */}
-              <div className="absolute top-0 left-1/2 w-px h-6 bg-white/50"></div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -123,9 +147,9 @@ export default function RedePage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent text-white p-6 overflow-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center text-purple-400">
-        Minha Rede - Visão em Árvore
+    <div className="min-h-screen bg-transparent text-white p-4 md:p-6 overflow-auto">
+      <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center text-purple-400">
+        Minha Rede - Árvore Responsiva
       </h1>
 
       {carregando && (
@@ -133,7 +157,7 @@ export default function RedePage() {
       )}
 
       {!carregando && rede && (
-        <div className="overflow-auto p-4 min-w-max flex justify-center">
+        <div className="overflow-auto p-2 md:p-4 min-w-max flex justify-center">
           {renderNode(rede)}
         </div>
       )}
