@@ -184,19 +184,19 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Esteira de comentários */}
+        {/* Lista de comentários vertical */}
         <div className="mb-8">
           <h3 className="text-lg text-center text-white font-semibold mb-3">
             Transformações Reais com a Ziller.Ia
           </h3>
-          <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-white/20">
+          <div className="flex flex-col gap-2 px-2 py-4 border-t border-b border-white/20">
             {comentariosEsteira.map((comentario, index) => (
-              <span
+              <div
                 key={index}
-                className="inline-block bg-white/10 text-white text-sm px-4 py-2 rounded-full shadow-sm border border-white/20 min-w-[250px]"
+                className="bg-white/10 text-white text-sm px-4 py-2 rounded shadow-sm border border-white/20"
               >
                 {comentario}
-              </span>
+              </div>
             ))}
           </div>
         </div>
