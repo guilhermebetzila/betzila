@@ -18,6 +18,7 @@ model User {
   valorInvestido Float     @default(0)
   pontos         Int       @default(0)
   indicador      String?
+  lastLogin      DateTime?  // Novo campo adicionado
 
   indicadoPorId  Int?
   indicadoPor    User?     @relation("Indicacoes", fields: [indicadoPorId], references: [id])
@@ -44,12 +45,11 @@ model Deposito {
 model Investimento {
   id                  Int      @id @default(autoincrement())
   valor               Float
-  percentualDiario    Float    @default(0.025) // valor padrão de 2,5% ao dia
+  percentualDiario    Float    @default(0.025)
   rendimentoAcumulado Float    @default(0)
   criadoEm            DateTime @default(now())
-
-  limite              Float    @default(0)      // máximo que o investimento pode render (200%)
-  ativo               Boolean  @default(true)   // se o investimento ainda está ativo
+  limite              Float    @default(0)
+  ativo               Boolean  @default(true)
 
   userId              Int
   user                User     @relation(fields: [userId], references: [id])
@@ -59,8 +59,7 @@ model RendimentoDiario {
   id         Int      @id @default(autoincrement())
   user       User     @relation(fields: [userId], references: [id])
   userId     Int
-
-  dateKey    String   // formato YYYY-MM-DD para evitar crédito duplicado
+  dateKey    String
   base       Float
   rate       Float
   amount     Float
@@ -113,7 +112,6 @@ model Bola {
   partida   Partida @relation(fields: [partidaId], references: [id])
 }
 
-// Novo modelo para graduações
 model Graduacao {
   id     Int    @id @default(autoincrement())
   nome   String
