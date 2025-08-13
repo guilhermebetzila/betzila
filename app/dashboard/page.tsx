@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { FaBell, FaRobot, FaSearch } from 'react-icons/fa';
+import { FaBell, FaRobot } from 'react-icons/fa';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
@@ -17,23 +17,6 @@ const menuItems = [
   { label: '🎓 Mentoria', action: '/games/mentoria' },
   { label: '🚪 Sair', action: 'logout' },
 ];
-
-const nomesFicticios = [
-  'Ana Clara', 'Bruno Silva', 'Carlos Eduardo', 'Daniela Souza', 'Eduardo Lima',
-  'Fernanda Rocha', 'Gabriel Santos', 'Helena Costa', 'Igor Alves', 'Juliana Castro',
-  'Kauan Ferreira', 'Larissa Oliveira', 'Marcelo Dias', 'Natalia Gomes', 'Otávio Ramos',
-  'Paula Martins', 'Rafael Teixeira', 'Simone Silva', 'Thiago Mendes', 'Vanessa Moreira',
-];
-
-function gerarSaquesAleatorios(qtd = 1000) {
-  const saques = [];
-  for (let i = 0; i < qtd; i++) {
-    const nome = nomesFicticios[Math.floor(Math.random() * nomesFicticios.length)];
-    const valor = (Math.random() * (2000 - 300) + 300).toFixed(2);
-    saques.push(`${nome} sacou R$ ${valor}`);
-  }
-  return saques;
-}
 
 const comentariosEsteira = [
   '"Agora posso viajar com minha esposa. A Ziller.Ia me deu asas!" — Paulo, MG',
@@ -54,7 +37,6 @@ export default function DashboardPage() {
 
   const [totalIndicados, setTotalIndicados] = useState<number>(0);
   const [saldo, setSaldo] = useState<number>(0);
-  const [saques, setSaques] = useState<string[]>([]);
   const [isMuted, setIsMuted] = useState(true);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
@@ -87,8 +69,6 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    setSaques(gerarSaquesAleatorios());
-
     const fetchIndicacoes = async () => {
       try {
         const res = await fetch(`${API_BASE_URL}/api/user/indicacoes`);
@@ -126,7 +106,7 @@ export default function DashboardPage() {
   const pontos = totalIndicados * 10;
   const progresso = Math.min((pontos / 1000) * 100, 100);
 
-  if (status === 'loading') return <p className="text-center mt-10 text-black">Carregando...</p>;
+  if (status === 'loading') return <p className="text-center mt-10 text-white">Carregando...</p>;
   if (status === 'unauthenticated') return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
 
   const codigoIndicacao = user?.nome || user?.email || user?.id;
@@ -134,22 +114,14 @@ export default function DashboardPage() {
 
   return (
     <LayoutWrapper>
-      <div className="min-h-screen px-4 py-4 text-black relative">
+      <div className="min-h-screen px-4 py-4 text-white relative">
 
-        {/* Barra superior: Pesquisa, Robô, Sino */}
-        <div className="flex justify-between items-center mb-6 max-w-6xl mx-auto gap-4">
-          <div className="flex flex-1 items-center border border-black rounded-lg overflow-hidden">
-            <input
-              type="text"
-              placeholder="Pesquisar..."
-              className="flex-1 px-3 py-2 text-sm focus:outline-none"
-            />
-            <button className="px-3 text-black"><FaSearch /></button>
-          </div>
-          <button className="px-4 py-2 border border-black rounded-lg text-black flex items-center gap-2">
+        {/* Barra superior: Robô e Sino */}
+        <div className="flex justify-end items-center mb-6 max-w-6xl mx-auto gap-4">
+          <button className="px-4 py-2 border border-white rounded-lg text-white flex items-center gap-2">
             <FaRobot /> Atendimento
           </button>
-          <button className="px-4 py-2 border border-black rounded-lg text-black flex items-center gap-2">
+          <button className="px-4 py-2 border border-white rounded-lg text-white flex items-center gap-2">
             <FaBell /> Notificações
           </button>
         </div>
@@ -175,65 +147,53 @@ export default function DashboardPage() {
               Saldo: R$ {saldo.toFixed(2)}
             </span>
           </h1>
-          <p className="text-gray-600 text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
-          <p className="text-green-600 mt-2">Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!</p>
+          <p className="text-white text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
+          <p className="text-white mt-2">Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!</p>
 
-          <div className="mt-6 bg-gray-100 rounded-lg p-4 border border-black shadow-md">
-            <h3 className="text-black text-sm font-semibold mb-2">Seu Código de Indicação:</h3>
-            <div className="flex items-center justify-between bg-white text-black px-3 py-2 rounded-md font-mono text-sm border">
+          <div className="mt-6 bg-black/20 rounded-lg p-4 border border-white shadow-md">
+            <h3 className="text-white text-sm font-semibold mb-2">Seu Código de Indicação:</h3>
+            <div className="flex items-center justify-between bg-black/10 text-white px-3 py-2 rounded-md font-mono text-sm border border-white">
               <a
                 href={linkIndicacao}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="truncate underline hover:text-green-600"
+                className="truncate underline hover:text-green-400"
               >
                 {linkIndicacao}
               </a>
               <button
                 onClick={() => navigator.clipboard.writeText(linkIndicacao)}
-                className="ml-4 bg-black hover:bg-gray-800 text-white font-semibold px-3 py-1 rounded transition-colors text-xs"
+                className="ml-4 bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-1 rounded transition-colors text-xs"
               >
                 Copiar
               </button>
             </div>
-            <p className="text-gray-500 text-xs mt-1">
+            <p className="text-white text-xs mt-1">
               Compartilhe este link com amigos e ganhe bônus por cada novo Ziler indicado.
             </p>
           </div>
 
           <div className="mt-4">
-            <p className="text-sm text-gray-700 mb-1">Pontos Acumulados: {pontos} pontos</p>
-            <div className="w-full bg-gray-200 rounded-full h-4">
-              <div className="bg-black h-4 rounded-full" style={{ width: `${progresso}%` }}></div>
+            <p className="text-white text-sm mb-1">Pontos Acumulados: {pontos} pontos</p>
+            <div className="w-full bg-white/20 rounded-full h-4">
+              <div className="bg-white h-4 rounded-full" style={{ width: `${progresso}%` }}></div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-white text-xs mt-1">
               Você precisa de 1000 pontos para desbloquear o próximo prêmio
             </p>
           </div>
         </div>
 
-        {/* Saques recentes */}
-        <div className="mb-12">
-          <h3 className="text-xl font-semibold text-center text-black mb-4">Prova Social: Saques Recentes</h3>
-          <div className="bg-gray-100 rounded-xl p-4 max-h-40 overflow-y-auto shadow-inner border border-black">
-            <ul className="space-y-1 text-sm text-black font-mono">
-              {saques.slice(0, 20).map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
         {/* Esteira de comentários */}
         <div className="mb-8">
-          <h3 className="text-lg text-center text-black font-semibold mb-3">
+          <h3 className="text-lg text-center text-white font-semibold mb-3">
             Transformações Reais com a Ziller.Ia
           </h3>
-          <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-gray-300">
+          <div className="overflow-x-auto whitespace-nowrap space-x-4 scroll-smooth px-2 py-4 border-t border-b border-white/20">
             {comentariosEsteira.map((comentario, index) => (
               <span
                 key={index}
-                className="inline-block bg-gray-200 text-black text-sm px-4 py-2 rounded-full shadow-sm border border-black min-w-[250px]"
+                className="inline-block bg-white/10 text-white text-sm px-4 py-2 rounded-full shadow-sm border border-white/20 min-w-[250px]"
               >
                 {comentario}
               </span>
@@ -252,30 +212,30 @@ export default function DashboardPage() {
       </div>
 
       {/* Footer */}
-      <footer className="w-full mt-20 text-black py-12 px-6 border-t border-gray-400">
+      <footer className="w-full mt-20 text-white py-12 px-6 border-t border-white/20">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-black text-lg font-bold mb-4">Segurança & Confiança</h3>
-            <p className="text-sm text-gray-700 mb-2">Auditoria independente concluída com sucesso.</p>
-            <p className="text-sm text-gray-700 mb-2">IA operando com precisão validada de 87,9%.</p>
-            <p className="text-sm text-gray-700">Certificados e parcerias disponíveis no painel.</p>
+            <h3 className="text-white text-lg font-bold mb-4">Segurança & Confiança</h3>
+            <p className="text-white text-sm mb-2">Auditoria independente concluída com sucesso.</p>
+            <p className="text-white text-sm mb-2">IA operando com precisão validada de 87,9%.</p>
+            <p className="text-white text-sm">Certificados e parcerias disponíveis no painel.</p>
           </div>
           <div>
-            <h3 className="text-black text-lg font-bold mb-4">Transparência Total</h3>
-            <p className="text-sm text-gray-700 mb-2">Painel de controle com histórico completo.</p>
-            <p className="text-sm text-gray-700 mb-2">Saque e depósito via Pix 100% transparente.</p>
-            <p className="text-sm text-gray-700">Controle total do seu investimento, em tempo real.</p>
+            <h3 className="text-white text-lg font-bold mb-4">Transparência Total</h3>
+            <p className="text-white text-sm mb-2">Painel de controle com histórico completo.</p>
+            <p className="text-white text-sm mb-2">Saque e depósito via Pix 100% transparente.</p>
+            <p className="text-white text-sm">Controle total do seu investimento, em tempo real.</p>
           </div>
           <div>
-            <h3 className="text-black text-lg font-bold mb-4">Comunidade Ziler</h3>
-            <p className="text-sm text-gray-700 mb-2">Top 10 Zilers com maiores ganhos do mês.</p>
-            <p className="text-sm text-gray-700 mb-2">
+            <h3 className="text-white text-lg font-bold mb-4">Comunidade Ziler</h3>
+            <p className="text-white text-sm mb-2">Top 10 Zilers com maiores ganhos do mês.</p>
+            <p className="text-white text-sm mb-2">
               Missão: Pagar dívidas, viver de renda, transformar vidas.
             </p>
-            <p className="text-sm text-gray-700">Você é o protagonista dessa revolução financeira.</p>
+            <p className="text-white text-sm">Você é o protagonista dessa revolução financeira.</p>
           </div>
         </div>
-        <div className="text-center mt-12 text-sm text-gray-600">
+        <div className="text-center mt-12 text-white text-sm">
           © {new Date().getFullYear()} Ziller.Ia • Todos os direitos reservados
         </div>
       </footer>
