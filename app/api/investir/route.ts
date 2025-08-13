@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions' // ajuste aqui
+import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions'
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
 
     const userId = Number(session.user.id)
 
-    // Busca o usuário atual junto com quem ele indicou (não é necessário para pontos indiretos)
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -32,19 +31,29 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const valor = parseFloat(body.valor)
 
-    if (isNaN(valor) || valor <= 0) {
-      return NextResponse.json({ error: 'Valor inválido para investir' }, { status: 400 })
+    if (isNaN(valor) || valor < 1) {
+      return NextResponse.json({ error: 'Valor inválido para investir (mínimo R$1)' }, { status: 400 })
     }
 
     if (user.saldo < valor) {
       return NextResponse.json({ error: 'Saldo insuficiente para esse valor' }, { status: 400 })
     }
 
+    // Define percentual diário de acordo com o valor investido
+    let percentualDiario: number
+    if (valor <= 5000) {
+      percentualDiario = parseFloat((Math.random() * (1.5 - 1.0) + 1.0).toFixed(2))
+    } else if (valor <= 10000) {
+      percentualDiario = parseFloat((Math.random() * (1.8 - 1.5) + 1.5).toFixed(2))
+    } else {
+      percentualDiario = 2.0
+    }
+
     const novoSaldo = user.saldo - valor
     const novoInvestimento = user.valorInvestido + valor
     const pontosGanhos = Math.floor(valor / 2)
 
-    // Atualiza saldo, valor investido e pontos do usuário
+    // Atualiza saldo, valor investido e pontos
     const usuarioAtualizado = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -54,24 +63,23 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Salva o investimento no histórico
+    // Salva investimento no histórico com percentual diário
     await prisma.investimento.create({
       data: {
         userId,
         valor,
+        percentualDiario,
+        rendimentoAcumulado: 0, // inicia com 0
       },
     })
 
-    // Atualiza pontos do indicado direto, se existir
+    // Atualiza pontos do indicado direto
     if (user.indicadoPorId) {
       await prisma.user.update({
         where: { id: user.indicadoPorId },
-        data: {
-          pontos: { increment: pontosGanhos },
-        },
+        data: { pontos: { increment: pontosGanhos } },
       })
 
-      // Atualiza pontos do indicado indireto, se existir
       const indicadorDireto = await prisma.user.findUnique({
         where: { id: user.indicadoPorId },
         select: { indicadoPorId: true },
@@ -80,9 +88,7 @@ export async function POST(req: NextRequest) {
       if (indicadorDireto?.indicadoPorId) {
         await prisma.user.update({
           where: { id: indicadorDireto.indicadoPorId },
-          data: {
-            pontos: { increment: pontosGanhos },
-          },
+          data: { pontos: { increment: pontosGanhos } },
         })
       }
     }
@@ -93,6 +99,10 @@ export async function POST(req: NextRequest) {
         saldo: usuarioAtualizado.saldo,
         valorInvestido: usuarioAtualizado.valorInvestido,
         pontos: usuarioAtualizado.pontos,
+      },
+      investimento: {
+        valor,
+        percentualDiario,
       },
     })
   } catch (error) {

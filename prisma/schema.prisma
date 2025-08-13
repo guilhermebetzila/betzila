@@ -1,4 +1,4 @@
-generator client {
+generator client { 
   provider   = "prisma-client-js"
   engineType = "binary"
 }
@@ -13,7 +13,7 @@ model User {
   email          String    @unique
   nome           String
   senha          String
-  cpf            String?   @unique // Temporariamente opcional
+  cpf            String?   @unique
   saldo          Float     @default(0)
   valorInvestido Float     @default(0)
   pontos         Int       @default(0)
@@ -26,6 +26,7 @@ model User {
   cartelas       Cartela[]
   investimentos  Investimento[]
   depositos      Deposito[]
+  rendimentos    RendimentoDiario[] // relação com histórico de rendimentos
 }
 
 model Deposito {
@@ -38,12 +39,29 @@ model Deposito {
 }
 
 model Investimento {
-  id        Int      @id @default(autoincrement())
-  valor     Float
-  criadoEm  DateTime @default(now())
+  id                  Int      @id @default(autoincrement())
+  valor               Float
+  percentualDiario    Float    @default(0.025) // valor padrão de 2,5% ao dia
+  rendimentoAcumulado Float    @default(0)
+  criadoEm            DateTime @default(now())
 
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  userId              Int
+  user                User     @relation(fields: [userId], references: [id])
+}
+
+model RendimentoDiario {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+
+  dateKey    String   // formato YYYY-MM-DD para evitar crédito duplicado
+  base       Float
+  rate       Float
+  amount     Float
+  creditedAt DateTime @default(now())
+
+  @@unique([userId, dateKey])
+  @@index([userId, dateKey])
 }
 
 model Partida {
