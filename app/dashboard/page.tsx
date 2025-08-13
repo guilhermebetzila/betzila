@@ -9,13 +9,13 @@ import { FaBell, FaRobot } from 'react-icons/fa';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 const menuItems = [
-  { label: '🤖 IA', action: '/games/ia' },
-  { label: '📥 Depositar', action: '/games/depositar' },
-  { label: '📤 Saque via Pix', action: '/games/saque' },
-  { label: '📄 Cadastrar CPF', action: '/games/cadastrar-cpf' },
-  { label: '💰 Bolsão da IA', action: '/games/bolsao' },
-  { label: '🎓 Mentoria', action: '/games/mentoria' },
-  { label: '🚪 Sair', action: 'logout' },
+  { label: '🤖 IA', action: '/games/ia', img: '/img/ia.png' }, // imagem da IA
+  { label: '📥 Depositar', action: '/games/depositar', img: '/img/2.png' },
+  { label: '📤 Saque via Pix', action: '/games/saque', img: '/img/3.png' },
+  { label: '📄 Cadastrar CPF', action: '/games/cadastrar-cpf', img: '/img/4.png' },
+  { label: '💰 Bolsão da IA', action: '/games/bolsao', img: '/img/5.png' },
+  { label: '🎓 Mentoria', action: '/games/mentoria', img: '/img/6.png' },
+  { label: '🚪 Sair', action: 'logout', img: '/img/7.png' },
 ];
 
 const comentariosEsteira = [
@@ -126,7 +126,7 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Esteira de imagens no lugar dos botões */}
+        {/* Esteira horizontal de 7 círculos */}
         <div className="mb-6 overflow-x-auto">
           <div className="flex gap-4 px-2 py-4">
             {menuItems.map((item, index) => (
@@ -136,7 +136,7 @@ export default function DashboardPage() {
                 className="flex-shrink-0 w-20 h-20 rounded-full border-2 border-white overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
               >
                 <img
-                  src={`/img/${index + 1}.png`} // coloque suas imagens 1.png a 7.png em /public/img
+                  src={item.img}
                   alt={item.label}
                   className="w-full h-full object-cover"
                 />
@@ -190,7 +190,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Lista de comentários vertical */}
+        {/* Lista de comentários */}
         <div className="mb-8">
           <h3 className="text-lg text-center text-white font-semibold mb-3">
             Transformações Reais com a Ziller.Ia
