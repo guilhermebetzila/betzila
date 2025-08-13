@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { hash } from 'bcryptjs'
 import { sign } from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
+import { sendWelcomeEmail } from '@/lib/mailer' // import do helper que vamos criar
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,25 +19,15 @@ export async function POST(req: NextRequest) {
     }
 
     // 📧 Verificar se o e-mail já existe
-    const existingEmail = await prisma.user.findUnique({
-      where: { email },
-    })
+    const existingEmail = await prisma.user.findUnique({ where: { email } })
     if (existingEmail) {
-      return NextResponse.json(
-        { message: 'E-mail já cadastrado.' },
-        { status: 400 }
-      )
+      return NextResponse.json({ message: 'E-mail já cadastrado.' }, { status: 400 })
     }
 
     // 🧾 Verificar se o CPF já existe
-    const existingCpf = await prisma.user.findUnique({
-      where: { cpf },
-    })
+    const existingCpf = await prisma.user.findUnique({ where: { cpf } })
     if (existingCpf) {
-      return NextResponse.json(
-        { message: 'CPF já cadastrado.' },
-        { status: 400 }
-      )
+      return NextResponse.json({ message: 'CPF já cadastrado.' }, { status: 400 })
     }
 
     let indicadoPorId: number | null = null
@@ -55,13 +46,7 @@ export async function POST(req: NextRequest) {
 
       console.log('[REGISTER] Indicador encontrado:', userIndicador)
 
-      if (userIndicador) {
-        indicadoPorId = userIndicador.id
-      } else {
-        console.log('[REGISTER] Indicador inválido:', indicador)
-        // Se quiser bloquear cadastro com indicador inválido, descomente:
-        // return NextResponse.json({ message: 'Indicador inválido.' }, { status: 400 });
-      }
+      if (userIndicador) indicadoPorId = userIndicador.id
     }
 
     const hashedPassword = await hash(password, 10)
@@ -80,13 +65,17 @@ export async function POST(req: NextRequest) {
 
     console.log('[REGISTER] Novo usuário criado:', newUser.id)
 
-    // ✅ Gera token JWT e envia cookie como no login
+    // 📧 Envia email de boas-vindas
+    try {
+      await sendWelcomeEmail(email, name)
+      console.log('[REGISTER] Email de boas-vindas enviado para:', email)
+    } catch (emailError) {
+      console.error('[REGISTER] Erro ao enviar email:', emailError)
+    }
+
+    // ✅ Gera token JWT e envia cookie
     const token = sign(
-      {
-        id: newUser.id,
-        nome: newUser.nome,
-        email: newUser.email
-      },
+      { id: newUser.id, nome: newUser.nome, email: newUser.email },
       process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     )
