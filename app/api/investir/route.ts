@@ -49,64 +49,73 @@ export async function POST(req: NextRequest) {
       percentualDiario = 2.0
     }
 
+    // Atualiza saldo e valor investido
     const novoSaldo = user.saldo - valor
     const novoInvestimento = user.valorInvestido + valor
-    const pontosGanhos = Math.floor(valor / 2)
 
-    // Atualiza saldo, valor investido e pontos
-    const usuarioAtualizado = await prisma.user.update({
+    await prisma.user.update({
       where: { id: userId },
       data: {
         saldo: novoSaldo,
         valorInvestido: novoInvestimento,
-        pontos: { increment: pontosGanhos },
       },
     })
 
-    // Salva investimento no histórico com percentual diário
+    // Salva investimento no histórico
     await prisma.investimento.create({
       data: {
         userId,
         valor,
         percentualDiario,
-        rendimentoAcumulado: 0, // inicia com 0
+        rendimentoAcumulado: 0,
       },
     })
 
-    // Atualiza pontos do indicado direto
-    if (user.indicadoPorId) {
-      await prisma.user.update({
-        where: { id: user.indicadoPorId },
-        data: { pontos: { increment: pontosGanhos } },
-      })
-
-      const indicadorDireto = await prisma.user.findUnique({
-        where: { id: user.indicadoPorId },
-        select: { indicadoPorId: true },
-      })
-
-      if (indicadorDireto?.indicadoPorId) {
-        await prisma.user.update({
-          where: { id: indicadorDireto.indicadoPorId },
-          data: { pontos: { increment: pontosGanhos } },
-        })
-      }
-    }
+    // Atualiza pontos instantaneamente incluindo todos os níveis de indicados
+    await atualizarPontos(userId)
 
     return NextResponse.json({
       message: 'Valor investido com sucesso!',
-      user: {
-        saldo: usuarioAtualizado.saldo,
-        valorInvestido: usuarioAtualizado.valorInvestido,
-        pontos: usuarioAtualizado.pontos,
-      },
-      investimento: {
-        valor,
-        percentualDiario,
-      },
+      user: await prisma.user.findUnique({ where: { id: userId }, select: { saldo: true, valorInvestido: true, pontos: true } }),
+      investimento: { valor, percentualDiario },
     })
   } catch (error) {
     console.error('Erro ao investir valor:', error)
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })
   }
 }
+
+// Função para atualizar pontos do usuário incluindo indicados em todos os níveis
+async function atualizarPontos(userId: number) {
+  const usuario = await prisma.user.findUnique({ where: { id: userId } })
+  if (!usuario) return
+
+  // Investimentos próprios
+  const investimentosProprios = await prisma.investimento.findMany({ where: { userId } })
+  let totalInvestido = investimentosProprios.reduce((acc, i) => acc + i.valor, 0)
+
+  // Função recursiva para somar investimentos de todos os indicados
+  async function somarInvestimentosIndicados(indicadorId: number): Promise<number> {
+    const indicados = await prisma.user.findMany({ where: { indicadoPorId: indicadorId } })
+    let total = 0
+    for (const indicado of indicados) {
+      const inv = await prisma.investimento.findMany({ where: { userId: indicado.id } })
+      total += inv.reduce((acc, i) => acc + i.valor, 0)
+      // chama recursivamente para os próximos níveis
+      total += await somarInvestimentosIndicados(indicado.id)
+    }
+    return total
+  }
+
+  totalInvestido += await somarInvestimentosIndicados(userId)
+
+  // Calcula pontos: 1 ponto a cada R$2
+  const pontos = Math.floor(totalInvestido / 2)
+
+  // Atualiza os pontos do usuário
+  await prisma.user.update({
+    where: { id: userId },
+    data: { pontos },
+  })
+}
+
