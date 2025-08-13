@@ -1,140 +1,124 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
+// Endpoint para investir
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
+      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
     const userId = Number(session.user.id);
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        saldo: true,
-        valorInvestido: true,
-        pontos: true,
-        indicadoPorId: true,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
-    }
-
     const body = await req.json();
     const valor = parseFloat(body.valor);
 
     if (isNaN(valor) || valor < 1) {
-      return NextResponse.json({ error: 'Valor inválido para investir (mínimo R$1)' }, { status: 400 });
+      return NextResponse.json({ error: "Valor inválido para investir (mínimo R$1)" }, { status: 400 });
     }
 
-    if (user.saldo < valor) {
-      return NextResponse.json({ error: 'Saldo insuficiente para esse valor' }, { status: 400 });
+    const usuario = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, saldo: true, valorInvestido: true, pontos: true, graduacaoId: true }
+    });
+
+    if (!usuario) {
+      return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
     }
 
-    // Percentual diário fixo de 2,5%
-    const percentualDiario = 2.5;
+    if (usuario.saldo < valor) {
+      return NextResponse.json({ error: "Saldo insuficiente" }, { status: 400 });
+    }
 
     // Atualiza saldo e valor investido
-    const novoSaldo = user.saldo - valor;
-    const novoInvestimento = user.valorInvestido + valor;
-
     await prisma.user.update({
       where: { id: userId },
       data: {
-        saldo: novoSaldo,
-        valorInvestido: novoInvestimento,
+        saldo: usuario.saldo - valor,
+        valorInvestido: usuario.valorInvestido + valor,
       },
     });
 
-    // Cria investimento com limite de 200% do valor aplicado
+    // Cria o investimento
     await prisma.investimento.create({
       data: {
         userId,
         valor,
-        percentualDiario,
+        percentualDiario: valor <= 5000 ? 1.5 : valor <= 10000 ? parseFloat((Math.random() * (1.8 - 1.6) + 1.6).toFixed(2)) : parseFloat((Math.random() * (2.5 - 2.0) + 2.0).toFixed(2)),
         rendimentoAcumulado: 0,
         limite: valor * 2,
         ativo: true,
       },
     });
 
-    // Atualiza pontos do usuário
-    await atualizarPontos(userId);
+    // Atualiza pontos incluindo rede direta e indireta
+    const pontosTotais = await calcularPontos(userId);
+
+    // Atualiza graduação
+    const graduacao = await atualizarGraduacao(userId, pontosTotais);
 
     return NextResponse.json({
-      message: 'Valor investido com sucesso!',
-      user: await prisma.user.findUnique({
-        where: { id: userId },
-        select: { saldo: true, valorInvestido: true, pontos: true },
-      }),
-      investimento: { valor, percentualDiario },
+      message: "Investimento registrado com sucesso!",
+      pontos: pontosTotais,
+      graduacao: graduacao?.nome || null,
     });
+
   } catch (error) {
-    console.error('Erro ao investir valor:', error);
-    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
+    console.error("Erro ao investir:", error);
+    return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 });
   }
 }
 
-// Função para atualizar rendimentos diários (executar em cron ou no login do usuário)
-export async function atualizarRendimentos() {
-  const investimentos = await prisma.investimento.findMany({ where: { ativo: true } });
-
-  for (const inv of investimentos) {
-    const rendimento = inv.valor * 0.025; // 2,5% ao dia
-    let novoAcumulado = inv.rendimentoAcumulado + rendimento;
-
-    if (novoAcumulado >= inv.limite) {
-      novoAcumulado = inv.limite;
-      await prisma.investimento.update({
-        where: { id: inv.id },
-        data: { rendimentoAcumulado: novoAcumulado, ativo: false },
-      });
-    } else {
-      await prisma.investimento.update({
-        where: { id: inv.id },
-        data: { rendimentoAcumulado: novoAcumulado },
-      });
-    }
-  }
-}
-
-// Atualiza pontos do usuário incluindo indicados diretos e indiretos
-async function atualizarPontos(userId: number) {
+// Função para calcular pontos incluindo todos os indicados (diretos e indiretos)
+async function calcularPontos(userId: number): Promise<number> {
   const usuario = await prisma.user.findUnique({ where: { id: userId } });
-  if (!usuario) return;
+  if (!usuario) return 0;
 
-  // Investimentos próprios
   const investimentosProprios = await prisma.investimento.findMany({ where: { userId } });
   let totalInvestido = investimentosProprios.reduce((acc, i) => acc + i.valor, 0);
 
-  // Função recursiva para somar investimentos de todos os indicados
-  async function somarInvestimentosIndicados(indicadorId: number): Promise<number> {
-    const indicados = await prisma.user.findMany({ where: { indicadoPorId: indicadorId } });
+  async function somarRede(id: number): Promise<number> {
+    const indicados = await prisma.user.findMany({ where: { indicadoPorId: id } });
     let total = 0;
-    for (const indicado of indicados) {
-      const inv = await prisma.investimento.findMany({ where: { userId: indicado.id } });
+    for (const ind of indicados) {
+      const inv = await prisma.investimento.findMany({ where: { userId: ind.id } });
       total += inv.reduce((acc, i) => acc + i.valor, 0);
-      total += await somarInvestimentosIndicados(indicado.id);
+      total += await somarRede(ind.id);
     }
     return total;
   }
 
-  totalInvestido += await somarInvestimentosIndicados(userId);
+  totalInvestido += await somarRede(userId);
 
-  // 1 ponto a cada R$2 investidos
   const pontos = Math.floor(totalInvestido / 2);
 
   await prisma.user.update({
     where: { id: userId },
     data: { pontos },
   });
+
+  return pontos;
 }
 
+// Função para atualizar graduação com base nos pontos
+async function atualizarGraduacao(userId: number, pontos: number) {
+  const graduacoes = await prisma.graduacao.findMany({
+    orderBy: { pontos: "asc" },
+  });
+
+  const novaGraduacao = graduacoes
+    .filter(g => pontos >= g.pontos)
+    .pop();
+
+  if (novaGraduacao) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { graduacaoId: novaGraduacao.id },
+    });
+  }
+
+  return novaGraduacao;
+}

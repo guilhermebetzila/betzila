@@ -41,37 +41,8 @@ export default function DashboardPage() {
   const [pontos, setPontos] = useState<number>(0);
   const [pontosDiretos, setPontosDiretos] = useState<number>(0);
   const [pontosIndiretos, setPontosIndiretos] = useState<number>(0);
-  const [isMuted, setIsMuted] = useState(true);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
   const user = session?.user;
-
-  // Música de fundo
-  useEffect(() => {
-    const newAudio = new Audio('/audio/triunfo.mp3');
-    newAudio.loop = true;
-    newAudio.volume = 0.3;
-    newAudio.muted = true;
-    setAudio(newAudio);
-
-    const playOnInteraction = () => {
-      newAudio.play().catch(() => {});
-      window.removeEventListener('click', playOnInteraction);
-    };
-    window.addEventListener('click', playOnInteraction);
-
-    return () => {
-      newAudio.pause();
-    };
-  }, []);
-
-  const toggleMute = () => {
-    if (audio) {
-      const nextMuted = !isMuted;
-      audio.muted = nextMuted;
-      setIsMuted(nextMuted);
-    }
-  };
 
   // Buscar dados do usuário
   useEffect(() => {
@@ -151,7 +122,7 @@ export default function DashboardPage() {
               Saldo: R$ {saldo.toFixed(2)}
             </span>
           </h1>
-          <p className="text-white text-sm mt-1">Bem-vindo ao seu painel personalizado</p>
+          <p className="text-white text-sm mt-1">Valor investido: R$ {valorInvestido.toFixed(2)}</p>
           <p className="text-white mt-2">
             Você já indicou <strong>{totalIndicados}</strong> pessoa(s)!
           </p>

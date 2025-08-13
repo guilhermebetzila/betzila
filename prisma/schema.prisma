@@ -1,4 +1,4 @@
-generator client { 
+generator client {  
   provider   = "prisma-client-js"
   engineType = "binary"
 }
@@ -23,10 +23,13 @@ model User {
   indicadoPor    User?     @relation("Indicacoes", fields: [indicadoPorId], references: [id])
   indicados      User[]    @relation("Indicacoes")
 
+  graduacaoId    Int? 
+  graduacao      Graduacao? @relation(fields: [graduacaoId], references: [id])
+
   cartelas       Cartela[]
   investimentos  Investimento[]
   depositos      Deposito[]
-  rendimentos    RendimentoDiario[] // relação com histórico de rendimentos
+  rendimentos    RendimentoDiario[]
 }
 
 model Deposito {
@@ -108,4 +111,12 @@ model Bola {
   ordem     Int
   partidaId Int
   partida   Partida @relation(fields: [partidaId], references: [id])
+}
+
+// Novo modelo para graduações
+model Graduacao {
+  id     Int    @id @default(autoincrement())
+  nome   String
+  pontos Int    @unique
+  users  User[]
 }
