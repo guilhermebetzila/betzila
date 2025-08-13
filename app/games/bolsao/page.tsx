@@ -38,41 +38,37 @@ export default function BolsaoPage() {
   }, [bolsao, capital]);
 
   return (
-    <div className="min-h-screen bg-white text-black flex flex-col items-center justify-start p-6 space-y-8">
+    <div className="min-h-screen text-white flex flex-col items-center justify-start p-6 space-y-8">
 
       <h1 className="text-4xl font-bold mb-4 text-center">Bolsão da Inteligência Artificial</h1>
 
       {/* Bolsão */}
-      <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-xl text-center border-2 border-black">
+      <div className="rounded-lg p-6 w-full max-w-xl text-center border-2 border-white">
         <h2 className="text-xl font-semibold mb-2">Bolsão Operacional</h2>
-        <p className={`text-4xl font-bold ${
-          bolsao > prevBolsao.current ? 'text-black' : 'text-gray-600'
-        } transition-colors duration-500`}>
+        <p className={`text-4xl font-bold transition-colors duration-500`}>
           {formatBRL(bolsao)}
         </p>
-        <span className="text-sm text-gray-700">Valor total em operações de mercado</span>
+        <span className="text-sm">Valor total em operações de mercado</span>
       </div>
 
       {/* Capital da Empresa */}
-      <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-xl text-center border-2 border-black">
+      <div className="rounded-lg p-6 w-full max-w-xl text-center border-2 border-white">
         <h2 className="text-xl font-semibold mb-2">Capital da Empresa</h2>
-        <p className={`text-4xl font-bold ${
-          capital > prevCapital.current ? 'text-black' : 'text-gray-600'
-        } transition-colors duration-500`}>
+        <p className={`text-4xl font-bold transition-colors duration-500`}>
           {formatBRL(capital)}
         </p>
-        <span className="text-sm text-gray-700">Capital próprio acompanhando as oscilações</span>
+        <span className="text-sm">Capital próprio acompanhando as oscilações</span>
       </div>
 
       {/* Caixa de Proteção */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center border-2 border-black">
+        <div className="rounded-lg p-6 text-center border-2 border-white">
           <h3 className="text-lg font-semibold mb-2">Caixa de Proteção 1</h3>
-          <p className="text-3xl font-bold text-gray-700">{formatBRL(caixa1)}</p>
+          <p className="text-3xl font-bold">{formatBRL(caixa1)}</p>
         </div>
-        <div className="bg-white rounded-lg shadow-md p-6 text-center border-2 border-black">
+        <div className="rounded-lg p-6 text-center border-2 border-white">
           <h3 className="text-lg font-semibold mb-2">Caixa de Proteção 2</h3>
-          <p className="text-3xl font-bold text-gray-700">{formatBRL(caixa2)}</p>
+          <p className="text-3xl font-bold">{formatBRL(caixa2)}</p>
         </div>
       </div>
     </div>
