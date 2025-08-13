@@ -48,7 +48,15 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/saldo`);
+        const res = await fetch(`${API_BASE_URL}/api/saldo`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            // Enviar token se necessário:
+            // 'Authorization': `Bearer ${session?.token}`
+          },
+          credentials: 'include', // importante se o cookie HttpOnly estiver sendo usado
+        });
         const data = await res.json();
         if (res.ok) {
           setSaldo(data.saldo || 0);
@@ -75,8 +83,8 @@ export default function DashboardPage() {
   };
 
   const progresso = Math.min((pontos / 1000) * 100, 100);
-  const codigoIndicacao = user?.nome || user?.email || user?.id;
-  const linkIndicacao = `https://www.ziller.ia.com.br/register?indicador=${encodeURIComponent(codigoIndicacao || '')}`;
+  const codigoIndicacao = user?.id || user?.email || '';
+  const linkIndicacao = `https://www.ziller.club/register?indicador=${encodeURIComponent(codigoIndicacao)}`;
 
   if (status === 'loading') return <p className="text-center mt-10 text-white">Carregando...</p>;
   if (status === 'unauthenticated') return <p className="text-center mt-10 text-red-500">Acesso negado. Faça login para continuar.</p>;
@@ -84,7 +92,6 @@ export default function DashboardPage() {
   return (
     <LayoutWrapper>
       <div className="min-h-screen px-4 py-4 text-white relative">
-
         {/* Barra superior */}
         <div className="flex justify-end items-center mb-6 max-w-6xl mx-auto gap-4">
           <button className="px-4 py-2 border border-white rounded-lg text-white flex items-center gap-2">
@@ -104,11 +111,7 @@ export default function DashboardPage() {
                 onClick={() => handleMenuClick(item)}
                 className="flex-shrink-0 w-20 h-20 rounded-full border-2 border-white overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
               >
-                <img
-                  src={item.img}
-                  alt={item.label}
-                  className="w-full h-full object-cover"
-                />
+                <img src={item.img} alt={item.label} className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
@@ -191,6 +194,7 @@ export default function DashboardPage() {
             Investir Agora
           </button>
         </div>
+
       </div>
 
       {/* Footer */}

@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -15,7 +15,12 @@ function FormularioRegistro() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Pegando indicador da URL ou localStorage
+  // Regras de senha
+  const [hasUpper, setHasUpper] = useState(false);
+  const [hasLower, setHasLower] = useState(false);
+  const [hasNumber, setHasNumber] = useState(false);
+  const [hasSpecial, setHasSpecial] = useState(false);
+
   useEffect(() => {
     const indicacaoURL = searchParams.get('indicador');
     if (indicacaoURL) {
@@ -26,6 +31,14 @@ function FormularioRegistro() {
       if (indicacaoLocal) setIndicador(indicacaoLocal);
     }
   }, [searchParams]);
+
+  // Atualiza validação da senha
+  useEffect(() => {
+    setHasUpper(/[A-Z]/.test(password));
+    setHasLower(/(?:.*[a-z]){2,}/.test(password));
+    setHasNumber(/\d/.test(password));
+    setHasSpecial(/[!@#$%^&*()_+\[\]{};:'",.<>\/?\\|-]/.test(password));
+  }, [password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,15 +59,15 @@ function FormularioRegistro() {
       });
 
       if (res.ok) {
-        router.push('/login')
+        router.push('/login');
       } else {
-        const data = await res.json()
-        setErro(data?.message || 'Erro ao registrar')
+        const data = await res.json();
+        setErro(data?.message || 'Erro ao registrar');
       }
     } catch (err) {
-      setErro('Erro de conexão com o servidor')
+      setErro('Erro de conexão com o servidor');
     }
-  }
+  };
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
@@ -99,12 +112,30 @@ function FormularioRegistro() {
           className="w-full p-2 border border-gray-300 rounded"
           required
         />
+
+        {/* Validação visual da senha */}
+        <div className="text-sm space-y-1">
+          <p className={hasUpper ? 'text-green-600' : 'text-red-500'}>
+            • Pelo menos 1 letra maiúscula
+          </p>
+          <p className={hasLower ? 'text-green-600' : 'text-red-500'}>
+            • Pelo menos 2 letras minúsculas
+          </p>
+          <p className={hasNumber ? 'text-green-600' : 'text-red-500'}>
+            • Pelo menos 1 número
+          </p>
+          <p className={hasSpecial ? 'text-green-600' : 'text-red-500'}>
+            • Pelo menos 1 caractere especial
+          </p>
+        </div>
+
         <input
           type="text"
           placeholder="Indicador (opcional)"
           value={indicador}
           onChange={(e) => setIndicador(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded"
+          readOnly={!!searchParams.get('indicador')}
         />
         {erro && <p className="text-red-500 text-sm">{erro}</p>}
         <button
@@ -115,7 +146,7 @@ function FormularioRegistro() {
         </button>
       </form>
     </div>
-  )
+  );
 }
 
 export default function RegistroPage() {
@@ -123,5 +154,5 @@ export default function RegistroPage() {
     <Suspense fallback={<p className="text-center">Carregando...</p>}>
       <FormularioRegistro />
     </Suspense>
-  )
+  );
 }
