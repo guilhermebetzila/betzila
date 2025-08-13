@@ -38,7 +38,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen px-4 bg-white text-black">
+    <main className="flex flex-col items-center justify-center min-h-screen px-4 bg-black text-white">
       <h1 className="text-3xl font-bold mb-6">Login</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
         <div>
@@ -47,7 +47,7 @@ export default function LoginPage() {
             placeholder="Seu email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full px-4 py-2 border border-gray-600 bg-transparent text-white rounded focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400"
             required
           />
         </div>
@@ -57,20 +57,20 @@ export default function LoginPage() {
             placeholder="Sua senha"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full px-4 py-2 border border-gray-600 bg-transparent text-white rounded focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400"
             required
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
           disabled={carregando}
         >
           {carregando ? 'Entrando...' : 'Entrar'}
         </button>
       </form>
       {mensagem && (
-        <p className="mt-4 text-sm text-red-600 text-center">{mensagem}</p>
+        <p className="mt-4 text-sm text-red-400 text-center">{mensagem}</p>
       )}
     </main>
   );
