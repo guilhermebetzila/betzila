@@ -18,6 +18,18 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // 🔑 Validação de senha complexa
+    const senhaRegex = /^(?=.*[A-Z])(?=(?:.*[a-z]){2,})(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};:'",.<>\/?\\|-]).{6,}$/
+    if (!senhaRegex.test(password)) {
+      return NextResponse.json(
+        {
+          message:
+            'A senha deve ter pelo menos 1 letra maiúscula, 2 letras minúsculas, 1 número e 1 caractere especial.'
+        },
+        { status: 400 }
+      )
+    }
+
     // 📧 Verificar se o e-mail já existe
     const existingEmail = await prisma.user.findUnique({ where: { email } })
     if (existingEmail) {
