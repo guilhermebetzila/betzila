@@ -25,28 +25,31 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'ID ausente' }, { status: 400 })
     }
 
-    // ⚡ Se for teste do Mercado Pago, só retorna sucesso
-    if (String(paymentId) === '1') {
-      console.log('🧪 Webhook de teste recebido. Respondendo com 200 OK.')
-      return NextResponse.json({ success: true, test: true }, { status: 200 })
+    // 👉 Se for ID de teste (não numérico real), apenas retornar OK
+    if (isNaN(Number(paymentId))) {
+      console.log('⚠️ Recebido ID de teste, ignorando:', paymentId)
+      return NextResponse.json({ status: 'test event recebido' }, { status: 200 })
     }
 
-    // 🔎 Caso real → buscar no Mercado Pago
     let paymentData
     try {
       paymentData = await payments.get({ id: String(paymentId) })
     } catch (error) {
       console.error('❌ Erro ao buscar detalhes do pagamento:', error)
-      return NextResponse.json({ error: 'Erro ao buscar pagamento' }, { status: 500 })
+      return NextResponse.json({ error: 'Erro ao buscar pagamento' }, { status: 200 }) // não quebrar
     }
 
     const status = (paymentData.status ?? '').toString().trim().toLowerCase()
-    const tipoOriginal = (paymentData.payment_type_id ?? '').toString()
-    const tipo = tipoOriginal.trim().toLowerCase().replace(/\s+/g, '')
+    const tipo = (paymentData.payment_type_id ?? '').toString().trim().toLowerCase()
     const valor = paymentData.transaction_amount
     const externalRefRaw = paymentData.external_reference
 
-    console.log('📦 Dados do pagamento:', { status, tipo, valor, email: externalRefRaw })
+    console.log('📦 Dados do pagamento recebidos do Mercado Pago:', {
+      status,
+      tipo,
+      valor,
+      email: externalRefRaw,
+    })
 
     if (typeof externalRefRaw !== 'string' || !externalRefRaw.trim()) {
       return NextResponse.json({ error: 'Email ausente ou inválido' }, { status: 400 })
@@ -73,6 +76,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ status: 'aguardando aprovação ou tipo inválido' }, { status: 200 })
+
   } catch (error) {
     console.error('❌ Erro geral no webhook:', error)
     return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
