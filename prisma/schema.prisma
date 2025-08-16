@@ -1,4 +1,4 @@
-generator client {  
+generator client { 
   provider   = "prisma-client-js"
   engineType = "binary"
 }
@@ -18,7 +18,10 @@ model User {
   valorInvestido Float     @default(0)
   pontos         Int       @default(0)
   indicador      String?
-  lastLogin      DateTime?  // Novo campo adicionado
+  lastLogin      DateTime?
+
+  // 👇 Carteira vinculada ao usuário
+  carteira       String?   @unique
 
   indicadoPorId  Int?
   indicadoPor    User?     @relation("Indicacoes", fields: [indicadoPorId], references: [id])
@@ -27,10 +30,11 @@ model User {
   graduacaoId    Int? 
   graduacao      Graduacao? @relation(fields: [graduacaoId], references: [id])
 
-  cartelas       Cartela[]
-  investimentos  Investimento[]
-  depositos      Deposito[]
-  rendimentos    RendimentoDiario[]
+  cartelas        Cartela[]
+  investimentos   Investimento[]
+  depositos       Deposito[]
+  rendimentos     RendimentoDiario[]
+  onChainDeposits OnChainDeposit[]   // 👈 Relacionamento com depósitos on-chain
 }
 
 model Deposito {
@@ -40,6 +44,15 @@ model Deposito {
 
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
+
+  // 🔹 Novo campo
+  status    StatusDeposito @default(pendente)
+}
+
+enum StatusDeposito {
+  pendente
+  confirmado
+  cancelado
 }
 
 model Investimento {
@@ -117,4 +130,23 @@ model Graduacao {
   nome   String
   pontos Int    @unique
   users  User[]
+}
+
+//
+// === Modelo para depósitos on-chain (USDT na BSC) ===
+//
+model OnChainDeposit {
+  id        Int      @id @default(autoincrement())
+  txHash    String   @unique
+  from      String
+  to        String
+  amount    Float
+  createdAt DateTime @default(now())
+
+  // 👇 Relacionamento com User (opcional, mas ideal)
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  // 🔹 Novo campo de status
+  status    StatusDeposito @default(pendente)
 }
